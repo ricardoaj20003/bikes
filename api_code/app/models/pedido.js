@@ -1,7 +1,8 @@
-const baseModel = require('./base'),
-      bookshelf = require('bookshelf')(baseModel.knex),
-      Person    = require('./person').Person,
-      Address   = require('./address').Address;
+const baseModel      = require('./base'),
+      bookshelf      = require('bookshelf')(baseModel.knex),
+      Person         = require('./person').Person,
+      Address        = require('./address').Address,
+      PaymentDetail  = require('./payment_detail.js').PaymentDetail;
 
 let Pedido = bookshelf.Model.extend({
   tableName: 'pedidos',
@@ -11,6 +12,9 @@ let Pedido = bookshelf.Model.extend({
   },
   address: function() {
     return this.hasOne(Address);
+  },
+  paymentDetail: function() {
+    return this.hasOne(PaymentDetail);
   }
 });
 
