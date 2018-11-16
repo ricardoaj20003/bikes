@@ -7,7 +7,7 @@ module.exports = function(fastify, opts, next){
   });
 
   fastify.get(`${prefix}/webhook`, (request, response) => {
-     if (req.query["hub.verify_token"] === process.env.VERIFICATION_TOKEN) {
+     if (request.query["hub.verify_token"] === process.env.VERIFICATION_TOKEN) {
         response.code(200).send(req.query["hub.challenge"]);
     } else {
       return response
@@ -18,8 +18,8 @@ module.exports = function(fastify, opts, next){
   });
 
   fastify.post(`${prefix}/webhook`, (request, response) => {
-    if (req.body.object === "page") {
-        req.body.entry.forEach(function(entry) {
+    if (request.body.object === "page") {
+        request.body.entry.forEach(function(entry) {
             entry.messaging.forEach(function(event) {
                 if (event.message) {
                     process_event(event);
