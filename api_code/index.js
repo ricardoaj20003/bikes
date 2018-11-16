@@ -18,6 +18,7 @@ fastify.register(require('fastify-swagger'), {
 });
 
 fastify.register(require('./app/routes/pedidos'));
+fastify.register(require('./app/routes/facebook_logic'));
 
 fastify.listen(3000, (err, address) => {
   if (err) throw err;
