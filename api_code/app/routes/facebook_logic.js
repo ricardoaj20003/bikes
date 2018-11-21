@@ -2,11 +2,73 @@ const prefix = '/facebook_logic',
       request = require("request");
 
 module.exports = function(fastify, opts, next){
-  fastify.get(`${prefix}`, (request, response) => {
-    return response.send({});
+  fastify.get(`${prefix}`,
+  {
+    schema: {
+      description: 'blabla',
+      tags: ['Facebook'],
+      summary: 'da todos los pedidos',
+      params: {
+        type: 'object',
+        properties: {
+          peluchito: {
+            type: 'string',
+            description: 'user id'
+          },
+          JAMON: {
+            type: 'string',
+            description: 'me gusta el jamon'
+            
+          }
+        }
+      },
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {
+    response.send({});
   });
 
-  fastify.get(`${prefix}/webhook`, (request, response) => {
+  fastify.get(`${prefix}/webhook`,
+  {
+    schema: {
+      description: 'Se dan los pedidos creados',
+      tags: ['Facebook'],
+      summary: 'da todos los pedidos',
+      params: {
+        type: 'object',
+        properties: {
+          peluchito: {
+            type: 'string',
+            description: 'user id'
+          },
+          JAMON: {
+            type: 'string',
+            description: 'me gusta el jamon'
+            
+          }
+        }
+      },
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {
      if (request.query["hub.verify_token"] === process.env.VERIFICATION_TOKEN) {
         return response.code(200).send(request.query["hub.challenge"]);
     } else {
@@ -17,7 +79,38 @@ module.exports = function(fastify, opts, next){
     }
   });
 
-  fastify.post(`${prefix}/webhook`, (request, response) => {
+  fastify.post(`${prefix}/webhook`,
+  {
+    schema: {
+      description: 'Se dan los pedidos creados',
+      tags: ['Facebook'],
+      summary: 'da todos los pedidos',
+      params: {
+        type: 'object',
+        properties: {
+          peluchito: {
+            type: 'string',
+            description: 'user id'
+          },
+          JAMON: {
+            type: 'string',
+            description: 'me gusta el jamon'
+            
+          }
+        }
+      },
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {
     if (request.body.object === "page") {
         request.body.entry.forEach(function(entry) {
             entry.messaging.forEach(function(event) {
