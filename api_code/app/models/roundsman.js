@@ -8,6 +8,13 @@ let Roundsman = bookshelf.Model.extend({
   hasTimestamps: true,
   conversation_code: function(){
     return this.hasOne(ConversationCode);
+  },
+  updateCode: function(){
+    let conversation_code = this.relations.conversation_code;
+    conversation_code.createCode();
+    return conversation_code.save({
+      message: this.relations.conversation_code.attributes.message
+    }, {patch: true});
   }
 });
 

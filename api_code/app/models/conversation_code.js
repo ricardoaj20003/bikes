@@ -116,18 +116,20 @@ let ConversationCode = bookshelf.Model.extend({
   hasTimestamps: true,
   initialize: function() {
     this.on('creating', (model, attrs, options) => {
-      let cad = "";
-      [1,2,3,4,5].forEach((i) => {
-        console.log(i);
-        var word = wordList[Math.floor(Math.random() * wordList.length)];
-        cad = `${cad} ${word}`;
-      });
-      model.set('message', cad);
+      this.createCode();
     }, this);
   },
   roundsman: function(){
     return this.belongsTo(Roundsman);
   },
+  createCode: function(){
+    let cad = "";
+    [1,2,3,4,5].forEach((i) => {
+      var word = wordList[Math.floor(Math.random() * wordList.length)];
+      cad = `${cad} ${word}`;
+    });
+    return this.set('message', cad.trim());
+  }
 });
 
 module.exports = {
