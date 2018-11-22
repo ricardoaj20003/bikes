@@ -1,5 +1,5 @@
+require('dotenv').config();
 const config = require('./base'),
-      Roundsman   = require('./roundsman').Roundsman,
       wordList = ['a', 'abajo', 'abandonar', 'abrir', 'absoluta', 'absoluto', 'abuelo', 'acabar', 'acaso', 'acciones',
 'acción', 'aceptar', 'acercar', 'acompañar', 'acordar', 'actitud', 'actividad', 'acto', 'actual', 'actuar',
 'acudir', 'acuerdo', 'adelante', 'además', 'adquirir', 'advertir', 'afectar', 'afirmar', 'agua', 'ahora',
@@ -109,6 +109,20 @@ const config = require('./base'),
 'vista', 'viva', 'vivir', 'vivo', 'voces', 'voluntad', 'volver', 'voz', 'vuelta', 'y',
 'ya', 'yo', 'zona', 'árbol', 'él', 'época', 'ésta', 'éste', 'éxito', 'última',
 'último', 'única', 'único'],
+      nodemailer = require('nodemailer'),
+      transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS
+        }
+      }),
+      mailOptions = {
+        from: process.env.EMAIL_FROM,
+        subject: 'Codigo de conversacion'
+      },
       bookshelf = require('bookshelf')(config.knex);
 
 let ConversationCode = bookshelf.Model.extend({
@@ -120,6 +134,7 @@ let ConversationCode = bookshelf.Model.extend({
     }, this);
   },
   roundsman: function(){
+    let Roundsman = require('./roundsman').Roundsman;
     return this.belongsTo(Roundsman);
   },
   createCode: function(){
@@ -128,7 +143,23 @@ let ConversationCode = bookshelf.Model.extend({
       var word = wordList[Math.floor(Math.random() * wordList.length)];
       cad = `${cad} ${word}`;
     });
-    return this.set('message', cad.trim());
+    this.set('message', cad.trim());
+    return this.roundsman().where({id: this.attributes.roundsman_id})
+      .fetch().then((roundsman) => {
+        let email = roundsman.attributes.email;
+        return this.sendCodeMail(email);
+      });
+  },
+  sendCodeMail: function(email){
+    let html = `<h4>Codigo: ${this.attributes.message}</h4>`;
+    mailOptions.to = email;
+    mailOptions.html = html;
+    transporter.sendMail(mailOptions, function (err, info) {
+      if(err)
+        console.log(err);
+      else
+        console.log(info);
+    });
   }
 });
 

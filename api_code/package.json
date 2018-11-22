@@ -21,6 +21,7 @@
     "fastify-jwt": "^0.7.0",
     "fastify-swagger": "^0.15.1",
     "knex": "^0.13.0",
+    "nodemailer": "^4.7.0",
     "pg": "^7.6.1",
     "request": "^2.88.0"
   }
