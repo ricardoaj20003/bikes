@@ -5,22 +5,13 @@ module.exports = function(fastify, opts, next){
   fastify.get(`${prefix}`,
   {
     schema: {
-      description: 'blabla',
+      description: 'Toma los pedidos creados',
       tags: ['Facebook'],
-      summary: 'da todos los pedidos',
+      summary: 'Toma los pedidos',
       params: {
         type: 'object',
         properties: {
-          peluchito: {
-            type: 'string',
-            description: 'user id'
-          },
-          JAMON: {
-            type: 'string',
-            description: 'me gusta el jamon'
-            
-          }
-        }
+                 }
       },
       response: {
         201: {
@@ -40,21 +31,13 @@ module.exports = function(fastify, opts, next){
   fastify.get(`${prefix}/webhook`,
   {
     schema: {
-      description: 'Se dan los pedidos creados',
+      description: 'Toma los pedidos creados',
       tags: ['Facebook'],
-      summary: 'da todos los pedidos',
+      summary: 'Toma los pedidos creados',
       params: {
         type: 'object',
         properties: {
-          peluchito: {
-            type: 'string',
-            description: 'user id'
-          },
-          JAMON: {
-            type: 'string',
-            description: 'me gusta el jamon'
-            
-          }
+         
         }
       },
       response: {
@@ -88,16 +71,7 @@ module.exports = function(fastify, opts, next){
       params: {
         type: 'object',
         properties: {
-          peluchito: {
-            type: 'string',
-            description: 'user id'
-          },
-          JAMON: {
-            type: 'string',
-            description: 'me gusta el jamon'
-            
-          }
-        }
+        }  
       },
       response: {
         201: {

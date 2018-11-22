@@ -36,15 +36,6 @@ module.exports = function(fastify, opts, next){
       params: {
         type: 'object',
         properties: {
-          peluchito: {
-            type: 'string',
-            description: 'user id'
-          },
-          JAMON: {
-            type: 'string',
-            description: 'me gusta el jamon'
-            
-          }
         }
       },
       response: {
@@ -74,17 +65,29 @@ module.exports = function(fastify, opts, next){
       params: {
         type: 'object',
         properties: {
-          peluchito: {
+          address: {
             type: 'string',
-            description: 'user id'
+            description: 'Direcion'
           },
-          JAMON: {
+          references_notes: {
             type: 'string',
-            description: 'me gusta el jamon'
-            
+            description: 'Referencias del domicilio'
+          },
+          destination: {
+            type: 'string',
+            description: 'Lugar de destino'
+          },
+          distance: {
+            type: 'number',
+            description: 'Distancia a recorrer'
+          },
+          origin: {
+            type: 'string',
+            description: 'Domicilio del remitente'
           }
         }
       },
+
       response: {
         201: {
           description: 'Succesful response',
@@ -121,13 +124,17 @@ module.exports = function(fastify, opts, next){
       params: {
         type: 'object',
         properties: {
-          peluchito: {
+          name: {
             type: 'string',
-            description: 'user id'
+            description: 'nombre de usuario'
           },
-          JAMON: {
+          email: {
             type: 'string',
-            description: 'me gusta el jamon'
+            description: 'correo electronico del usuario'
+          },
+          celular: {
+            type: 'integer',
+            description: 'numero de celular'
             
           }
         }
@@ -163,13 +170,21 @@ module.exports = function(fastify, opts, next){
       params: {
         type: 'object',
         properties: {
-          peluchito: {
-            type: 'string',
-            description: 'user id'
+          credit: {
+            type: 'boolean',
+            description: 'especifica si el cliente tiene credito'
           },
-          JAMON: {
-            type: 'string',
-            description: 'me gusta el jamon'
+          invoice: {
+            type: 'boolean',
+            description: 'especifica si el cliente tiene credito'
+          },
+          total: {
+            type: 'number',
+            description: 'total de la cuenta'
+          },
+          iva: {
+            type: 'number',
+            description: 'iva del producto'
             
           }
         }
