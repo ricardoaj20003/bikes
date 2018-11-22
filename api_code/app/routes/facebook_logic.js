@@ -1,4 +1,5 @@
 const prefix = '/facebook_logic',
+      ConversationCode  = require('../models/conversation_code').ConversationCode,
       request = require("request");
 
 module.exports = function(fastify, opts, next){
@@ -22,7 +23,7 @@ module.exports = function(fastify, opts, next){
         request.body.entry.forEach(function(entry) {
             entry.messaging.forEach(function(event) {
                 if (event.message) {
-                    process_event(event);
+                    validateMessage(event);
                 }
             });
         });
@@ -35,18 +36,19 @@ module.exports = function(fastify, opts, next){
   return next();
 };
 
-function process_event(event){
-  var senderID = event.sender.id;
-  var message = event.message;
-  let responseMessage = '';
+function validateMessage(event){
+  let senderID = event.sender.id;
+  let message = event.message;
 
-  if(message.text){
-    responseMessage = {
-      "text": 'Enviaste este mensaje: ' + message.text
-    };
-  }
+  return ConversationCode.where({message: message})
+    .fetch().then((conversationCode) => {
+      if (!conversationCode)
+        return '';
 
-  send_message(senderID, responseMessage);
+      return conversationCode.setSenderId(senderID);
+
+    });
+
 }
 
 function send_message(senderID, responseMessage){
@@ -63,8 +65,6 @@ function send_message(senderID, responseMessage){
     "method": "POST",
     "json": request_body
   }, (err, res, body) => {
-    console.log(res);
-    console.log(body);
     if (!err) {
       console.log('Mensaje enviado!');
     } else {
