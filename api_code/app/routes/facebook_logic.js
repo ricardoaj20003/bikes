@@ -3,12 +3,12 @@ const prefix = '/facebook_logic',
 
 module.exports = function(fastify, opts, next){
   fastify.get(`${prefix}`, (request, response) => {
-    response.send({});
+    return response.send({});
   });
 
   fastify.get(`${prefix}/webhook`, (request, response) => {
      if (request.query["hub.verify_token"] === process.env.VERIFICATION_TOKEN) {
-        response.code(200).send(req.query["hub.challenge"]);
+        return response.code(200).send(request.query["hub.challenge"]);
     } else {
       return response
         .code(403)
@@ -26,10 +26,10 @@ module.exports = function(fastify, opts, next){
                 }
             });
         });
-        return response.code(200).send();
+        return response.code(200).send('EVENT_RECEIVED');
     }
 
-    return response.code(200).send();
+    return response.code(404).send();
   });
 
   return next();
@@ -38,9 +38,10 @@ module.exports = function(fastify, opts, next){
 function process_event(event){
   var senderID = event.sender.id;
   var message = event.message;
+  let responseMessage = '';
 
   if(message.text){
-    let responseMessage = {
+    responseMessage = {
       "text": 'Enviaste este mensaje: ' + message.text
     };
   }
@@ -48,12 +49,12 @@ function process_event(event){
   send_message(senderID, responseMessage);
 }
 
-function send_message(senderID, response){
+function send_message(senderID, responseMessage){
   let request_body = {
     "recipient": {
       "id": senderID
     },
-    "message": response
+    "message": responseMessage
   };
 
   request({
@@ -62,6 +63,8 @@ function send_message(senderID, response){
     "method": "POST",
     "json": request_body
   }, (err, res, body) => {
+    console.log(res);
+    console.log(body);
     if (!err) {
       console.log('Mensaje enviado!');
     } else {

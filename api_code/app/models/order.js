@@ -4,8 +4,8 @@ const baseModel      = require('./base'),
       Address        = require('./address').Address,
       PaymentDetail  = require('./payment_detail.js').PaymentDetail;
 
-let Pedido = bookshelf.Model.extend({
-  tableName: 'pedidos',
+let Order = bookshelf.Model.extend({
+  tableName: 'orders',
   hasTimestamps: true,
   person: function() {
     return this.hasOne(Person);
@@ -19,5 +19,5 @@ let Pedido = bookshelf.Model.extend({
 });
 
 module.exports = {
-  Pedido : Pedido
+  Order : Order
 };

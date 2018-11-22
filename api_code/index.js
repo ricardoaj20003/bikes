@@ -17,8 +17,15 @@ fastify.register(require('fastify-swagger'), {
   exposeRoute: true
 });
 
-fastify.register(require('./app/routes/pedidos'));
+fastify.addHook('preHandler', (request, reply, next) => {
+  console.log('Si');
+  next();
+});
+
+fastify.register(require('./app/routes/orders'));
 fastify.register(require('./app/routes/facebook_logic'));
+fastify.register(require('./app/routes/roundsman'));
+fastify.register(require('./app/routes/conversation_codes'));
 
 fastify.listen(3000, (err, address) => {
   if (err) throw err;
