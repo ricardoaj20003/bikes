@@ -3,6 +3,12 @@ const prefix            = '/repartidores',
       ConversationCode  = require('../models/conversation_code').ConversationCode;
 
 module.exports = function(fastify, opts, next){
+  fastify.get(`${prefix}`, (request, response) => {
+    Roundsman.fetchAll({withRelated: ['conversation_code']}).then(function(roundsmans){
+      return response.send(roundsmans);
+    });
+  });
+
   fastify.post(`${prefix}`, (request, response) => {
     return new Roundsman(request.body.roundsman).save()
       .then(function(roundsman){
