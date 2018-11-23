@@ -1,5 +1,5 @@
 const prefix = '/pedidos',
-      Pedido = require('../models/pedido').Pedido,
+      Pedido = require('../models/order').Pedido,
       Address = require('../models/address').Address,
       PaymentDetail  = require('../models/payment_detail.js').PaymentDetail,
       Person  = require('../models/person').Person;
@@ -12,6 +12,16 @@ module.exports = function(fastify, opts, next){
       description: 'Se dan los pedidos creados',
       tags: ['Pedidos'],
       summary: 'da todos los pedidos',
+      params:{
+        type: 'object',
+        properties:{
+        address : {
+        references_notes: 'algo',
+            origin: 'mi casa',
+            destination: 'tu casa',
+            distance: 10
+        }
+     },
       response: {
         201: {
           description: 'Succesful response',

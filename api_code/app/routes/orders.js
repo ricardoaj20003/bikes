@@ -6,7 +6,27 @@ const prefix = '/pedidos',
 
 
 module.exports = function(fastify, opts, next){
-  fastify.get(`${prefix}`, (request, response) => {
+  fastify.get(`${prefix}`, 
+  {
+    schema: {
+      description: 'Se dan los pedidos creados',
+      tags: ['Pedidos'],
+      summary: 'da todos los pedidos',
+      description: 'Se dan los pedidos creados',
+      tags: ['Pedidos'],
+      summary: 'da todos los pedidos',
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {
       Order.fetchAll({withRelated: ['address', 'person', 'paymentDetail']}).then(function(orders){
         return response.send(orders);
       });
@@ -19,7 +39,49 @@ module.exports = function(fastify, opts, next){
       });
     });
 
-  fastify.post(`${prefix}`, (request, response) => {
+  fastify.post(`${prefix}`, 
+  {
+    schema: {
+      description: 'Crea los pedidos',
+      tags: ['Pedidos'],
+      summary: 'crea la peticion',
+      body: {
+        type: 'object',
+        properties: {
+          address: {
+            type: 'string',
+            description: 'Direcion'
+          },
+          references_notes: {
+            type: 'string',
+            description: 'Referencias del domicilio'
+          },
+          destination: {
+            type: 'string',
+            description: 'Lugar de destino'
+          },
+          distance: {
+            type: 'number',
+            description: 'Distancia a recorrer'
+          },
+          origin: {
+            type: 'string',
+            description: 'Domicilio del remitente'
+          }
+        }
+      },
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {  
     return new Order().save()
       .then(function (order) {
         return new Address(request.body.address).save({'order_id' : order.id})
@@ -35,7 +97,51 @@ module.exports = function(fastify, opts, next){
       });
   });
 
-  fastify.post(`${prefix}/:id/add_person`, (request, response) => {
+  fastify.post(`${prefix}/:id/add_person`, 
+  {
+    schema: {
+      description: 'Agrega persona',
+      tags: ['Pedidos'],
+      summary: 'agrega persona',
+      body: {
+        type: 'object',
+        properties: {
+          name: {
+            type: 'string',
+            description: 'nombre de usuario'
+          },
+          email: {
+            type: 'string',
+            description: 'correo electronico del usuario'
+          },
+          celular: {
+            type: 'integer',
+            description: 'numero de celular'
+            
+          }
+        }
+      },
+      params: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'boolean',
+            description: 'identificador del cliente'
+          },
+        }
+      },
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {
     let orderId = request.params.id;
     return new Person(request.body.person).save({'order_id': orderId})
       .then(function (person){
@@ -46,7 +152,55 @@ module.exports = function(fastify, opts, next){
       });
   });
 
-  fastify.post(`${prefix}/:id/add_payment_detail`, (request, response) => {
+  fastify.post(`${prefix}/:id/add_payment_detail`,
+  {
+    schema: {
+      description: 'Se dan los pedidos creados',
+      tags: ['Pedidos'],
+      summary: 'Detalle de pedidos por id',
+      params: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'boolean',
+            description: 'identificador del cliente'
+          },
+        }
+      },
+      body: {
+        type: 'object',
+        properties: {
+          credit: {
+            type: 'boolean',
+            description: 'especifica si el cliente tiene credito'
+          },
+          invoice: {
+            type: 'boolean',
+            description: 'especifica si el cliente tiene credito'
+          },
+          total: {
+            type: 'number',
+            description: 'total de la cuenta'
+          },
+          iva: {
+            type: 'number',
+            description: 'iva del producto'
+            
+          }
+        }
+      },
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {
     let orderId = request.params.id;
     return new PaymentDetail(request.body.payment_detail).save({'order_id': orderId})
       .then(function (PaymentDetail){

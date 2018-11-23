@@ -5,9 +5,9 @@ module.exports = function(fastify, opts, next){
   fastify.get(`${prefix}`,
   {
     schema: {
-      description: 'Toma los pedidos creados',
+      description: '',
       tags: ['Facebook'],
-      summary: 'Toma los pedidos',
+      summary: 'Ruta a modo de prueba',
       params: {
         type: 'object',
         properties: {
@@ -31,9 +31,9 @@ module.exports = function(fastify, opts, next){
   fastify.get(`${prefix}/webhook`,
   {
     schema: {
-      description: 'Toma los pedidos creados',
+      description: 'ruta para comprobar funcionamiento de logica de FB',
       tags: ['Facebook'],
-      summary: 'Toma los pedidos creados',
+      summary: 'ruta para comprobar funcionamiento de logica de FB',
       params: {
         type: 'object',
         properties: {
@@ -65,13 +65,15 @@ module.exports = function(fastify, opts, next){
   fastify.post(`${prefix}/webhook`,
   {
     schema: {
-      description: 'Se dan los pedidos creados',
+      body:{
+      description: 'Compara la valides del token',
       tags: ['Facebook'],
-      summary: 'da todos los pedidos',
+      summary: 'ruta para comprobar funcionamiento de logica de FB',
       params: {
         type: 'object',
         properties: {
         }  
+      } 
       },
       response: {
         201: {
