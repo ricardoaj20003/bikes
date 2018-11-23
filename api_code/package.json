@@ -17,9 +17,11 @@
   "dependencies": {
     "bcrypt": "^3.0.2",
     "bookshelf": "^0.13.3",
+    "cors": "^2.8.5",
     "dotenv": "^6.1.0",
     "fastify": "^1.13.0",
     "fastify-swagger": "^0.15.1",
+    "fastify-url-data": "^2.2.0",
     "jsonwebtoken": "^8.4.0",
     "knex": "^0.13.0",
     "md5": "^2.2.1",
