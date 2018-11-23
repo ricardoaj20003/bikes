@@ -2,11 +2,56 @@ const prefix = '/facebook_logic',
       request = require("request");
 
 module.exports = function(fastify, opts, next){
-  fastify.get(`${prefix}`, (request, response) => {
-    return response.send({});
+  fastify.get(`${prefix}`,
+  {
+    schema: {
+      description: '',
+      tags: ['Facebook'],
+      summary: 'Ruta a modo de prueba',
+      params: {
+        type: 'object',
+        properties: {
+                 }
+      },
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {
+    response.send({});
   });
 
-  fastify.get(`${prefix}/webhook`, (request, response) => {
+  fastify.get(`${prefix}/webhook`,
+  {
+    schema: {
+      description: 'ruta para comprobar funcionamiento de logica de FB',
+      tags: ['Facebook'],
+      summary: 'ruta para comprobar funcionamiento de logica de FB',
+      params: {
+        type: 'object',
+        properties: {
+         
+        }
+      },
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {
      if (request.query["hub.verify_token"] === process.env.VERIFICATION_TOKEN) {
         return response.code(200).send(request.query["hub.challenge"]);
     } else {
@@ -17,7 +62,31 @@ module.exports = function(fastify, opts, next){
     }
   });
 
-  fastify.post(`${prefix}/webhook`, (request, response) => {
+  fastify.post(`${prefix}/webhook`,
+  {
+    schema: {
+      body:{
+      description: 'Compara la valides del token',
+      tags: ['Facebook'],
+      summary: 'ruta para comprobar funcionamiento de logica de FB',
+      params: {
+        type: 'object',
+        properties: {
+        }  
+      } 
+      },
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {
     if (request.body.object === "page") {
         request.body.entry.forEach(function(entry) {
             entry.messaging.forEach(function(event) {

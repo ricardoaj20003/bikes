@@ -1,5 +1,5 @@
 const prefix = '/pedidos',
-      Order = require('../models/order').Order,
+      Pedido = require('../models/order').Pedido,
       Address = require('../models/address').Address,
       PaymentDetail  = require('../models/payment_detail.js').PaymentDetail,
       Person  = require('../models/person').Person;
@@ -12,9 +12,16 @@ module.exports = function(fastify, opts, next){
       description: 'Se dan los pedidos creados',
       tags: ['Pedidos'],
       summary: 'da todos los pedidos',
-      description: 'Se dan los pedidos creados',
-      tags: ['Pedidos'],
-      summary: 'da todos los pedidos',
+      params:{
+        type: 'object',
+        properties:{
+        address : {
+        references_notes: 'algo',
+            origin: 'mi casa',
+            destination: 'tu casa',
+            distance: 10
+        }
+     },
       response: {
         201: {
           description: 'Succesful response',
@@ -27,25 +34,45 @@ module.exports = function(fastify, opts, next){
     }
   },
   (request, response) => {
-      Order.fetchAll({withRelated: ['address', 'person', 'paymentDetail']}).then(function(orders){
-        return response.send(orders);
-      });
+      return response.send({ hello: 'world' });
     });
 
-  fastify.get(`${prefix}/:id`, (request, response) => {
-    return Order.where(request.params).fetch({withRelated: ['address', 'person', 'paymentDetail']})
-      .then(function(order){
-        return response.send(order);
-      });
-    });
-
-  fastify.post(`${prefix}`, 
+  fastify.get(`${prefix}/:id`, 
   {
     schema: {
-      description: 'Crea los pedidos',
+      description: 'Se dan los pedidos creados',
       tags: ['Pedidos'],
-      summary: 'crea la peticion',
-      body: {
+      summary: 'da todos los pedidos',
+      params: {
+        type: 'object',
+        properties: {
+        }
+      },
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {
+    return Pedido.where(request.params).fetch({withRelated: ['address']})
+      .then(function(pedido){
+        return response.send(pedido);
+      });
+    });
+
+  fastify.post(`${prefix}`,
+  {
+    schema: {
+      description: 'Se dan los pedidos creados',
+      tags: ['Pedidos'],
+      summary: 'da todos los pedidos',
+      params: {
         type: 'object',
         properties: {
           address: {
@@ -70,6 +97,7 @@ module.exports = function(fastify, opts, next){
           }
         }
       },
+
       response: {
         201: {
           description: 'Succesful response',
@@ -81,14 +109,14 @@ module.exports = function(fastify, opts, next){
       }
     }
   },
-  (request, response) => {  
-    return new Order().save()
-      .then(function (order) {
-        return new Address(request.body.address).save({'order_id' : order.id})
+  (request, response) => {
+    return new Pedido().save()
+      .then(function (pedido) {
+        return new Address(request.body.address).save({'pedido_id' : pedido.id})
           .then(function(){
-            return Order.where({id: order.id}).fetch({withRelated: ['address']})
-              .then(function(order){
-                return response.send(order);
+            return Pedido.where({id: pedido.id}).fetch({withRelated: ['address']})
+              .then(function(pedido){
+                return response.send(pedido);
               });
           });
       })
@@ -97,13 +125,13 @@ module.exports = function(fastify, opts, next){
       });
   });
 
-  fastify.post(`${prefix}/:id/add_person`, 
+  fastify.post(`${prefix}/:id/add_person`,
   {
     schema: {
-      description: 'Agrega persona',
+      description: 'Se dan los pedidos creados',
       tags: ['Pedidos'],
-      summary: 'agrega persona',
-      body: {
+      summary: 'da todos los pedidos',
+      params: {
         type: 'object',
         properties: {
           name: {
@@ -121,15 +149,6 @@ module.exports = function(fastify, opts, next){
           }
         }
       },
-      params: {
-        type: 'object',
-        properties: {
-          id: {
-            type: 'boolean',
-            description: 'identificador del cliente'
-          },
-        }
-      },
       response: {
         201: {
           description: 'Succesful response',
@@ -142,12 +161,12 @@ module.exports = function(fastify, opts, next){
     }
   },
   (request, response) => {
-    let orderId = request.params.id;
-    return new Person(request.body.person).save({'order_id': orderId})
+    let pedidoId = request.params.id;
+    return new Person(request.body.person).save({'pedido_id': pedidoId})
       .then(function (person){
-        return Order.where(request.params).fetch({withRelated: ['address', 'person']})
-          .then(function(order){
-            return response.send(order);
+        return Pedido.where(request.params).fetch({withRelated: ['address', 'person']})
+          .then(function(pedido){
+            return response.send(pedido);
           });
       });
   });
@@ -157,17 +176,8 @@ module.exports = function(fastify, opts, next){
     schema: {
       description: 'Se dan los pedidos creados',
       tags: ['Pedidos'],
-      summary: 'Detalle de pedidos por id',
+      summary: 'da todos los pedidos',
       params: {
-        type: 'object',
-        properties: {
-          id: {
-            type: 'boolean',
-            description: 'identificador del cliente'
-          },
-        }
-      },
-      body: {
         type: 'object',
         properties: {
           credit: {
@@ -201,12 +211,12 @@ module.exports = function(fastify, opts, next){
     }
   },
   (request, response) => {
-    let orderId = request.params.id;
-    return new PaymentDetail(request.body.payment_detail).save({'order_id': orderId})
+    let pedidoId = request.params.id;
+    return new PaymentDetail(request.body.payment_detail).save({'pedido_id': pedidoId})
       .then(function (PaymentDetail){
-        return Order.where(request.params).fetch({withRelated: ['address', 'person', 'paymentDetail']})
-          .then(function(order){
-            return response.send(order);
+        return Pedido.where(request.params).fetch({withRelated: ['address', 'person', 'paymentDetail']})
+          .then(function(pedido){
+            return response.send(pedido);
           });
       });
   });
