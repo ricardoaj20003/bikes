@@ -30,7 +30,7 @@ fastify.options('*', (request, reply) => { reply.send(); });
 
 fastify.addHook('preHandler', (request, response, next) => {
   let urlData = request.urlData();
-  if (urlData.path !== '/users/sign_in')
+  if (urlData.path !== '/users/sign_in' && !urlData.path.match(/\/documentation\//) )
     try {
       jwt.verify(request.headers.token, process.env.TOKEN_SECRET);
     } catch (err){
