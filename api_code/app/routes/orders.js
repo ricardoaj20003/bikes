@@ -32,7 +32,27 @@ module.exports = function(fastify, opts, next){
       });
     });
 
-  fastify.get(`${prefix}/:id`, (request, response) => {
+  fastify.get(`${prefix}/:id`,
+  {
+    schema: {
+      description: 'Recibe la direccion , nombre de la persona y el detalle de pago',
+      tags: ['Pedidos'],
+      summary: 'Recibe la informacion del usuario',
+      description: 'Se da la informacion del usuario',
+      tags: ['Pedidos'],
+      summary: 'da todos los pedidos',
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {
     return Order.where(request.params).fetch({withRelated: ['address', 'person', 'paymentDetail']})
       .then(function(order){
         return response.send(order);
