@@ -32,7 +32,7 @@ module.exports = function(fastify, opts, next){
     schema: {
       description: 'Relaciona el codigo con el id del repartidor',
       tags: ['Repartidores'],
-      summary: 'VIncula el codigo con el repartidor',
+      summary: 'Vincula el codigo con el repartidor',
       body: {
         type: 'object',
         properties: {
@@ -46,7 +46,7 @@ module.exports = function(fastify, opts, next){
           },
           celular: {
             type: 'number',
-            description: 'Distancia a recorrerNumero de celular del repartidor'
+            description: 'Numero de celular del repartidor'
           },
           zone_code: {
             type: 'number',
@@ -78,7 +78,25 @@ module.exports = function(fastify, opts, next){
       });
   });
 
-  fastify.get(`${prefix}/:id/conversation_code`, (request, response) => {
+  fastify.get(`${prefix}/:id/conversation_code`,
+  {
+    schema: {
+      description: 'Relaciona el codigo con el repartidor',
+      tags: ['Repartidores'],
+      summary: 'Relaciona el codigo de pedido con el repartidor',
+      description: 'Relaciona el codigo de pedido con el repartidor',
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        }
+      }
+    }
+  },
+   (request, response) => {
     return Roundsman.where({id: request.params.id})
       .fetch({withRelated: ['conversation_code']})
       .then((roundsman) => {
@@ -86,7 +104,33 @@ module.exports = function(fastify, opts, next){
       });
   });
 
-  fastify.post(`${prefix}/:id/refresh_code`, (request, response) => {
+  fastify.post(`${prefix}/:id/refresh_code`,
+  {
+    schema: {
+      description: 'Relaciona el codigo con el id del repartidor',
+      tags: ['Repartidores'],
+      summary: 'Vincula el codigo con el repartidor',
+      params: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'number',
+            description: 'ID del repartidor'
+          }
+        }
+      },
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {
     Roundsman.where({id: request.params.id}).fetch({withRelated: ['conversation_code']}).then((roundsman) => {
       roundsman.updateCode().then((conversation_code) => {
         return response.send(conversation_code);
