@@ -1,0 +1,43 @@
+footer .terms {
+  text-align: center;
+}
+
+footer .terms ul{
+  padding: 0;
+}
+
+.solicita{
+  margin: 0 auto;
+}
+
+.solicita .btn_full a{
+  color: white;
+}
+
+.solicita .btn_full:hover{
+  background: white;
+}
+.solicita .btn_full:hover a{
+  color: #85c99d;
+}
+
+.btn.distance{
+  background: #85c99d;
+  color: white;
+  padding: 10px;
+}
+
+.btn.distance:hover{
+  background: white;
+}
+.btn.distance:hover{
+  color: #85c99d;
+}
+.distance-form * {
+  margin: 10px 15px 10px 0;
+}
+.distance-form input{
+  padding: 6px;
+}
+
+
