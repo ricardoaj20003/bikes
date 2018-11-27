@@ -1,9 +1,8 @@
-@import url("animate.min.css"); 								/* Animate */
-@import url("bootstrap.min.css"); 								/* Main Bootstrap */
+/*@import url("animate.min.css"); 								[> Animate <]*/
 @import url("menu.css");										/* Menu styles */
 @import url("style.css");										/* Main theme styles */
-@import url("responsive.css");									/* Responsive */
-@import url("elegant_font/elegant_font.min.css");				/* Icon pack */
+@import url("responsive.css");									 /*Responsive */
+@import url("elegant_font/elegant_font.min.css");			/*Icon pack */
 @import url("fontello/css/fontello.min.css");					/* Icon pack */
 @import url("magnific-popup.css");								/* Lightbox & dialog script */
 @import url("pop_up.css");										/* Popup Advertising */
