@@ -33,11 +33,19 @@ footer .terms ul{
 .btn.distance:hover{
   color: #85c99d;
 }
+.distance-form{
+  /*margin-bottom: 20px;*/
+}
+.references{
+  margin-top: 25px;
+}
 .distance-form * {
   margin: 10px 15px 10px 0;
 }
 .distance-form input{
   padding: 6px;
 }
-
+.distance-box{
+  padding: 3px 20px;
+}
 
