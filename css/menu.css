@@ -115,9 +115,9 @@ a.show-submenu-mega + .menu-wrapper.show_mega,
   position: relative;
   display:block;
   overflow: visible;
-  position:absolute; 
-  top:0;
-  right:15px;
+  position:absolute;
+  top: 0px;
+  right: 20px;
   margin: 0;
   padding: 0;
   width: 30px;

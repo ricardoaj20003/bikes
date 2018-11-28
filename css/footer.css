@@ -1,6 +1,18 @@
 footer .terms {
   text-align: center;
 }
+footer .container{
+  padding-top: 25px;
+}
+
+@media only screen and (min-width: 768px) {
+  html, body{
+    overflow-x: hidden;
+  }
+  footer .container{
+    padding-top: 0;
+  }
+}
 
 footer .terms ul{
   padding: 0;
