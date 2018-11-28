@@ -5,7 +5,7 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 
 module.exports = {
-  entry: ['./js/app/index.js', './css/base.css'],
+  entry: ['./css/base.css'],
   mode: 'development',
   output: {
     filename: 'bundle.js',
