@@ -4,13 +4,26 @@ footer .terms {
 footer .container{
   padding-top: 25px;
 }
-
+.distance-form input,
+.distance-form button{
+  width: 100%;
+}
+.distance-form input[type="button"]{
+  margin-bottom: 22px;
+}
+html, body{
+  overflow-x: hidden !important;
+}
 @media only screen and (min-width: 768px) {
-  html, body{
-    overflow-x: hidden;
-  }
   footer .container{
     padding-top: 0;
+  }
+  .distance-form input, 
+  .distance-form button{
+    width: auto;
+  }
+  .distance-form input[type="button"]{
+    margin-bottom: 0px;
   }
 }
 
