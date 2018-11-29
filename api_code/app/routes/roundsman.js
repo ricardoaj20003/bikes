@@ -88,8 +88,8 @@ module.exports = function(fastify, opts, next){
 
   fastify.post(`${prefix}/:id/refresh_code`, (request, response) => {
     Roundsman.where({id: request.params.id}).fetch({withRelated: ['conversation_code']}).then((roundsman) => {
-      roundsman.updateCode().then((conversation_code) => {
-        return response.send(conversation_code);
+      roundsman.updateCode().then((conversationCode) => {
+        return response.send(conversationCode);
       });
     });
   });

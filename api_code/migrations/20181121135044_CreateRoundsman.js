@@ -7,6 +7,7 @@ exports.up = function(knex, Promise) {
     table.string('email');
     table.string('celular');
     table.string('zone_code');
+    table.string('senderID');
     table.timestamps();
   });
 };

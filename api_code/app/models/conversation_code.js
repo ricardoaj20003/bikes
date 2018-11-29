@@ -137,6 +137,10 @@ let ConversationCode = bookshelf.Model.extend({
     let Roundsman = require('./roundsman').Roundsman;
     return this.belongsTo(Roundsman);
   },
+  roundsmanObject: function(){
+    return this.roundsman()
+      .where({id: this.attributes.roundsman_id}).fetch();
+  },
   createCode: function(){
     let cad = "";
     [1,2,3,4,5].forEach((i) => {
@@ -144,11 +148,18 @@ let ConversationCode = bookshelf.Model.extend({
       cad = `${cad} ${word}`;
     });
     this.set('message', cad.trim());
-    return this.roundsman().where({id: this.attributes.roundsman_id})
-      .fetch().then((roundsman) => {
+    return this.roundsmanObject.then((roundsman) => {
         let email = roundsman.attributes.email;
         return this.sendCodeMail(email);
       });
+  },
+  setSenderId: function(senderID){
+    return this.roundsmanObject.then((roundsman) => {
+      return roundsman.save({senderID: senderID}, {patch: true})
+        .then((roundsman) => {
+          return roundsman;
+        });
+    });
   },
   sendCodeMail: function(email){
     let html = `<h4>Codigo: ${this.attributes.message}</h4>`;
