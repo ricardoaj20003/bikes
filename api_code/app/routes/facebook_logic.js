@@ -92,7 +92,7 @@ module.exports = function(fastify, opts, next){
         request.body.entry.forEach(function(entry) {
             entry.messaging.forEach(function(event) {
                 if (event.message) {
-                    validateMessage(event);
+                    processMessage(event);
                 }
             });
         });
@@ -105,7 +105,7 @@ module.exports = function(fastify, opts, next){
   return next();
 };
 
-function validateMessage(event){
+function processMessage(event){
   let senderID = event.sender.id;
   let message = event.message;
 
