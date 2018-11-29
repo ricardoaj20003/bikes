@@ -7,6 +7,11 @@ module.exports = function(fastify, opts, next){
   fastify.post(`${prefix}`,
   {
     schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
       description: 'Ruta para crear usuario',
       tags: ['Users'],
       summary: 'Ruta para crear usuarios (aun es a modo de prueba)',
@@ -39,7 +44,6 @@ module.exports = function(fastify, opts, next){
     }
   },
   (request, response) => {
-    return response.send({});
     return new User({username: 'donmandon', password: '12345678', email: 'ohcl87@hotmail.com'}).save()
       .then(function (user) {
         return response.send(user);
@@ -52,6 +56,11 @@ module.exports = function(fastify, opts, next){
   fastify.post(`${prefix}/sign_in`,
   {
     schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
       description: 'Proceso de autenticacion del usuario',
       tags: ['Users'],
       summary: 'Valida usuario',

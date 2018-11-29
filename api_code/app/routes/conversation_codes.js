@@ -5,6 +5,11 @@ module.exports = function(fastify, opts, next){
   fastify.get(`${prefix}/:roundsmanId`, 
   {
     schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
       description: 'Relaciona el id del repartidor con el codigo de pedido',
       tags: ['Codigo de pedido'],
       summary: 'Relaciona el codigo de pedido con el id del repartidor',

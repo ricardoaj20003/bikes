@@ -5,6 +5,11 @@ module.exports = function(fastify, opts, next){
   fastify.get(`${prefix}`,
   {
     schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
       description: '',
       tags: ['Facebook'],
       summary: 'Ruta a modo de prueba',
@@ -31,6 +36,11 @@ module.exports = function(fastify, opts, next){
   fastify.get(`${prefix}/webhook`,
   {
     schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
       description: 'ruta para comprobar funcionamiento de logica de FB',
       tags: ['Facebook'],
       summary: 'ruta para comprobar funcionamiento de logica de FB',
@@ -65,6 +75,11 @@ module.exports = function(fastify, opts, next){
   fastify.post(`${prefix}/webhook`,
   {
     schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
       body:{
       description: 'Compara la valides del token',
       tags: ['Facebook'],

@@ -6,6 +6,11 @@ module.exports = function(fastify, opts, next){
   fastify.get(`${prefix}`, 
   {
     schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
       description: ' Codigo para el repartidor.',
       tags: ['Repartidores'],
       summary: 'Devuelve el codigo al repartidor',
@@ -30,6 +35,11 @@ module.exports = function(fastify, opts, next){
   fastify.post(`${prefix}`, 
   {
     schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
       description: 'Relaciona el codigo con el id del repartidor',
       tags: ['Repartidores'],
       summary: 'Vincula el codigo con el repartidor',
@@ -81,6 +91,11 @@ module.exports = function(fastify, opts, next){
   fastify.get(`${prefix}/:id/conversation_code`,
   {
     schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
       description: 'Relaciona el codigo con el repartidor',
       tags: ['Repartidores'],
       summary: 'Relaciona el codigo de pedido con el repartidor',
@@ -107,6 +122,11 @@ module.exports = function(fastify, opts, next){
   fastify.post(`${prefix}/:id/refresh_code`,
   {
     schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
       description: 'Relaciona el codigo con el id del repartidor',
       tags: ['Repartidores'],
       summary: 'Vincula el codigo con el repartidor',

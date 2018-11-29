@@ -9,6 +9,11 @@ module.exports = function(fastify, opts, next){
   fastify.get(`${prefix}`, 
   {
     schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
       description: 'Se dan los pedidos creados',
       tags: ['Pedidos'],
       summary: 'da todos los pedidos',
@@ -35,6 +40,11 @@ module.exports = function(fastify, opts, next){
   fastify.get(`${prefix}/:id`,
   {
     schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
       description: 'Recibe la direccion , nombre de la persona y el detalle de pago',
       tags: ['Pedidos'],
       summary: 'Recibe la informacion del usuario',
@@ -62,6 +72,11 @@ module.exports = function(fastify, opts, next){
   fastify.post(`${prefix}`, 
   {
     schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
       description: 'Crea los pedidos',
       tags: ['Pedidos'],
       summary: 'crea la peticion',
@@ -120,6 +135,11 @@ module.exports = function(fastify, opts, next){
   fastify.post(`${prefix}/:id/add_person`, 
   {
     schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
       description: 'Agrega persona',
       tags: ['Pedidos'],
       summary: 'agrega persona',
@@ -175,6 +195,11 @@ module.exports = function(fastify, opts, next){
   fastify.post(`${prefix}/:id/add_payment_detail`,
   {
     schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
       description: 'Se dan los pedidos creados',
       tags: ['Pedidos'],
       summary: 'Detalle de pedidos por id',
