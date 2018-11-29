@@ -2,8 +2,8 @@ require('dotenv').config();
 const fastify = require('fastify')({
   logger: true
 }),
-    jwt = require('jsonwebtoken'),
-    cors = require('cors');
+  jwt = require('jsonwebtoken'),
+  cors = require('cors');
 
 
 fastify.register(require('fastify-swagger'), {
@@ -30,7 +30,11 @@ fastify.options('*', (request, reply) => { reply.send(); });
 
 fastify.addHook('preHandler', (request, response, next) => {
   let urlData = request.urlData();
-  if (urlData.path !== '/users/sign_in' && !urlData.path.match(/\/documentation\//) )
+  if (
+    urlData.path !== '/users/sign_in' &&
+    !urlData.path.match(/\/documentation\//) &&
+    !urlData.path.match(/\/facebook_logic\//)
+  )
     try {
       jwt.verify(request.headers.token, process.env.TOKEN_SECRET);
     } catch (err){
