@@ -1,0 +1,76 @@
+footer .terms {
+  text-align: center;
+}
+footer .container{
+  padding-top: 25px;
+}
+.distance-form input,
+.distance-form button{
+  width: 100%;
+}
+.distance-form input[type="button"]{
+  margin-bottom: 22px;
+}
+html, body{
+  overflow-x: hidden !important;
+}
+@media only screen and (min-width: 768px) {
+  footer .container{
+    padding-top: 0;
+  }
+  .distance-form input, 
+  .distance-form button{
+    width: auto;
+  }
+  .distance-form input[type="button"]{
+    margin-bottom: 0px;
+  }
+}
+
+footer .terms ul{
+  padding: 0;
+}
+
+.solicita{
+  margin: 0 auto;
+}
+
+.solicita .btn_full a{
+  color: white;
+}
+
+.solicita .btn_full:hover{
+  background: white;
+}
+.solicita .btn_full:hover a{
+  color: #85c99d;
+}
+
+.btn.distance{
+  background: #85c99d;
+  color: white;
+  padding: 10px;
+}
+
+.btn.distance:hover{
+  background: white;
+}
+.btn.distance:hover{
+  color: #85c99d;
+}
+.distance-form{
+  /*margin-bottom: 20px;*/
+}
+.references{
+  margin-top: 25px;
+}
+.distance-form * {
+  margin: 10px 15px 10px 0;
+}
+.distance-form input{
+  padding: 6px;
+}
+.distance-box{
+  padding: 3px 20px;
+}
+
