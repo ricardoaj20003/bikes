@@ -52,6 +52,12 @@ module.exports = function(fastify, opts, next){
       description: 'Se da la informacion del usuario',
       tags: ['Pedidos'],
       summary: 'da todos los pedidos',
+      params: {
+        type: 'object',
+        properties: {
+          id: {type: 'integer'},
+        }
+      },
       response: {
         201: {
           description: 'Succesful response',
@@ -70,7 +76,6 @@ module.exports = function(fastify, opts, next){
       });
   });
 
-<<<<<<< HEAD
   fastify.post(`${prefix}`, 
   {
     schema: {
@@ -86,64 +91,16 @@ module.exports = function(fastify, opts, next){
         type: 'object',
         properties: {
           address: {
-            type: 'string',
-            description: 'Direcion'
-          },
-          references_notes: {
-            type: 'string',
-            description: 'Referencias del domicilio'
-          },
-          destination: {
-            type: 'string',
-            description: 'Lugar de destino'
-          },
-          distance: {
-            type: 'number',
-            description: 'Distancia a recorrer'
-          },
-          origin: {
-            type: 'string',
-            description: 'Domicilio del remitente'
+            type:'object',
+            properties: {
+              references_notes: {type:'string'},
+              origin:{type:'string'},
+              destination:{type:'string'},
+              distance:{type:'number'}
+            }
           }
         }
       },
-      response: {
-        201: {
-          description: 'Succesful response',
-=======
-  fastify.post(`${prefix}`,
-    {
-      schema: {
-        description: 'Crea los pedidos',
-        tags: ['Pedidos'],
-        summary: 'crea la peticion',
-        body: {
->>>>>>> ee90d2173e79057a7bb66592c39777d3d8a7d0d3
-          type: 'object',
-          properties: {
-            address: {
-              type: 'object',
-              properties: {
-                references_notes: {
-                  type: 'string',
-                  description: 'Referencias del domicilio'
-                },
-                destination: {
-                  type: 'string',
-                  description: 'Lugar de destino'
-                },
-                distance: {
-                  type: 'number',
-                  description: 'Distancia a recorrer'
-                },
-                origin: {
-                  type: 'string',
-                  description: 'Domicilio del remitente'
-                }
-              }
-            },
-          }
-        },
         response: {
           201: {
             description: 'Succesful response',
@@ -154,7 +111,7 @@ module.exports = function(fastify, opts, next){
           }
         }
       }
-    },
+  },
     (request, response) => {
       return new Order().save()
         .then(function (order) {
@@ -171,7 +128,6 @@ module.exports = function(fastify, opts, next){
         });
     });
 
-<<<<<<< HEAD
   fastify.post(`${prefix}/:id/add_person`, 
   {
     schema: {
@@ -186,51 +142,20 @@ module.exports = function(fastify, opts, next){
       body: {
         type: 'object',
         properties: {
-          name: {
-            type: 'string',
-            description: 'nombre de usuario'
-          },
-          email: {
-            type: 'string',
-            description: 'correo electronico del usuario'
-          },
-          celular: {
-            type: 'integer',
-            description: 'numero de celular'
-            
-=======
-  fastify.post(`${prefix}/:id/add_person`,
-    {
-      schema: {
-        description: 'Agrega persona',
-        tags: ['Pedidos'],
-        summary: 'agrega persona',
-        body: {
-          type: 'object',
-          properties: {
-            name: {
-              type: 'string',
-              description: 'nombre de usuario'
-            },
-            email: {
-              type: 'string',
-              description: 'correo electronico del usuario'
-            },
-            celular: {
-              type: 'integer',
-              description: 'numero de celular'
-
+          id:{
+            type:'object',
+            properties: {
+          name: {type: 'string'},
+          email: {type: 'string'},
+          celular: {type: 'integer'}
             }
->>>>>>> ee90d2173e79057a7bb66592c39777d3d8a7d0d3
           }
-        },
+        }
+      },
         params: {
           type: 'object',
           properties: {
-            id: {
-              type: 'integer',
-              description: 'identificador del cliente'
-            },
+            id: {type: 'integer'},
           }
         },
         response: {
@@ -243,7 +168,7 @@ module.exports = function(fastify, opts, next){
           }
         }
       }
-    },
+  },
     (request, response) => {
       let orderId = request.params.id;
       return new Person(request.body.person).save({'order_id': orderId})
@@ -254,107 +179,5 @@ module.exports = function(fastify, opts, next){
             });
         });
     });
-
-  fastify.post(`${prefix}/:id/add_payment_detail`,
-<<<<<<< HEAD
-  {
-    schema: {
-      security: [
-        {
-          Bearer: []
-        }
-      ],
-      description: 'Se dan los pedidos creados',
-      tags: ['Pedidos'],
-      summary: 'Detalle de pedidos por id',
-      params: {
-        type: 'object',
-        properties: {
-          id: {
-            type: 'boolean',
-            description: 'identificador del cliente'
-          },
-        }
-      },
-      body: {
-        type: 'object',
-        properties: {
-          credit: {
-            type: 'boolean',
-            description: 'especifica si el cliente tiene credito'
-          },
-          invoice: {
-            type: 'boolean',
-            description: 'especifica si el cliente tiene credito'
-          },
-          total: {
-            type: 'number',
-            description: 'total de la cuenta'
-          },
-          iva: {
-            type: 'number',
-            description: 'iva del producto'
-            
-=======
-    {
-      schema: {
-        description: 'Se dan los pedidos creados',
-        tags: ['Pedidos'],
-        summary: 'Detalle de pedidos por id',
-        params: {
-          type: 'object',
-          properties: {
-            id: {
-              type: 'integer',
-              description: 'identificador del cliente'
-            },
->>>>>>> ee90d2173e79057a7bb66592c39777d3d8a7d0d3
-          }
-        },
-        body: {
-          type: 'object',
-          properties: {
-            credit: {
-              type: 'boolean',
-              description: 'especifica si el cliente tiene credito'
-            },
-            invoice: {
-              type: 'boolean',
-              description: 'especifica si el cliente tiene credito'
-            },
-            total: {
-              type: 'integer',
-              description: 'total de la cuenta'
-            },
-            iva: {
-              type: 'integer',
-              description: 'iva del producto'
-
-            }
-          }
-        },
-        response: {
-          201: {
-            description: 'Succesful response',
-            type: 'object',
-            properties: {
-              hello: { type: 'string' }
-            }
-          }
-        }
-      }
-    },
-    (request, response) => {
-      let orderId = request.params.id;
-      return new PaymentDetail(request.body.payment_detail).save({'order_id': orderId})
-        .then(function (PaymentDetail){
-          return Order.where(request.params).fetch({withRelated: ['address', 'person', 'paymentDetail']})
-            .then(function(order){
-              new Roundsman().assign_order();
-              return response.send(order);
-            });
-        });
-    });
-
   return next();
 };

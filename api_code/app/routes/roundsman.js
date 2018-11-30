@@ -102,6 +102,12 @@ module.exports = function(fastify, opts, next){fastify.get(`${prefix}`,
         ],
       summary: 'Relaciona el codigo de pedido con el repartidor',
       description: 'Relaciona el codigo de pedido con el repartidor',
+      params: {
+        type: 'object',
+        properties: {
+          id: {type: 'integer'},
+        }
+      },
       response: {
           201: {
           description: 'Succesful response',
@@ -141,9 +147,7 @@ module.exports = function(fastify, opts, next){fastify.get(`${prefix}`,
       params: {
         type: 'object',
         properties: {
-          id: {
-            type: 'number',
-            description: 'ID del repartidor'
+          id: {type: 'number'},
             }
           }
         },
@@ -157,7 +161,6 @@ module.exports = function(fastify, opts, next){fastify.get(`${prefix}`,
             }
           }
         }
-      }
     },
   (request, response) => {
     Roundsman.where({id: request.params.id

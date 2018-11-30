@@ -18,18 +18,9 @@ module.exports = function(fastify, opts, next){
       body: {
         type: 'object',
         properties: {
-          username: {
-            type: 'string',
-            description: 'Nombre del usuario'
-          },
-          password: {
-            type: 'string',
-            description: 'Password del usuario'
-          },
-          email: {
-            type: 'string',
-            description: 'correo electronico del usuario'
-          },
+          username: {type: 'string'},
+          password: {type: 'string'},
+          email: {type: 'string'},
         }
       },
       response: {
@@ -67,14 +58,8 @@ module.exports = function(fastify, opts, next){
       body: {
         type: 'object',
         properties: {
-          Username: {
-            type: 'string',
-            description: 'Nombre del usuario'
-          },
-          password: {
-            type: 'string',
-            description: 'Password del usuario'
-          },
+          Username: {type: 'string'},
+          password: {type: 'string'},
         }
       },
       response: {
