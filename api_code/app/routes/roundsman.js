@@ -2,9 +2,7 @@ const prefix            = '/repartidores',
       Roundsman         = require('../models/roundsman').Roundsman,
       ConversationCode  = require('../models/conversation_code').ConversationCode;
 
-module.exports = function(fastify, opts, next){
-  fastify.get(`${prefix
-  }`,
+module.exports = function(fastify, opts, next){fastify.get(`${prefix}`,
   {
     schema: {
       security: [
@@ -55,8 +53,8 @@ module.exports = function(fastify, opts, next){
             type:'object',
             properties: {
               name: {type:'string'},
-              celphone:{type:'string'},
-              zonec_ode:{type:'number'},
+              celular:{type:'string'},
+              zone_code:{type:'number'},
               email:{type:'string'}
             }
           }
