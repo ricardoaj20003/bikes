@@ -2,12 +2,17 @@ const prefix            = '/repartidores',
       Roundsman         = require('../models/roundsman').Roundsman,
       ConversationCode  = require('../models/conversation_code').ConversationCode;
 
-module.exports = function(fastify, opts, next){
-  fastify.get(`${prefix}`, 
+module.exports = function(fastify, opts, next){fastify.get(`${prefix}`,
   {
     schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
       description: ' Codigo para el repartidor.',
-      tags: ['Repartidores'],
+      tags: ['Repartidores'
+      ],
       summary: 'Devuelve el codigo al repartidor',
       description: 'Entrega el codigo al repartidor',
       response: {
@@ -15,42 +20,43 @@ module.exports = function(fastify, opts, next){
           description: 'Succesful response',
           type: 'object',
           properties: {
-            hello: { type: 'string' }
+            hello: { type: 'string'
+            }
           }
         }
       }
     }
   },
   (request, response) => {
-    Roundsman.fetchAll({withRelated: ['conversation_code']}).then(function(roundsmans){
+    Roundsman.fetchAll({withRelated: ['conversation_code'
+      ]
+    }).then(function(roundsmans){
       return response.send(roundsmans);
     });
   });
 
-  fastify.post(`${prefix}`, 
+  fastify.post(`${prefix}`,
   {
     schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
       description: 'Relaciona el codigo con el id del repartidor',
       tags: ['Repartidores'],
-      summary: 'VIncula el codigo con el repartidor',
+      summary: 'Vincula el codigo con el repartidor',
       body: {
         type: 'object',
         properties: {
-          nombre: {
-            type: 'string',
-            description: 'Nombre del repartidor'
-          },
-          email: {
-            type: 'string',
-            description: 'Correo electronico del repartidor'
-          },
-          celular: {
-            type: 'number',
-            description: 'Distancia a recorrerNumero de celular del repartidor'
-          },
-          zone_code: {
-            type: 'number',
-            description: 'Codigo postal'
+          roundsman: {
+            type:'object',
+            properties: {
+              name: {type:'string'},
+              celular:{type:'string'},
+              zone_code:{type:'number'},
+              email:{type:'string'}
+            }
           }
         }
       },
@@ -59,7 +65,7 @@ module.exports = function(fastify, opts, next){
           description: 'Succesful response',
           type: 'object',
           properties: {
-            hello: { type: 'string' }
+            hello: { type: 'string'}
           }
         }
       }
@@ -68,31 +74,104 @@ module.exports = function(fastify, opts, next){
   (request, response) => {
     return new Roundsman(request.body.roundsman).save()
       .then(function(roundsman){
-        return new ConversationCode().save({'roundsman_id': roundsman.id})
+        return new ConversationCode().save({'roundsman_id': roundsman.id
+        })
           .then(function(conversation){
-            return Roundsman.where({id: roundsman.id}).fetch({withRelated: ['conversation_code']})
+            return Roundsman.where({id: roundsman.id
+          }).fetch({withRelated: ['conversation_code'
+            ]
+          })
               .then(function(roundsman){
                 return response.send(roundsman);
-              });
           });
+        });
       });
-  });
+    });
 
-  fastify.get(`${prefix}/:id/conversation_code`, (request, response) => {
-    return Roundsman.where({id: request.params.id})
-      .fetch({withRelated: ['conversation_code']})
+  fastify.get(`${prefix
+    }/:id/conversation_code`,
+    {
+    schema: {
+      security: [
+          {
+          Bearer: []
+          }
+        ],
+      description: 'Relaciona el codigo con el repartidor',
+      tags: ['Repartidores'
+        ],
+      summary: 'Relaciona el codigo de pedido con el repartidor',
+      description: 'Relaciona el codigo de pedido con el repartidor',
+      params: {
+        type: 'object',
+        properties: {
+          id: {type: 'integer'},
+        }
+      },
+      response: {
+          201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string'
+              }
+            }
+          }
+        }
+      }
+    },
+   (request, response) => {
+    return Roundsman.where({id: request.params.id
+      })
+      .fetch({withRelated: ['conversation_code'
+        ]
+      })
       .then((roundsman) => {
         return response.send(roundsman.relations.conversation_code);
       });
-  });
+    });
 
-  fastify.post(`${prefix}/:id/refresh_code`, (request, response) => {
-    Roundsman.where({id: request.params.id}).fetch({withRelated: ['conversation_code']}).then((roundsman) => {
-      roundsman.updateCode().then((conversationCode) => {
-        return response.send(conversationCode);
+  fastify.post(`${prefix
+    }/:id/refresh_code`,
+    {
+    schema: {
+      security: [
+          {
+          Bearer: []
+          }
+        ],
+      description: 'Relaciona el codigo con el id del repartidor',
+      tags: ['Repartidores'
+        ],
+      summary: 'Vincula el codigo con el repartidor',
+      params: {
+        type: 'object',
+        properties: {
+          id: {type: 'number'},
+            }
+          }
+        },
+      response: {
+          201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string'
+              }
+            }
+          }
+        }
+    },
+  (request, response) => {
+    Roundsman.where({id: request.params.id
+      }).fetch({withRelated: ['conversation_code'
+        ]
+      }).then((roundsman) => {
+      roundsman.updateCode().then((conversation_code) => {
+        return response.send(conversation_code);
+        });
       });
     });
-  });
 
   return next();
-};
+  };

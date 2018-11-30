@@ -8,16 +8,24 @@ const fastify = require('fastify')({
 
 fastify.register(require('fastify-swagger'), {
   swagger: {
+    securityDefinitions: {
+      Bearer: {
+      type: 'apiKey',
+      name: 'token',
+      in: 'header',
+      }
+    },
     info: {
       title: 'Don mandón API',
       description: 'Documentación del api don mandón',
       version: '1.0'
     },
-    host: 'localhost',
+    host: 'localhost:3000',
     schemes: ['http'],
     consumes: ['application/json'],
-    produces: ['application/json']
+    produces: ['application/json'],
   },
+
   exposeRoute: true
 });
 

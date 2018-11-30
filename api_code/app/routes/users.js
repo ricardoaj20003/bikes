@@ -7,24 +7,20 @@ module.exports = function(fastify, opts, next){
   fastify.post(`${prefix}`,
   {
     schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
       description: 'Ruta para crear usuario',
       tags: ['Users'],
       summary: 'Ruta para crear usuarios (aun es a modo de prueba)',
       body: {
         type: 'object',
         properties: {
-          username: {
-            type: 'string',
-            description: 'Nombre del usuario'
-          },
-          password: {
-            type: 'string',
-            description: 'Password del usuario'
-          },
-          email: {
-            type: 'string',
-            description: 'correo electronico del usuario'
-          },
+          username: {type: 'string'},
+          password: {type: 'string'},
+          email: {type: 'string'},
         }
       },
       response: {
@@ -39,7 +35,6 @@ module.exports = function(fastify, opts, next){
     }
   },
   (request, response) => {
-    return response.send({});
     return new User({username: 'donmandon', password: '12345678', email: 'ohcl87@hotmail.com'}).save()
       .then(function (user) {
         return response.send(user);
@@ -52,20 +47,19 @@ module.exports = function(fastify, opts, next){
   fastify.post(`${prefix}/sign_in`,
   {
     schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
       description: 'Proceso de autenticacion del usuario',
       tags: ['Users'],
       summary: 'Valida usuario',
       body: {
         type: 'object',
         properties: {
-          Username: {
-            type: 'string',
-            description: 'Nombre del usuario'
-          },
-          password: {
-            type: 'string',
-            description: 'Password del usuario'
-          },
+          Username: {type: 'string'},
+          password: {type: 'string'},
         }
       },
       response: {

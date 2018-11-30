@@ -9,6 +9,11 @@ module.exports = function(fastify, opts, next){
   fastify.get(`${prefix}`, 
   {
     schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
       description: 'Se dan los pedidos creados',
       tags: ['Pedidos'],
       summary: 'da todos los pedidos',
@@ -32,7 +37,8 @@ module.exports = function(fastify, opts, next){
         }
       }
     }
-  },
+  }
+},
   (request, response) => {
       return response.send({ hello: 'world' });
     });
@@ -40,6 +46,11 @@ module.exports = function(fastify, opts, next){
   fastify.get(`${prefix}/:id`, 
   {
     schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
       description: 'Se dan los pedidos creados',
       tags: ['Pedidos'],
       summary: 'da todos los pedidos',
@@ -69,32 +80,23 @@ module.exports = function(fastify, opts, next){
   fastify.post(`${prefix}`,
   {
     schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
       description: 'Se dan los pedidos creados',
       tags: ['Pedidos'],
       summary: 'da todos los pedidos',
       params: {
         type: 'object',
         properties: {
-          address: {
-            type: 'string',
-            description: 'Direcion'
-          },
-          references_notes: {
-            type: 'string',
-            description: 'Referencias del domicilio'
-          },
-          destination: {
-            type: 'string',
-            description: 'Lugar de destino'
-          },
+          address: {type: 'string' },
+          references_notes: { type: 'string'},
+          destination: {type: 'string'},
           distance: {
-            type: 'number',
-            description: 'Distancia a recorrer'
-          },
-          origin: {
-            type: 'string',
-            description: 'Domicilio del remitente'
-          }
+            type: 'number'},
+          origin: {type: 'string'}
         }
       },
 
@@ -128,25 +130,20 @@ module.exports = function(fastify, opts, next){
   fastify.post(`${prefix}/:id/add_person`,
   {
     schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
       description: 'Se dan los pedidos creados',
       tags: ['Pedidos'],
       summary: 'da todos los pedidos',
       params: {
         type: 'object',
         properties: {
-          name: {
-            type: 'string',
-            description: 'nombre de usuario'
-          },
-          email: {
-            type: 'string',
-            description: 'correo electronico del usuario'
-          },
-          celular: {
-            type: 'integer',
-            description: 'numero de celular'
-            
-          }
+          name: {type: 'string'},
+          email: {type: 'string'},
+          celular: {type: 'integer'}
         }
       },
       response: {
@@ -174,29 +171,21 @@ module.exports = function(fastify, opts, next){
   fastify.post(`${prefix}/:id/add_payment_detail`,
   {
     schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
       description: 'Se dan los pedidos creados',
       tags: ['Pedidos'],
       summary: 'da todos los pedidos',
       params: {
         type: 'object',
         properties: {
-          credit: {
-            type: 'boolean',
-            description: 'especifica si el cliente tiene credito'
-          },
-          invoice: {
-            type: 'boolean',
-            description: 'especifica si el cliente tiene credito'
-          },
-          total: {
-            type: 'number',
-            description: 'total de la cuenta'
-          },
-          iva: {
-            type: 'number',
-            description: 'iva del producto'
-            
-          }
+          credit: {type: 'boolean'},
+          invoice: {type: 'boolean'},
+          total: {type: 'number'},
+          iva: {type: 'number'}
         }
       },
       response: {
