@@ -148,13 +148,13 @@ let ConversationCode = bookshelf.Model.extend({
       cad = `${cad} ${word}`;
     });
     this.set('message', cad.trim());
-    return this.roundsmanObject.then((roundsman) => {
+    return this.roundsmanObject().then((roundsman) => {
         let email = roundsman.attributes.email;
         return this.sendCodeMail(email);
       });
   },
   setSenderId: function(senderID){
-    return this.roundsmanObject.then((roundsman) => {
+    return this.roundsmanObject().then((roundsman) => {
       return roundsman.save({senderID: senderID}, {patch: true})
         .then((roundsman) => {
           return roundsman;
