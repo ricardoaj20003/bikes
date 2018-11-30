@@ -1,8 +1,9 @@
 const prefix = '/pedidos',
-      Order = require('../models/order').Order,
-      Address = require('../models/address').Address,
-      PaymentDetail  = require('../models/payment_detail.js').PaymentDetail,
-      Person  = require('../models/person').Person;
+  Order = require('../models/order').Order,
+  Address = require('../models/address').Address,
+  PaymentDetail  = require('../models/payment_detail.js').PaymentDetail,
+  Roundsman  = require('../models/roundsman.js').Roundsman,
+  Person  = require('../models/person').Person;
 
 
 module.exports = function(fastify, opts, next){
@@ -31,7 +32,7 @@ module.exports = function(fastify, opts, next){
       }
     }
   },
-  (request, response) => {
+    (request, response) => {
       Order.fetchAll({withRelated: ['address', 'person', 'paymentDetail']}).then(function(orders){
         return response.send(orders);
       });
@@ -67,8 +68,9 @@ module.exports = function(fastify, opts, next){
       .then(function(order){
         return response.send(order);
       });
-    });
+  });
 
+<<<<<<< HEAD
   fastify.post(`${prefix}`, 
   {
     schema: {
@@ -108,30 +110,68 @@ module.exports = function(fastify, opts, next){
       response: {
         201: {
           description: 'Succesful response',
+=======
+  fastify.post(`${prefix}`,
+    {
+      schema: {
+        description: 'Crea los pedidos',
+        tags: ['Pedidos'],
+        summary: 'crea la peticion',
+        body: {
+>>>>>>> ee90d2173e79057a7bb66592c39777d3d8a7d0d3
           type: 'object',
           properties: {
-            hello: { type: 'string' }
+            address: {
+              type: 'object',
+              properties: {
+                references_notes: {
+                  type: 'string',
+                  description: 'Referencias del domicilio'
+                },
+                destination: {
+                  type: 'string',
+                  description: 'Lugar de destino'
+                },
+                distance: {
+                  type: 'number',
+                  description: 'Distancia a recorrer'
+                },
+                origin: {
+                  type: 'string',
+                  description: 'Domicilio del remitente'
+                }
+              }
+            },
+          }
+        },
+        response: {
+          201: {
+            description: 'Succesful response',
+            type: 'object',
+            properties: {
+              hello: { type: 'string' }
+            }
           }
         }
       }
-    }
-  },
-  (request, response) => {  
-    return new Order().save()
-      .then(function (order) {
-        return new Address(request.body.address).save({'order_id' : order.id})
-          .then(function(){
-            return Order.where({id: order.id}).fetch({withRelated: ['address']})
-              .then(function(order){
-                return response.send(order);
-              });
-          });
-      })
-      .catch(function (err) {
-        return response.send(err);
-      });
-  });
+    },
+    (request, response) => {
+      return new Order().save()
+        .then(function (order) {
+          return new Address(request.body.address).save({'order_id' : order.id})
+            .then(function(){
+              return Order.where({id: order.id}).fetch({withRelated: ['address']})
+                .then(function(order){
+                  return response.send(order);
+                });
+            });
+        })
+        .catch(function (err) {
+          return response.send(err);
+        });
+    });
 
+<<<<<<< HEAD
   fastify.post(`${prefix}/:id/add_person`, 
   {
     schema: {
@@ -158,41 +198,65 @@ module.exports = function(fastify, opts, next){
             type: 'integer',
             description: 'numero de celular'
             
-          }
-        }
-      },
-      params: {
-        type: 'object',
-        properties: {
-          id: {
-            type: 'boolean',
-            description: 'identificador del cliente'
-          },
-        }
-      },
-      response: {
-        201: {
-          description: 'Succesful response',
+=======
+  fastify.post(`${prefix}/:id/add_person`,
+    {
+      schema: {
+        description: 'Agrega persona',
+        tags: ['Pedidos'],
+        summary: 'agrega persona',
+        body: {
           type: 'object',
           properties: {
-            hello: { type: 'string' }
+            name: {
+              type: 'string',
+              description: 'nombre de usuario'
+            },
+            email: {
+              type: 'string',
+              description: 'correo electronico del usuario'
+            },
+            celular: {
+              type: 'integer',
+              description: 'numero de celular'
+
+            }
+>>>>>>> ee90d2173e79057a7bb66592c39777d3d8a7d0d3
+          }
+        },
+        params: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'integer',
+              description: 'identificador del cliente'
+            },
+          }
+        },
+        response: {
+          201: {
+            description: 'Succesful response',
+            type: 'object',
+            properties: {
+              hello: { type: 'string' }
+            }
           }
         }
       }
-    }
-  },
-  (request, response) => {
-    let orderId = request.params.id;
-    return new Person(request.body.person).save({'order_id': orderId})
-      .then(function (person){
-        return Order.where(request.params).fetch({withRelated: ['address', 'person']})
-          .then(function(order){
-            return response.send(order);
-          });
-      });
-  });
+    },
+    (request, response) => {
+      let orderId = request.params.id;
+      return new Person(request.body.person).save({'order_id': orderId})
+        .then(function (person){
+          return Order.where(request.params).fetch({withRelated: ['address', 'person']})
+            .then(function(order){
+              return response.send(order);
+            });
+        });
+    });
 
   fastify.post(`${prefix}/:id/add_payment_detail`,
+<<<<<<< HEAD
   {
     schema: {
       security: [
@@ -231,30 +295,66 @@ module.exports = function(fastify, opts, next){
             type: 'number',
             description: 'iva del producto'
             
-          }
-        }
-      },
-      response: {
-        201: {
-          description: 'Succesful response',
+=======
+    {
+      schema: {
+        description: 'Se dan los pedidos creados',
+        tags: ['Pedidos'],
+        summary: 'Detalle de pedidos por id',
+        params: {
           type: 'object',
           properties: {
-            hello: { type: 'string' }
+            id: {
+              type: 'integer',
+              description: 'identificador del cliente'
+            },
+>>>>>>> ee90d2173e79057a7bb66592c39777d3d8a7d0d3
+          }
+        },
+        body: {
+          type: 'object',
+          properties: {
+            credit: {
+              type: 'boolean',
+              description: 'especifica si el cliente tiene credito'
+            },
+            invoice: {
+              type: 'boolean',
+              description: 'especifica si el cliente tiene credito'
+            },
+            total: {
+              type: 'integer',
+              description: 'total de la cuenta'
+            },
+            iva: {
+              type: 'integer',
+              description: 'iva del producto'
+
+            }
+          }
+        },
+        response: {
+          201: {
+            description: 'Succesful response',
+            type: 'object',
+            properties: {
+              hello: { type: 'string' }
+            }
           }
         }
       }
-    }
-  },
-  (request, response) => {
-    let orderId = request.params.id;
-    return new PaymentDetail(request.body.payment_detail).save({'order_id': orderId})
-      .then(function (PaymentDetail){
-        return Order.where(request.params).fetch({withRelated: ['address', 'person', 'paymentDetail']})
-          .then(function(order){
-            return response.send(order);
-          });
-      });
-  });
+    },
+    (request, response) => {
+      let orderId = request.params.id;
+      return new PaymentDetail(request.body.payment_detail).save({'order_id': orderId})
+        .then(function (PaymentDetail){
+          return Order.where(request.params).fetch({withRelated: ['address', 'person', 'paymentDetail']})
+            .then(function(order){
+              new Roundsman().assign_order();
+              return response.send(order);
+            });
+        });
+    });
 
   return next();
 };
