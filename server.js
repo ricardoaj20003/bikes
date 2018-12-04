@@ -1,24 +1,44 @@
 var fs = require("fs");
 var host = "localhost";
-var port = 3000;
+var port = 3003;
 var express = require("express");
 var path = require("path");
 
 var app = express();
-app.use(express.static(__dirname + "/public")); //use static files in ROOT/public folder
 
-app.get("*", function(request, response){ //root dir
-  var filename = path.join(process.cwd(), request.path);
+app.use(express.static(__dirname + '/app'));
 
-  console.log('asdasd', request.path, filename);
+app.set('views', __dirname + '/app/views');
+app.engine('html', require('ejs').renderFile);
+app.set('view engine', 'html');
 
-  fs.exists(filename, function(exists) {
-    if(!exists) {
-      response.sendFile("404.html");
-    }else{
-      response.sendFile(filename);
-    }
-  });
-});
+
+app.get('/', (req, res) => {
+  res.render('index.html');
+})
+app.get('/admin', (req, res) => {
+  res.render('admin.html');
+})
+app.get('/faq', (req, res) => {
+  res.render('faq.html');
+})
+app.get('/nosotros', (req, res) => {
+  res.render('nosotros.html');
+})
+app.get('/solicita', (req, res) => {
+  res.render('solicita.html');
+})
+app.get('/solicita-pago', (req, res) => {
+  res.render('solicita-pago.html');
+})
+app.get('/solicita-gracias', (req, res) => {
+  res.render('solicita-gracias.html');
+})
+app.get('/terminos-condiciones', (req, res) => {
+  res.render('terminos-condiciones.html');
+})
+app.get('*', (req, res) => {
+  res.render('404.html');
+})
 
 app.listen(port, host);
