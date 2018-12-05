@@ -1,0 +1,183 @@
+const prefix = '/pedidos',
+  Order = require('../models/order').Order,
+  Address = require('../models/address').Address,
+  PaymentDetail  = require('../models/payment_detail.js').PaymentDetail,
+  Roundsman  = require('../models/roundsman.js').Roundsman,
+  Person  = require('../models/person').Person;
+
+
+module.exports = function(fastify, opts, next){
+  fastify.get(`${prefix}`, 
+  {
+    schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
+      description: 'Se dan los pedidos creados',
+      tags: ['Pedidos'],
+      summary: 'da todos los pedidos',
+      description: 'Se dan los pedidos creados',
+      tags: ['Pedidos'],
+      summary: 'da todos los pedidos',
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        }
+      }
+    }
+  },
+    (request, response) => {
+      Order.fetchAll({withRelated: ['address', 'person', 'paymentDetail']}).then(function(orders){
+        return response.send(orders);
+      });
+    });
+
+  fastify.get(`${prefix}/:id`,
+  {
+    schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
+      description: 'Recibe la direccion , nombre de la persona y el detalle de pago',
+      tags: ['Pedidos'],
+      summary: 'Recibe la informacion del usuario',
+      description: 'Se da la informacion del usuario',
+      tags: ['Pedidos'],
+      summary: 'da todos los pedidos',
+      params: {
+        type: 'object',
+        properties: {
+          id: {type: 'integer'},
+        }
+      },
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {
+    return Order.where(request.params).fetch({withRelated: ['address', 'person', 'paymentDetail']})
+      .then(function(order){
+        return response.send(order);
+      });
+  });
+
+  fastify.post(`${prefix}`, 
+  {
+    schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
+      description: 'Crea los pedidos',
+      tags: ['Pedidos'],
+      summary: 'crea la peticion',
+      body: {
+        type: 'object',
+        properties: {
+          address: {
+            type:'object',
+            properties: {
+              references_notes: {type:'string'},
+              origin:{type:'string'},
+              destination:{type:'string'},
+              distance:{type:'number'}
+            }
+          }
+        }
+      },
+        response: {
+          201: {
+            description: 'Succesful response',
+            type: 'object',
+            properties: {
+              hello: { type: 'string' }
+            }
+          }
+        }
+      }
+  },
+    (request, response) => {
+      return new Order().save()
+        .then(function (order) {
+          return new Address(request.body.address).save({'order_id' : order.id})
+            .then(function(){
+              return Order.where({id: order.id}).fetch({withRelated: ['address']})
+                .then(function(order){
+                  return response.send(order);
+                });
+            });
+        })
+        .catch(function (err) {
+          return response.send(err);
+        });
+    });
+
+  fastify.post(`${prefix}/:id/add_person`, 
+  {
+    schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
+      description: 'Agrega persona',
+      tags: ['Pedidos'],
+      summary: 'agrega persona',
+      body: {
+        type: 'object',
+        properties: {
+          id:{
+            type:'object',
+            properties: {
+          name: {type: 'string'},
+          email: {type: 'string'},
+          celular: {type: 'integer'}
+            }
+          }
+        }
+      },
+        params: {
+          type: 'object',
+          properties: {
+            id: {type: 'integer'},
+          }
+        },
+        response: {
+          201: {
+            description: 'Succesful response',
+            type: 'object',
+            properties: {
+              hello: { type: 'string' }
+            }
+          }
+        }
+      }
+  },
+    (request, response) => {
+      let orderId = request.params.id;
+      return new Person(request.body.person).save({'order_id': orderId})
+        .then(function (person){
+          return Order.where(request.params).fetch({withRelated: ['address', 'person']})
+            .then(function(order){
+              return response.send(order);
+            });
+        });
+    });
+  return next();
+};

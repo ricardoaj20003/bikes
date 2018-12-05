@@ -1,0 +1,45 @@
+{
+  "name": "bikes",
+  "scripts": {
+    "build": "webpack -p",
+    "watch": "webpack --watch"
+  },
+  "version": "1.0.0",
+  "description": "",
+  "main": "webpack.config.js",
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "ejs": "^2.6.1",
+    "expose-loader": "^0.7.5",
+    "express": "^4.16.4",
+    "extract-text-webpack-plugin": "^4.0.0-alpha.0",
+    "fs": "0.0.1-security",
+    "http": "0.0.0",
+    "icheck": "^1.0.2",
+    "jquery": "^2.2.4",
+    "jquery-placeholder": "^2.3.1",
+    "magnific-popup": "^1.0.0",
+    "morph-text": "^1.0.2",
+    "path": "^0.12.7",
+    "uglifyjs-webpack-plugin": "^2.0.1",
+    "url": "^0.11.0",
+    "webpack": "^4.26.1",
+    "webpack-cli": "^3.1.2",
+    "wow.js": "^1.2.2"
+  },
+  "devDependencies": {
+    "css-loader": "^1.0.1",
+    "file-loader": "^2.0.0",
+    "url-loader": "^1.1.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ricardoaj20003/bikes.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ricardoaj20003/bikes/issues"
+  },
+  "homepage": "https://github.com/ricardoaj20003/bikes#readme"
+}
