@@ -210,15 +210,14 @@ $("a.add_to_basket").on("click",function(){
 });
   var source, destination;
   var directionsDisplay;
+  var countryRestrict = {'country': 'mx'};
   var directionsService = new google.maps.DirectionsService();
   google.maps.event.addDomListener(window, 'load', function () {
-    new google.maps.places.SearchBox(document.getElementById('txtSource'));
-    new google.maps.places.SearchBox(document.getElementById('txtDestination'));
-    directionsDisplay = new google.maps.DirectionsRenderer({ 
-      'draggable': true 
+    new google.maps.places.autocomplete(document.getElementById('txtSource'), {
+      types: ['(regions)'],
+      componentRestrictions: countryRestrict
     });
-  });
-
+    
   var mumbai = new google.maps.LatLng(20.6737777, -103.4054536);
   var mapOptions = {
     zoom: 12,
