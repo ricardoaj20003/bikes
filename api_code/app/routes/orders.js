@@ -212,13 +212,28 @@ module.exports = function(fastify, opts, next){
   },
   (request, response) => {
     let orderId = request.params.id;
-    return new PaymentDetail(request.body.payment_detail).save({'order_id': orderId})
-      .then(function (PaymentDetail){
-        return Order.where(request.params).fetch({withRelated: ['address', 'person', 'paymentDetail']})
-          .then(function(order){
+    return Order.where(request.params).fetch({withRelated: ['address', 'person', 'paymentDetail']})
+      .then(function(order){
+        if (order.relations.paymentDetail.attributes.id)
+          return Roundsman.where({id: 1}).fetch().then(function(roundsman){
+            roundsman.assign_order();
             return response.send(order);
           });
+
+        return new PaymentDetail(request.body.payment_detail).save({'order_id': orderId})
+          .then(function (PaymentDetail){
+            return Order.where(request.params).fetch({withRelated: ['address', 'person', 'paymentDetail']})
+              .then(function(order){
+                if (order) {
+                  return Roundsman.where({id: 1}).fetch().then(function(roundsman){
+                    roundsman.assign_order();
+                    return response.send(order);
+                  });
+                }
+              });
+          });
       });
+
   });
   return next();
 };

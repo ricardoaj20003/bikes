@@ -10,6 +10,8 @@ let Roundsman = bookshelf.Model.extend({
     return this.hasOne(ConversationCode);
   },
   assign_order: function(){
+    console.log('a');
+    return '';
     this.where({id: 1}).fetch().then((roundsman) => {
       this.sendMessage(roundsman.attributes.senderID);
     });
@@ -37,7 +39,6 @@ let Roundsman = bookshelf.Model.extend({
       "method": "POST",
       "json": request_body
     }, (err, res, body) => {
-      console.log(body);
       if (!err) {
         console.log('Mensaje enviado!');
       } else {
