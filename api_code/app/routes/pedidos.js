@@ -143,7 +143,7 @@ module.exports = function(fastify, opts, next){
         properties: {
           name: {type: 'string'},
           email: {type: 'string'},
-          celular: {type: 'integer'}
+          celular: {type: 'string'}
         }
       },
       response: {

@@ -18,9 +18,6 @@ module.exports = function(fastify, opts, next){
       description: 'Se dan los pedidos creados',
       tags: ['Pedidos'],
       summary: 'da todos los pedidos',
-      description: 'Se dan los pedidos creados',
-      tags: ['Pedidos'],
-      summary: 'da todos los pedidos',
       response: {
         201: {
           description: 'Succesful response',
@@ -49,9 +46,6 @@ module.exports = function(fastify, opts, next){
       description: 'Recibe la direccion , nombre de la persona y el detalle de pago',
       tags: ['Pedidos'],
       summary: 'Recibe la informacion del usuario',
-      description: 'Se da la informacion del usuario',
-      tags: ['Pedidos'],
-      summary: 'da todos los pedidos',
       params: {
         type: 'object',
         properties: {
@@ -145,9 +139,9 @@ module.exports = function(fastify, opts, next){
           id:{
             type:'object',
             properties: {
-          name: {type: 'string'},
-          email: {type: 'string'},
-          celular: {type: 'integer'}
+              name: {type: 'string'},
+              email: {type: 'string'},
+              celular: {type: 'string'}
             }
           }
         }
@@ -171,13 +165,60 @@ module.exports = function(fastify, opts, next){
   },
     (request, response) => {
       let orderId = request.params.id;
-      return new Person(request.body.person).save({'order_id': orderId})
-        .then(function (person){
-          return Order.where(request.params).fetch({withRelated: ['address', 'person']})
-            .then(function(order){
-              return response.send(order);
+      return Order.where(request.params).fetch({withRelated: ['address', 'person']})
+        .then(function(order){
+          if (order)
+            return response.send(order);
+
+          return new Person(request.body.person).save({'order_id': orderId})
+            .then(function (person){
+              return Order.where(request.params).fetch({withRelated: ['address', 'person']})
+                .then(function(order){
+                  return response.send(order);
+                });
             });
         });
     });
+
+  fastify.post(`${prefix}/:id/add_payment_detail`,
+  {
+    schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
+      description: 'Se dan los pedidos creados',
+      tags: ['Pedidos'],
+      summary: 'da todos los pedidos',
+      params: {
+        type: 'object',
+        properties: {
+          credit: {type: 'boolean'},
+          invoice: {type: 'boolean'},
+          total: {type: 'number'},
+          iva: {type: 'number'}
+        }
+      },
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        }
+      } }
+  },
+  (request, response) => {
+    let orderId = request.params.id;
+    return new PaymentDetail(request.body.payment_detail).save({'order_id': orderId})
+      .then(function (PaymentDetail){
+        return Order.where(request.params).fetch({withRelated: ['address', 'person', 'paymentDetail']})
+          .then(function(order){
+            return response.send(order);
+          });
+      });
+  });
   return next();
 };
