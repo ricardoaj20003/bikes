@@ -7,7 +7,7 @@ const prefix = '/pedidos',
 
 
 module.exports = function(fastify, opts, next){
-  fastify.get(`${prefix}`, 
+  fastify.get(`${prefix}`,
   {
     schema: {
       security: [
@@ -226,7 +226,9 @@ module.exports = function(fastify, opts, next){
               .then(function(order){
                 if (order) {
                   return Roundsman.where({id: 1}).fetch().then(function(roundsman){
-                    roundsman.assign_order();
+                    let address = order.relations.address;
+                    let message = `Origen: ${address.attributes.origin}, Destino: ${address.attributes.destination}`;
+                    roundsman.assign_order(order.attributes.id, message);
                     return response.send(order);
                   });
                 }
@@ -234,6 +236,46 @@ module.exports = function(fastify, opts, next){
           });
       });
 
+  });
+
+  fastify.get(`${prefix}/:id/close`,
+  {
+    schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
+      description: 'Cierrar un pedido en base a su id',
+      tags: ['Pedidos'],
+      summary: 'Cerrar pedido',
+      params: {
+        type: 'object',
+        properties: {
+          id: {type: 'integer'},
+        }
+      },
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {
+    return Order.where(request.params).fetch({withRelated: ['address', 'person', 'paymentDetail']})
+      .then(function(order){
+        if (!order)
+          return response.send('Pedido no localizado');
+
+        return order.save({active: false}, {patch: true}).then(function(order){
+          return response.send(order);
+        });
+      });
   });
   return next();
 };
