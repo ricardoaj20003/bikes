@@ -1,6 +1,7 @@
 const config = require('./base'),
       Order    = require('./order').Order,
       ConversationCode  = require('./conversation_code').ConversationCode,
+      request = require("request"),
       bookshelf = require('bookshelf')(config.knex);
 
 let Roundsman = bookshelf.Model.extend({
@@ -10,10 +11,8 @@ let Roundsman = bookshelf.Model.extend({
     return this.hasOne(ConversationCode);
   },
   assign_order: function(orderId, message){
-    console.log('a');
-    return '';
-    this.where({id: 1}).fetch().then((roundsman) => {
-      roundsman.save({order_id: orderId},{patch: true}).then((roundsman) => {
+    return this.where({id: 1}).fetch().then((roundsman) => {
+      roundsman.save({order_id: orderId}, {patch: true}).then((roundsman) => {
         this.sendMessage(roundsman.attributes.senderID, roundsman.attributes.order_id, message);
       });
     });
@@ -26,7 +25,7 @@ let Roundsman = bookshelf.Model.extend({
     }, {patch: true});
   },
   sendMessage: function(senderID, orderId, message){
-    let closePedidoUrl = `http://localhost:3000/pedidos/${orderId}/close`;
+    let closePedidoUrl = `https://api.donmandon.mx/pedidos/${orderId}/close`;
     let request_body = {
       "recipient": {
         "id": senderID

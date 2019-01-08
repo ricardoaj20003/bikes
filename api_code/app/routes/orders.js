@@ -216,8 +216,10 @@ module.exports = function(fastify, opts, next){
       .then(function(order){
         if (order.relations.paymentDetail.attributes.id)
           return Roundsman.where({id: 1}).fetch().then(function(roundsman){
-            roundsman.assign_order();
-            return response.send(order);
+	    let address = order.relations.address;
+	    let message = `Origen: ${address.attributes.origin}, Destino: ${address.attributes.destination}`;
+	    roundsman.assign_order(order.attributes.id, message);
+	    return response.send(order);
           });
 
         return new PaymentDetail(request.body.payment_detail).save({'order_id': orderId})

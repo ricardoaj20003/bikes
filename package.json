@@ -16,7 +16,7 @@
     "fs": "0.0.1-security",
     "http": "0.0.0",
     "icheck": "^1.0.2",
-    "jquery": "^2.2.4",
+    "jquery": "^3.3.1",
     "jquery-placeholder": "^2.3.1",
     "magnific-popup": "^1.0.0",
     "morph-text": "^1.0.2",

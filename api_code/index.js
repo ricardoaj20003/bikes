@@ -37,11 +37,13 @@ fastify.use(cors());
 fastify.options('*', (request, reply) => { reply.send(); });
 
 fastify.addHook('preHandler', (request, response, next) => {
+  return next();
   let urlData = request.urlData();
   if (
     urlData.path !== '/users/sign_in' &&
     !urlData.path.match(/\/documentation\//) &&
-    !urlData.path.match(/\/facebook_logic\//)
+    !urlData.path.match(/\/facebook_logic\//) &&
+    !urlData.path.match(/close/)
   )
     try {
       jwt.verify(request.headers.token, process.env.TOKEN_SECRET);
