@@ -9,9 +9,13 @@ let Roundsman = bookshelf.Model.extend({
   conversation_code: function(){
     return this.hasOne(ConversationCode);
   },
-  assign_order: function(){
+  assign_order: function(orderId, message){
+    console.log('a');
+    return '';
     this.where({id: 1}).fetch().then((roundsman) => {
-      this.sendMessage(roundsman.attributes.senderID);
+      roundsman.save({order_id: orderId},{patch: true}).then((roundsman) => {
+        this.sendMessage(roundsman.attributes.senderID, roundsman.attributes.order_id, message);
+      });
     });
   },
   updateCode: function(){
@@ -21,13 +25,14 @@ let Roundsman = bookshelf.Model.extend({
       message: this.relations.conversation_code.attributes.message
     }, {patch: true});
   },
-  sendMessage: function(senderID){
+  sendMessage: function(senderID, orderId, message){
+    let closePedidoUrl = `http://localhost:3000/pedidos/${orderId}/close`;
     let request_body = {
       "recipient": {
         "id": senderID
       },
       "message": {
-        "text":  "Tienes un nuevo pedido"
+        "text":  `Tienes un nuevo pedido \n ${message} \n ${closePedidoUrl}`
       }
     };
 
@@ -37,7 +42,6 @@ let Roundsman = bookshelf.Model.extend({
       "method": "POST",
       "json": request_body
     }, (err, res, body) => {
-      console.log(body);
       if (!err) {
         console.log('Mensaje enviado!');
       } else {
