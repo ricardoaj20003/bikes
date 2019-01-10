@@ -2,6 +2,7 @@ const baseModel      = require('./base'),
       bookshelf      = require('bookshelf')(baseModel.knex),
       Person         = require('./person').Person,
       Address        = require('./address').Address,
+      OrderControl   = require('./order_control').OrderControl,
       PaymentDetail  = require('./payment_detail.js').PaymentDetail;
 
 let Order = bookshelf.Model.extend({
@@ -15,6 +16,9 @@ let Order = bookshelf.Model.extend({
   },
   paymentDetail: function() {
     return this.hasOne(PaymentDetail);
+  },
+  orderControl: function() {
+    return this.hasOne(OrderControl);
   }
 });
 

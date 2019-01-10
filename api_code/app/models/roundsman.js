@@ -1,5 +1,5 @@
 const config = require('./base'),
-      Order    = require('./order').Order,
+      OrderControl        = require('./order_control').OrderControl,
       ConversationCode  = require('./conversation_code').ConversationCode,
       request = require("request"),
       bookshelf = require('bookshelf')(config.knex);
@@ -7,15 +7,15 @@ const config = require('./base'),
 let Roundsman = bookshelf.Model.extend({
   tableName: 'roundsman',
   hasTimestamps: true,
+  order_control: function() {
+    return this.hasOne(OrderControl);
+  },
   conversation_code: function(){
     return this.hasOne(ConversationCode);
   },
-  assign_order: function(orderId, message){
-    return this.where({id: 1}).fetch().then((roundsman) => {
-      roundsman.save({order_id: orderId}, {patch: true}).then((roundsman) => {
-        this.sendMessage(roundsman.attributes.senderID, roundsman.attributes.order_id, message);
-      });
-    });
+  assign_order: function(message){
+    let order_control = this.relations.order_control;
+    return this.sendMessage(this.attributes.senderID, order_control.attributes.order_id, message);
   },
   updateCode: function(){
     let conversation_code = this.relations.conversation_code;

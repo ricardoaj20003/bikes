@@ -111,13 +111,16 @@ const config = require('./base'),
 'último', 'única', 'único'],
       nodemailer = require('nodemailer'),
       transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
+        host: 'mail.donmandon.mx',
         port: 465,
         secure: true,
         auth: {
           user: process.env.EMAIL_USER,
           pass: process.env.EMAIL_PASS
-        }
+        },
+	 tls: {
+	    rejectUnauthorized: false
+	  }
       }),
       mailOptions = {
         from: process.env.EMAIL_FROM,
