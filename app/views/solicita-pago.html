@@ -36,7 +36,7 @@
     <link href="css/bundle.css" rel="stylesheet">
     
     <!-- Radio and check inputs -->
-    <link href="css/skins/square/grey.css" rel="stylesheet">
+    <link href="css/grey.css" rel="stylesheet">
 
     <!--[if lt IE 9]>
       <script src="js/html5shiv.min.js"></script>
@@ -238,37 +238,28 @@
                     <tbody>
                     <tr>
                         <td>
-                            <a href="#0" class="remove_item"><i class="icon_minus_alt"></i></a> <strong>5 KM</strong> Mensaje express
+                            <a href="#0" class="remove_item"><i class="icon_minus_alt"></i></a> <strong class='distanceValue'>5 KM</strong> Mensaje express
                         </td>
                         <td>
-                            <strong class="pull-right">$45</strong>
+                            <strong class="pull-right priceValue">$45</strong>
                         </td>
                     </tr>
                     <tr>
                     </tr>
                     </tbody>
                     </table>
-                    <hr>
-                    <div class="row" id="options_2">
-                        <div class="col-lg-6 col-md-12 col-sm-12 col-xs-6">
-                            <label><input type="radio" value="" checked name="option_2" class="icheck">Sin Factura</label>
-                        </div>
-                        <div class="col-lg-6 col-md-12 col-sm-12 col-xs-6">
-                            <label><input type="radio" value="" name="option_2" class="icheck">Factura*</label>
-                        </div>
-                    </div><!-- Edn options 2 -->
                     <hr>
                     <table class="table table_summary">
                     <tbody>
                     <tr>
                         <td class="total">
-                             TOTAL <span class="pull-right">$45</span>
+                             TOTAL <span class="pull-right totalValue">$45</span>
                         </td>
                     </tr>
                     </tbody>
                     </table>
                     <hr>
-                    <a class="btn_full" href="solicita-gracias" onclick=”ga(‘send’, ‘event’, ‘Pedidos’, Click Pagar, ‘Servicio pagado’);“>Paga servicio</a>
+                    <a class="btn_full" href="solicita-gracias">Paga servicio</a>
                     <a class="btn_full_outline" href="index"><i class="icon-right"></i> Cambio dirección</a>
                 </div><!-- End cart_box -->
                 </div><!-- End theiaStickySidebar -->
@@ -319,9 +310,31 @@
 <!-- SPECIFIC SCRIPTS -->
 <script src="js/theia-sticky-sidebar.js"></script>
 <script>
-    jQuery('#sidebar').theiaStickySidebar({
-      additionalMarginTop: 80
-    });
+  var idPedido = localStorage.getItem('idPedido');
+  $.ajax({
+    url: 'https://api.donmandon.mx/pedidos/' + idPedido,
+    type: "GET",
+    headers: {"token": localStorage.getItem('tokenKey')},
+    success: function(response){
+      if (response.error)
+        alert(response.error);
+
+      var distance = response.address.distance;
+      var price;
+      var metros = distance * 1000;
+      if(metros <= 3000){
+        price = '$35.00';
+      }else{
+        var calc =(35 + ((metros - 3000)/1000) * 5.5).toFixed(2);
+        price = '$' + calc;
+      }
+      $('.priceValue, .totalValue').html(price);
+      $('.distanceValue').html(distance + ' KM ')
+    }
+  });
+  $('#sidebar').theiaStickySidebar({
+    additionalMarginTop: 80
+  });
 </script>
 
 </body>
