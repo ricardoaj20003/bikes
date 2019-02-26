@@ -25,6 +25,10 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css" rel="stylesheet">
   <link href="css/bundle.css" rel="stylesheet">
+
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+
 </head>
 
 <body>
@@ -197,50 +201,78 @@
     <div class="main_title margin_mobile">
       <h2 class="nomargin_top">Haz tu pedido ahora</h2>
     </div>
-    <div class="row">
-      <div class="col-sm-12 col-lg-10 col-lg-offset-1">
-        <form class="distance-form">
-          <label>Punto de partida:</label>
-          <input type="text" id="txtSource" />
-          <label>Punto de entrega:</label>
-          <input type="text" id="txtDestination" />
-          <input type="button" value="Obtener distancia" onclick="GetRoute()" class="btn distance" />
-        </form>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-sm-12 col-lg-10 col-lg-offset-1">
-        <section class="distance-box well well-lg dvDistance" id="dvDistance">
-          <h4 id="distance-value">Distancia:</h4>
-          <h4 id="time-value">Duración:</h4>
-          <h4 id="price-value">Precio:</h4>
-        </section>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-sm-12 col-lg-10 col-lg-offset-1">
-        <div id="dvMap" style="width: 100%; height: 500px; margin: 0 auto;"></div>
-      </div>
-      <!--<div id="dvPanel" style="width: 300px; height: 500px">-->
-      <!--</div>-->
-    </div>
-    <div class="row references">
-      <div class="col-sm-12 col-lg-10 col-lg-offset-1">
-        <label>Notas de referencia</label>
-        <textarea class="form-control" style="height:150px" placeholder="Esquina con, edificio rojo, cuarto piso" name="notes"
-          id="notes"></textarea>
-      </div>
-    </div>
-    <hr style="border-color:#ddd;">
-    <div class="row">
-      <div class="col-sm-12 col-lg-10 col-lg-offset-1">
-        <div class="text-center solicita">
-          <button class="btn_full">
-            <a href="solicita">¡SOLICITA AHORA!
-          </button>
+
+    <form class="distance-form">
+      <div class="row">
+        <div class="col-sm-12 col-md-7 col-lg-7">
+          <div class="row">
+            <div class="col-md-12 block-input">
+              <label>Punto de partida:</label>
+              <input type="text" id="txtSource"  />
+              <label class="error-input txtSource" style="display: none">Esta campo es requerido*</label>
+            </div>
+
+            <div class="col-md-12  block-input">
+              <label>Punto de entrega:</label>
+              <input type="text" id="txtDestination"  />
+              <label class="error-input txtDestination" style="display: none">Esta campo es requerido*</label>
+            </div>
+
+            <div class="col-sm-12 col-md-12 col-lg-12  block-input">
+              <input type="button" value="Obtener distancia" onclick="GetRoute()" class="btn distance" />
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-4 col-lg-4 ">
+          <div class="panel panel-default ">
+            <div class="panel-heading">Costo Aproxímado</div>
+            <div class="panel-body dvDistance" id="dvDistance">
+              <ul class="list-group distance-box">
+                <li class="list-group-item"><span id="distance-value">Distancia:</span></li>
+                <li class="list-group-item hidden"><span id="time-value">Duración:</span></li>
+                <li class="list-group-item"><span id="price-value">Precio:</span></li>
+              </ul>
+
+
+
+            </div>
+          </div>
+
         </div>
       </div>
-    </div>
+
+    </form>
+
+    <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12">
+          <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-12">
+              <div id="dvMap" style="width: 100%; height: 500px; margin: 0 auto;"></div>
+            </div>
+          </div>
+          <div class="row references">
+            <div class="col-sm-12 col-md-12 col-lg-12">
+              <label>Notas de referencia</label>
+              <textarea class="form-control" style="height:150px" placeholder="Esquina con, edificio rojo, cuarto piso"
+                name="notes" id="notes"></textarea>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-12">
+              <div class="text-center solicita">
+                  <button id="actionMainrequest" class="btn btn_full" disabled> ¡SOLICITA AHORA!</button>
+                  <a href="solicita"   class="hidden"  ></a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+  </div>
+
+
   </div>
   <!-- End row -->
   </div>

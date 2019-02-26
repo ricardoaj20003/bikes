@@ -17,39 +17,44 @@ if (!localStorage.getItem('tokenKey'))
 }
 
 $('.text-center.solicita').click(function(){
-  var distance = $('.distance-box #distance-value').html().match(/(?<=Distancia\:\s)(.*)(?=\skm)/);
+  var distance = $('#distance-value').html().match(/(?<=Distancia\:\s)(.*)(?=\skm)/);
 
+  console.log(distance);
+  
   if (!distance){
-    alert('Error valitadion distance inputs');
+    alert('Verificar el Origen y Destino');
+    document.getElementById("txtDestination").focus();
+    return false;
+  }else{
+    var data = {
+      "address": {
+        "references_notes": $('textarea[name=notes]').val(),
+        "origin": $('.distance-form #txtSource').val(),
+        "destination": $('.distance-form #txtDestination').val(),
+        "distance": Math.round(parseFloat(distance[0].replace(',','.')) * 100) / 100
+      }
+    }
+  
+    $.ajax({
+      url: 'https://api.donmandon.mx/pedidos',
+      type: "POST",
+      headers: {"token": localStorage.getItem('tokenKey')},
+      data: JSON.stringify(data),
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      success: function(response){
+        if (response.error)
+          alert(response.error);
+  
+        localStorage.setItem('idPedido', response.id);
+        window.location.href = '/solicita';
+      }
+    });
+  
     return false;
   }
 
-  var data = {
-    "address": {
-      "references_notes": $('textarea[name=notes]').val(),
-      "origin": $('.distance-form #txtSource').val(),
-      "destination": $('.distance-form #txtDestination').val(),
-      "distance": Math.round(parseFloat(distance[0].replace(',','.')) * 100) / 100
-    }
-  }
-
-  $.ajax({
-    url: 'https://api.donmandon.mx/pedidos',
-    type: "POST",
-    headers: {"token": localStorage.getItem('tokenKey')},
-    data: JSON.stringify(data),
-    contentType: "application/json; charset=utf-8",
-    dataType: "json",
-    success: function(response){
-      if (response.error)
-        alert(response.error);
-
-      localStorage.setItem('idPedido', response.id);
-      window.location.href = '/solicita';
-    }
-  });
-
-  return false;
+ 
 });
 
 $('.theiaStickySidebar a[href=solicita-pago]').click(function(){
@@ -196,7 +201,21 @@ if (navigator.geolocation) {
   handleLocationError(false, infoWindow, map.getCenter());
 }
 function GetRoute() {
+  let source = document.getElementById("txtSource").value;
+  let destination = document.getElementById("txtDestination").value;
 
+
+  if (source == "" ) {
+    document.getElementById("txtSource").focus();
+    document.getElementsByClassName('txtSource')[0].style.display = 'block';
+
+  } else if (destination == "") {
+      document.getElementById("txtDestination").focus();
+      document.getElementsByClassName('txtSource')[0].style.display = 'none';
+      document.getElementsByClassName('txtDestination')[0].style.display = 'block';
+  }else{
+
+    document.getElementById("actionMainrequest").disabled = false;
     directionsDisplay.setMap(map);
 
     directionsDisplay.addListener('directions_changed', function() {
@@ -206,25 +225,31 @@ function GetRoute() {
         putDistanceAndDuration(source, destination);
     });
 
-    let source = document.getElementById("txtSource").value;
-    let destination = document.getElementById("txtDestination").value;
+    
 
     var request = {
         origin: source,
         destination: destination,
-        travelMode: google.maps.TravelMode.BICYCLING
+        travelMode: google.maps.TravelMode.DRIVING
     };
     directionsService.route(request, function (response, status) {
         if (status == google.maps.DirectionsStatus.OK) {
             directionsDisplay.setDirections(response);
         }
     });
+
+  }
+
+
+
+
+  
  function putDistanceAndDuration(source, destination){
     var service = new google.maps.DistanceMatrixService();
     service.getDistanceMatrix({
       origins: [source],
       destinations: [destination],
-      travelMode: google.maps.TravelMode.BICYCLING,
+      travelMode: google.maps.TravelMode.DRIVING,
       unitSystem: google.maps.UnitSystem.METRIC,
       avoidHighways: false,
       avoidTolls: false
@@ -241,10 +266,11 @@ function GetRoute() {
           price = '$' + calc;
         }
         document.getElementById("distance-value").innerHTML = "Distancia: " + distance;
-        document.getElementById("time-value").innerHTML = "Duración: " + duration;
-        document.getElementById("price-value").innerHTML = "Precio: " + price;
+        document.getElementById("time-value").innerHTML = "Duración: " + duration ;
+        document.getElementById("price-value").innerHTML = "Precio: " + price ;
       } else {
         alert("Unable to find the distance via road.");
       }
     });
- }}
+ }
+}
