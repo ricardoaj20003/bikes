@@ -19,39 +19,47 @@ if (!localStorage.getItem('tokenKey'))
 $('.text-center.solicita').click(function(){
   var distance = $('#distance-value').html().match(/(?<=Distancia\:\s)(.*)(?=\skm)/);
 
-  console.log(distance);
-  
   if (!distance){
     alert('Verificar el Origen y Destino');
     document.getElementById("txtDestination").focus();
     return false;
   }else{
-    var data = {
-      "address": {
-        "references_notes": $('textarea[name=notes]').val(),
-        "origin": $('.distance-form #txtSource').val(),
-        "destination": $('.distance-form #txtDestination').val(),
-        "distance": Math.round(parseFloat(distance[0].replace(',','.')) * 100) / 100
+    var response = grecaptcha.getResponse();
+
+    if(response.length == 0){
+      document.getElementById("g-recaptcha").focus();
+      alert("Captcha no verificado")
+      return false;
+
+    } else {
+      var data = {
+        "address": {
+          "references_notes": $('textarea[name=notes]').val(),
+          "origin": $('.distance-form #txtSource').val(),
+          "destination": $('.distance-form #txtDestination').val(),
+          "distance": Math.round(parseFloat(distance[0].replace(',','.')) * 100) / 100
+        }
       }
+    
+      $.ajax({
+        url: 'https://api.donmandon.mx/pedidos',
+        type: "POST",
+        headers: {"token": localStorage.getItem('tokenKey')},
+        data: JSON.stringify(data),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function(response){
+          if (response.error)
+            alert(response.error);
+    
+          localStorage.setItem('idPedido', response.id);
+          window.location.href = '/solicita';
+        }
+      });
+    
+      return false;
     }
-  
-    $.ajax({
-      url: 'https://api.donmandon.mx/pedidos',
-      type: "POST",
-      headers: {"token": localStorage.getItem('tokenKey')},
-      data: JSON.stringify(data),
-      contentType: "application/json; charset=utf-8",
-      dataType: "json",
-      success: function(response){
-        if (response.error)
-          alert(response.error);
-  
-        localStorage.setItem('idPedido', response.id);
-        window.location.href = '/solicita';
-      }
-    });
-  
-    return false;
+    
   }
 
  
