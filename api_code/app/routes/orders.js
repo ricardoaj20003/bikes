@@ -1,5 +1,6 @@
 const prefix = '/pedidos',
   Order = require('../models/order').Order,
+  OrderControl = require('../models/order_control').OrderControl,
   Address = require('../models/address').Address,
   PaymentDetail  = require('../models/payment_detail.js').PaymentDetail,
   Roundsman  = require('../models/roundsman.js').Roundsman,
@@ -215,24 +216,27 @@ module.exports = function(fastify, opts, next){
     return Order.where(request.params).fetch({withRelated: ['address', 'person', 'paymentDetail']})
       .then(function(order){
         if (order.relations.paymentDetail.attributes.id)
-          return Roundsman.where({id: 1}).fetch().then(function(roundsman){
-	    let address = order.relations.address;
-	    let message = `Origen: ${address.attributes.origin}, Destino: ${address.attributes.destination}`;
-	    roundsman.assign_order(order.attributes.id, message);
-	    return response.send(order);
-          });
+		return response.send(order);
 
         return new PaymentDetail(request.body.payment_detail).save({'order_id': orderId})
           .then(function (PaymentDetail){
             return Order.where(request.params).fetch({withRelated: ['address', 'person', 'paymentDetail']})
               .then(function(order){
                 if (order) {
-                  return Roundsman.where({id: 1}).fetch().then(function(roundsman){
-                    let address = order.relations.address;
-                    let message = `Origen: ${address.attributes.origin}, Destino: ${address.attributes.destination}`;
-                    roundsman.assign_order(order.attributes.id, message);
-                    return response.send(order);
-                  });
+		    return new OrderControl({order_id: order.id}).save(null, {method: 'insert'})
+		      .then(function (order_control) {
+		          return OrderControl.where({order_id: order.id}).fetch().then((order_control) => {
+				  return Roundsman.where({id: order_control.attributes.roundsman_id}).fetch({withRelated: ['order_control']}).then(function(roundsman){
+				    let address = order.relations.address;
+				    let message = `Origen: ${address.attributes.origin}, Destino: ${address.attributes.destination}`;
+				    roundsman.assign_order(message);
+				    return response.send(order);
+				  });
+			  })
+		      })
+		      .catch(function (err) {
+			return response.send(err);
+		      });
                 }
               });
           });

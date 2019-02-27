@@ -2,7 +2,6 @@
 exports.up = function(knex, Promise) {
   return knex.schema.createTable('roundsman', function (table) {
     table.increments();
-    table.integer('order_id').unique().unsigned().index().references('orders.id');
     table.string('name');
     table.string('email');
     table.string('celular');
