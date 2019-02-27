@@ -168,9 +168,6 @@ module.exports = function(fastify, opts, next){
       let orderId = request.params.id;
       return Order.where(request.params).fetch({withRelated: ['address', 'person']})
         .then(function(order){
-          if (order)
-            return response.send(order);
-
           return new Person(request.body.person).save({'order_id': orderId})
             .then(function (person){
               return Order.where(request.params).fetch({withRelated: ['address', 'person']})
