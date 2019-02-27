@@ -162,7 +162,12 @@ if (navigator.geolocation) {
             lat: position.coords.latitude, lng: position.coords.longitude
         };
 
-        geocoder.geocode({'location': latlng}, function(results, status) {
+	    var circle = new google.maps.Circle({
+		radius: 5500,
+		center: {lat: 19.24997, lng: -103.72714}
+	    });
+
+        geocoder.geocode({'location': latlng, bounds: circle.getBounds()}, function(results, status) {
           if (status === 'OK') {
             if (results[0]) {
               $('#txtSource').val(results[0].formatted_address)
