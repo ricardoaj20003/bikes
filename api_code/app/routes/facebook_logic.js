@@ -1,5 +1,6 @@
 const prefix = '/facebook_logic',
       ConversationCode  = require('../models/conversation_code').ConversationCode,
+      FacebookConversationLogic  = require('../models/facebook_conversation_logic').FacebookConversationLogic,
       request = require("request");
 
 module.exports = function(fastify, opts, next){
@@ -108,35 +109,19 @@ module.exports = function(fastify, opts, next){
 function processMessage(event){
   let senderID = event.sender.id;
   let message = event.message.text;
-  return ConversationCode.where({message: message})
-    .fetch().then((conversationCode) => {
-      if (!conversationCode)
-        return '';
+  if (!message)
+    return '';
+  
+  console.log(message);
+  let likeCad = `${message.split('$-').shift()}%`;
+  if (likeCad.replace(/%/g,'') === '')
+    return '';
 
-      return conversationCode.setSenderId(senderID);
-
+  return FacebookConversationLogic.where('request', 'LIKE', `${likeCad}`)
+    .fetch().then((facebook_conversation_logic) => {
+      if (!facebook_conversation_logic) {
+  	return '';
+      }
+      return facebook_conversation_logic.evaluateMessage(senderID, message);
     });
-
-}
-
-function send_message(senderID, responseMessage){
-  let request_body = {
-    "recipient": {
-      "id": senderID
-    },
-    "message": responseMessage
-  };
-
-  request({
-    "uri": "https://graph.facebook.com/v2.6/me/messages",
-    "qs": { "access_token": process.env.PAGE_ACCESS_TOKEN },
-    "method": "POST",
-    "json": request_body
-  }, (err, res, body) => {
-    if (!err) {
-      console.log('Mensaje enviado!');
-    } else {
-      console.error("No se puedo enviar el mensaje:" + err);
-    }
-  });
 }
