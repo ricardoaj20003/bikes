@@ -160,7 +160,7 @@ let ConversationCode = bookshelf.Model.extend({
     return this.roundsmanObject().then((roundsman) => {
       return roundsman.save({senderID: senderID}, {patch: true})
         .then((roundsman) => {
-          return roundsman;
+          return 'Quedaste activado';
         });
     });
   },
