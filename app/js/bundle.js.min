@@ -17,7 +17,14 @@ if (!localStorage.getItem('tokenKey'))
 }
 
 $('.text-center.solicita').click(function(){
-  var distance = $('#distance-value').html().match(/(<=Distancia\:\s)(.*)(?=\skm)/);
+  // var distance = $('#distance-value').text();
+  
+  var texto = $('#distance-value').text();
+  separador = " ",
+  textoseparado = texto.split(separador);
+  console.log(textoseparado);
+  var distance = textoseparado[1];
+  alert(distance[1]);
 
   if (!distance){
     alert('Verificar el Origen y Destino');
