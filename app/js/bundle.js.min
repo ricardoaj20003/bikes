@@ -17,7 +17,12 @@ if (!localStorage.getItem('tokenKey'))
 }
 
 $('.text-center.solicita').click(function(){
-  var distance = $('#distance-value').html().match(/(<=Distancia\:\s)(.*)(?=\skm)/);
+  // var distance = $('#distance-value').text();
+  
+  var texto = $('#distance-value').text();
+  separador = " ",
+  textoseparado = texto.split(separador);
+  var distance = textoseparado[1];
 
   if (!distance){
     alert('Verificar el Origen y Destino');
@@ -37,7 +42,7 @@ $('.text-center.solicita').click(function(){
           "references_notes": $('textarea[name=notes]').val(),
           "origin": $('.distance-form #txtSource').val(),
           "destination": $('.distance-form #txtDestination').val(),
-          "distance": Math.round(parseFloat(distance[0].replace(',','.')) * 100) / 100
+          "distance": Math.round(parseFloat(distance.replace(',','.')) * 100) / 100
         }
       }
     
