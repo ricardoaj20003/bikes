@@ -22,9 +22,7 @@ $('.text-center.solicita').click(function(){
   var texto = $('#distance-value').text();
   separador = " ",
   textoseparado = texto.split(separador);
-  console.log(textoseparado);
   var distance = textoseparado[1];
-  alert(distance[1]);
 
   if (!distance){
     alert('Verificar el Origen y Destino');
@@ -44,7 +42,7 @@ $('.text-center.solicita').click(function(){
           "references_notes": $('textarea[name=notes]').val(),
           "origin": $('.distance-form #txtSource').val(),
           "destination": $('.distance-form #txtDestination').val(),
-          "distance": Math.round(parseFloat(distance[0].replace(',','.')) * 100) / 100
+          "distance": Math.round(parseFloat(distance.replace(',','.')) * 100) / 100
         }
       }
     
