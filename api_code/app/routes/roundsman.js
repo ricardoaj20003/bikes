@@ -168,7 +168,9 @@ module.exports = function(fastify, opts, next){fastify.get(`${prefix}`,
         ]
       }).then((roundsman) => {
       roundsman.updateCode().then((conversation_code) => {
-        return response.send(conversation_code);
+	roundsman.save({senderID: null}, {patch: true}).then((roundsman) => {
+           return response.send(conversation_code);
+	});
         });
       });
     });

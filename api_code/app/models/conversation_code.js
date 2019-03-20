@@ -111,13 +111,16 @@ const config = require('./base'),
 'último', 'única', 'único'],
       nodemailer = require('nodemailer'),
       transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
+        host: 'mail.donmandon.mx',
         port: 465,
         secure: true,
         auth: {
           user: process.env.EMAIL_USER,
           pass: process.env.EMAIL_PASS
-        }
+        },
+	 tls: {
+	    rejectUnauthorized: false
+	  }
       }),
       mailOptions = {
         from: process.env.EMAIL_FROM,
@@ -157,7 +160,7 @@ let ConversationCode = bookshelf.Model.extend({
     return this.roundsmanObject().then((roundsman) => {
       return roundsman.save({senderID: senderID}, {patch: true})
         .then((roundsman) => {
-          return roundsman;
+          return 'Quedaste activado';
         });
     });
   },

@@ -17,39 +17,57 @@ if (!localStorage.getItem('tokenKey'))
 }
 
 $('.text-center.solicita').click(function(){
-  var distance = $('.distance-box #distance-value').html().match(/(?<=Distancia\:\s)(.*)(?=\skm)/);
+  // var distance = $('#distance-value').text();
+  
+  var texto = $('#distance-value').text();
+  separador = " ",
+  textoseparado = texto.split(separador);
+  var distance = textoseparado[1];
 
   if (!distance){
-    alert('Error');
+    alert('Verificar el Origen y Destino');
+    document.getElementById("txtDestination").focus();
     return false;
+  }else{
+    var response = grecaptcha.getResponse();
+
+    if(response.length == 0){
+      document.getElementById("g-recaptcha").focus();
+      alert("Captcha no verificado")
+      return false;
+
+    } else {
+      var data = {
+        "address": {
+          "references_notes": $('textarea[name=notes]').val(),
+          "origin": $('.distance-form #txtSource').val(),
+          "destination": $('.distance-form #txtDestination').val(),
+          "distance": Math.round(parseFloat(distance.replace(',','.')) * 100) / 100
+        }
+      }
+    
+      $.ajax({
+        url: 'https://api.donmandon.mx/pedidos',
+        type: "POST",
+        headers: {"token": localStorage.getItem('tokenKey')},
+        data: JSON.stringify(data),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function(response){
+          if (response.error)
+            alert(response.error);
+    
+          localStorage.setItem('idPedido', response.id);
+          window.location.href = '/solicita';
+        }
+      });
+    
+      return false;
+    }
+    
   }
 
-  var data = {
-    "address": {
-      "references_notes": $('textarea[name=notes]').val(),
-      "origin": $('.distance-form #txtSource').val(),
-      "destination": $('.distance-form #txtDestination').val(),
-      "distance": Math.round(parseFloat(distance[0].replace(',','.')) * 100) / 100
-    }
-  }
-
-  $.ajax({
-    url: 'https://api.donmandon.mx/pedidos',
-    type: "POST",
-    headers: {"token": localStorage.getItem('tokenKey')},
-    data: JSON.stringify(data),
-    contentType: "application/json; charset=utf-8",
-    dataType: "json",
-    success: function(response){
-      if (response.error)
-        alert(response.error);
-
-      localStorage.setItem('idPedido', response.id);
-      window.location.href = '/solicita';
-    }
-  });
-
-  return false;
+ 
 });
 
 $('.theiaStickySidebar a[href=solicita-pago]').click(function(){
@@ -100,7 +118,7 @@ $('.btn_full[href=solicita-gracias]').click(function(){
     "payment_detail" : {
       "credit" : $('.payment_select:first input[type=radio]').prop("checked"),
       "invoice" : false,
-      "total" : 10.0,
+      "total" : $('.totalValue').html().replace('$',''),
       "iva"   : 1.6
     }
   }
@@ -162,7 +180,12 @@ if (navigator.geolocation) {
             lat: position.coords.latitude, lng: position.coords.longitude
         };
 
-        geocoder.geocode({'location': latlng}, function(results, status) {
+	    var circle = new google.maps.Circle({
+		radius: 5500,
+		center: {lat: 19.24997, lng: -103.72714}
+	    });
+
+        geocoder.geocode({'location': latlng, bounds: circle.getBounds()}, function(results, status) {
           if (status === 'OK') {
             if (results[0]) {
               $('#txtSource').val(results[0].formatted_address)
@@ -196,7 +219,21 @@ if (navigator.geolocation) {
   handleLocationError(false, infoWindow, map.getCenter());
 }
 function GetRoute() {
+  let source = document.getElementById("txtSource").value;
+  let destination = document.getElementById("txtDestination").value;
 
+
+  if (source == "" ) {
+    document.getElementById("txtSource").focus();
+    document.getElementsByClassName('txtSource')[0].style.display = 'block';
+
+  } else if (destination == "") {
+      document.getElementById("txtDestination").focus();
+      document.getElementsByClassName('txtSource')[0].style.display = 'none';
+      document.getElementsByClassName('txtDestination')[0].style.display = 'block';
+  }else{
+
+    document.getElementById("actionMainrequest").disabled = false;
     directionsDisplay.setMap(map);
 
     directionsDisplay.addListener('directions_changed', function() {
@@ -206,8 +243,7 @@ function GetRoute() {
         putDistanceAndDuration(source, destination);
     });
 
-    let source = document.getElementById("txtSource").value;
-    let destination = document.getElementById("txtDestination").value;
+    
 
     var request = {
         origin: source,
@@ -219,6 +255,13 @@ function GetRoute() {
             directionsDisplay.setDirections(response);
         }
     });
+
+  }
+
+
+
+
+  
  function putDistanceAndDuration(source, destination){
     var service = new google.maps.DistanceMatrixService();
     service.getDistanceMatrix({
@@ -241,10 +284,11 @@ function GetRoute() {
           price = '$' + calc;
         }
         document.getElementById("distance-value").innerHTML = "Distancia: " + distance;
-        document.getElementById("time-value").innerHTML = "Duración: " + duration;
-        document.getElementById("price-value").innerHTML = "Precio: " + price;
+        document.getElementById("time-value").innerHTML = "Duración: " + duration ;
+        document.getElementById("price-value").innerHTML = "Precio: " + price ;
       } else {
         alert("Unable to find the distance via road.");
       }
     });
- }}
+ }
+}
