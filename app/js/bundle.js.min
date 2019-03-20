@@ -118,7 +118,7 @@ $('.btn_full[href=solicita-gracias]').click(function(){
     "payment_detail" : {
       "credit" : $('.payment_select:first input[type=radio]').prop("checked"),
       "invoice" : false,
-      "total" : 10.0,
+      "total" : $('.totalValue').html().replace('$',''),
       "iva"   : 1.6
     }
   }
