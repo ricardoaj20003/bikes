@@ -111,13 +111,17 @@ function processMessage(event){
   let message = event.message.text;
   if (!message)
     return '';
-  
-  console.log(message);
-  let likeCad = `${message.split('$-').shift()}%`;
-  if (likeCad.replace(/%/g,'') === '')
-    return '';
 
-  return FacebookConversationLogic.where('request', 'LIKE', `${likeCad}`)
+  let consulta = ['request', '=', message];
+  if (message.match(/\$-/)) {
+    let likeCad = `${message.split('$-').shift()}%`;
+    if (likeCad.replace(/%/g,'') === '')
+      return '';
+
+    consulta = ['request', 'LIKE', `${likeCad}`];
+  }
+
+  return FacebookConversationLogic.where(consulta.shift(), consulta.shift(), consulta.shift())
     .fetch().then((facebook_conversation_logic) => {
       if (!facebook_conversation_logic) {
   	return '';
