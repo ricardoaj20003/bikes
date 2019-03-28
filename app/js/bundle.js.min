@@ -16,38 +16,6 @@ if (!localStorage.getItem('tokenKey'))
   });
 }
 
-var date = new Date;
-var minutes = date.getMinutes();
-var hour = date.getHours();
-var day = date.getDate();
-var dayOfWeek = date.getDay(); // Sunday = 0, Monday = 1, etc.
-
-  console.log(hour + "-" + minutes+ "-" + day+ "-" +dayOfWeek );
-
-
-if(hour < 9 || hour >= 18 ){
-  $('.schedule-hide').hide();
-  $('.schedule-show').show();
-  $('.distance-form :input').attr("disabled", true);
-  
-}else{
-  if(hour == 17 && minutes>40){
-    $('.schedule-hide').hide();
-    $('.schedule-show').show();
-    $('.distance-form :input').attr("disabled", true);
-  }else{
-    if(dayOfWeek == 0 || dayOfWeek > 5){
-      $('.schedule-hide').hide();
-      $('.schedule-show').show();
-      $('.distance-form :input').attr("disabled", true);
-    }else{
-      $('.schedule-hide').show();
-      $('.schedule-show').hide();
-      $('.distance-form :input').attr("disabled", false);
-    }
-  }
-}
-
 $('.text-center.solicita').click(function(){
   // var distance = $('#distance-value').text();
   
@@ -180,7 +148,7 @@ var directionsService = new google.maps.DirectionsService();
 google.maps.event.addDomListener(window, 'load', function () {
     var circle = new google.maps.Circle({
         radius: 5500,
-        center: {lat: 19.2399156, lng: -103.7245426}
+        center: {lat: 19.24997, lng: -103.72714}
     });
     new google.maps.places.Autocomplete(document.getElementById('txtSource'), {
       types: ['geocode'],
@@ -197,7 +165,7 @@ google.maps.event.addDomListener(window, 'load', function () {
     });
 });
 
-var mumbai = new google.maps.LatLng(19.2399156, -103.7245426);
+var mumbai = new google.maps.LatLng(20.6737777, -103.4054536);
 var mapOptions = {
     zoom: 12,
     center: mumbai
@@ -213,8 +181,8 @@ if (navigator.geolocation) {
         };
 
 	    var circle = new google.maps.Circle({
-    radius: 5500,
-    center: {lat: 19.2399156, lng: -103.7245426}
+		radius: 5500,
+		center: {lat: 19.24997, lng: -103.72714}
 	    });
 
         geocoder.geocode({'location': latlng, bounds: circle.getBounds()}, function(results, status) {
