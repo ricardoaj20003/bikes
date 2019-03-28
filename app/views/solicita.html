@@ -295,8 +295,12 @@
       if(metros <= 3000){
         price = '$35.00';
       }else{
-        var calc =(35 + ((metros - 3000)/1000) * 5.5).toFixed(2);
-        price = '$' + calc;
+          debugger
+          var calc = (35 + ((metros - 3000)/1000) * 5.5).toFixed(2);
+          if (parseInt(calc.toString().split('.')[1]) > 0) {
+	    calc = parseInt(calc.toString().split('.')[0]) + 1;
+          }
+          price = '$' + calc + '.00';
       }
       $('.priceValue, .totalValue').html(price);
       $('.distanceValue').html(distance + ' KM ')

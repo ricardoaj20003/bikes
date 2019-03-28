@@ -276,7 +276,7 @@ function GetRoute() {
         var distance = response.rows[0].elements[0].distance.text;
         var duration = response.rows[0].elements[0].duration.text;
         var price;
-        var metros = response.rows[0].elements[0].distance.value;
+        var metros = parseFloat(distance.replace(' km', '')) * 1000;
         if(metros <= 3000){
           price = '$35.00';
         }else{
