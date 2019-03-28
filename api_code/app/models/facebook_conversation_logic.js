@@ -42,7 +42,11 @@ let FacebookConversationLogic = bookshelf.Model.extend({
     return {
       getmeCode: function(that, message){
         let roundsmanId = message.replace('Claro es el $-','');
-        console.log(roundsmanId);
+        if (isNaN(roundsmanId) || roundsmanId.length === 0)
+	  return new Promise((resolve, reject) => {
+	    return resolve('Es un placer atenderte');
+          });
+       
 	return Roundsman.where({id: roundsmanId}).fetch().then((roundsman) => {
 	  if (roundsman)
 	    return that.attributes.response.replace('$xName$', roundsman.attributes.name);
