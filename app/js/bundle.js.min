@@ -4,7 +4,7 @@ function toggleHandler(t){t.addEventListener("click",function(t){t.preventDefaul
 if (!localStorage.getItem('tokenKey'))
 {
   $.ajax({
-    url: 'https://api.donmandon.mx/users/sign_in',
+    url: 'https://api.donmandon.com.mx/users/sign_in',
     type: "POST",
     data: JSON.stringify({"username" : "donmandon", "password" : "12345678"}),
     contentType: "application/json; charset=utf-8",
@@ -79,7 +79,7 @@ $('.text-center.solicita').click(function(){
       }
     
       $.ajax({
-        url: 'https://api.donmandon.mx/pedidos',
+        url: 'https://api.donmandon.com.mx/pedidos',
         type: "POST",
         headers: {"token": localStorage.getItem('tokenKey')},
         data: JSON.stringify(data),
@@ -128,7 +128,7 @@ $('.theiaStickySidebar a[href=solicita-pago]').click(function(){
 
   var idPedido = localStorage.getItem('idPedido');
   $.ajax({
-    url: 'https://api.donmandon.mx/pedidos/' + idPedido  + '/add_person',
+    url: 'https://api.donmandon.com.mx/pedidos/' + idPedido  + '/add_person',
     type: "POST",
     headers: {"token": localStorage.getItem('tokenKey')},
     data: JSON.stringify(data),
@@ -157,7 +157,7 @@ $('.btn_full[href=solicita-gracias]').click(function(){
 
   var idPedido = localStorage.getItem('idPedido');
   $.ajax({
-    url: 'https://api.donmandon.mx/pedidos/' + idPedido  + '/add_payment_detail',
+    url: 'https://api.donmandon.com.mx/pedidos/' + idPedido  + '/add_payment_detail',
     type: "POST",
     headers: {"token": localStorage.getItem('tokenKey')},
     data: JSON.stringify(data),

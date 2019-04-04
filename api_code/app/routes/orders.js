@@ -226,9 +226,10 @@ module.exports = function(fastify, opts, next){
 				  return Roundsman.where({id: order_control.attributes.roundsman_id}).fetch({withRelated: ['order_control']}).then(function(roundsman){
 				    let address = order.relations.address;
 				    let name = order.relations.person.attributes.name;
+				    let cel = order.relations.person.attributes.celular;
 				    let price = order.relations.paymentDetail.attributes.total;
 			            let notes = address.attributes.references_notes;
-				    let message = `Origen: ${address.attributes.origin}, Destino: ${address.attributes.destination}, Nombre: ${name}, Precio: ${price}, Comentarios: ${notes}`;
+				    let message = `Origen: ${address.attributes.origin}, Destino: ${address.attributes.destination}, Nombre: ${name}, Celular: ${cel}, Precio: ${price}, Comentarios: ${notes}`;
 				    roundsman.assign_order(message);
 				    return response.send(order);
 				  });

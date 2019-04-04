@@ -68,6 +68,7 @@
       src="https://www.facebook.com/tr?id=223587065178648&ev=PageView&noscript=1"
     /></noscript>
     <!-- End Facebook Pixel Code -->
+    <script type="text/javascript"> window._mfq = window._mfq || []; (function() { var mf = document.createElement("script"); mf.type = "text/javascript"; mf.async = true; mf.src = "//cdn.mouseflow.com/projects/8f08a3b3-499d-4895-b8ec-b4ec3875b096.js"; document.getElementsByTagName("head")[0].appendChild(mf); })(); </script>
 </head>
 <body>
 
@@ -185,7 +186,7 @@
 					</div>
 					<div class="form-group">
 						<label>Celular</label>
-						<input type="text" id="tel_order" name="tel_order" class="form-control" placeholder="(312) 000 0000">
+						<input type="number" id="tel_order" name="tel_order" class="form-control" placeholder="(312) 000 0000">
 					</div>
 					<div class="form-group">
 						<label>Mail</label>
@@ -295,11 +296,8 @@
       if(metros <= 3000){
         price = '$35.00';
       }else{
-          var calc = (35 + ((metros - 3000)/1000) * 5.5).toFixed(2);
-          if (parseInt(calc.toString().split('.')[1]) > 0) {
-	    calc = parseInt(calc.toString().split('.')[0]) + 1;
-          }
-          price = '$' + calc + '.00';
+        var calc =(35 + ((metros - 3000)/1000) * 5.5).toFixed(2);
+        price = '$' + calc;
       }
       $('.priceValue, .totalValue').html(price);
       $('.distanceValue').html(distance + ' KM ')

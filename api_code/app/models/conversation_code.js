@@ -111,7 +111,7 @@ const config = require('./base'),
 'último', 'única', 'único'],
       nodemailer = require('nodemailer'),
       transporter = nodemailer.createTransport({
-        host: 'mail.donmandon.mx',
+        host: 'server.masfusion.com.mx',
         port: 465,
         secure: true,
         auth: {

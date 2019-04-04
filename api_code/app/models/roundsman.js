@@ -25,7 +25,7 @@ let Roundsman = bookshelf.Model.extend({
     }, {patch: true});
   },
   sendCloseMessage: function(senderID, orderId, message){
-    let closePedidoUrl = `https://api.donmandon.mx/pedidos/${orderId}/close`;
+    let closePedidoUrl = `https://api.donmandon.com.mx/pedidos/${orderId}/close`;
     let requestBody = {
       "recipient": {
         "id": senderID
