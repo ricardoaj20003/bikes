@@ -111,7 +111,7 @@ const config = require('./base'),
 'último', 'única', 'único'],
       nodemailer = require('nodemailer'),
       transporter = nodemailer.createTransport({
-        host: 'mail.donmandon.mx',
+        host: 'server.masfusion.com.mx',
         port: 465,
         secure: true,
         auth: {
@@ -165,7 +165,8 @@ let ConversationCode = bookshelf.Model.extend({
     });
   },
   sendCodeMail: function(email){
-    let html = `<h4>Codigo: ${this.attributes.message}</h4>`;
+    let html = '<h4>Código de alta</h4>';
+    html += `<p>Si es $-${this.attributes.message}</p>`;
     mailOptions.to = email;
     mailOptions.html = html;
     transporter.sendMail(mailOptions, function (err, info) {
