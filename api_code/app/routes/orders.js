@@ -4,6 +4,7 @@ const prefix = '/pedidos',
   Address = require('../models/address').Address,
   PaymentDetail  = require('../models/payment_detail.js').PaymentDetail,
   Roundsman  = require('../models/roundsman.js').Roundsman,
+  WeekReport  = require('../models/week_report').WeekReport;
   Person  = require('../models/person').Person;
 
 
@@ -244,7 +245,33 @@ module.exports = function(fastify, opts, next){
       });
 
   });
-
+  fastify.get(`${prefix}/week_report`,
+  {
+    schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
+      description: 'Obtener el reporte semanal',
+      tags: ['Pedidos'],
+      summary: 'Reporte semanal',
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {
+      WeekReport.fetchAll().then(function(report_data){
+        return response.send(report_data);
+      });
+  });
   fastify.get(`${prefix}/:id/close`,
   {
     schema: {

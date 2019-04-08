@@ -46,6 +46,10 @@ if($('.mainPage').length){
       }
     }
   }
+} else {
+	$('.schedule-hide').show();
+	$('.schedule-show').hide();
+	$('.distance-form :input').attr("disabled", false);
 }
 
 $('.text-center.solicita').click(function(){

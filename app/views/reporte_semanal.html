@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Reporte semanal</title>
+<style>
+table, td, th {
+  border: 1px solid black;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th {
+  height: 50px;
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<body>
+<table id='datos'>
+  <thead></thead>
+  <tbody></tbody>
+</table>
+<script>
+  $.get('https://api.donmandon.com.mx/pedidos/week_report', function(response){
+    Object.keys(response[0]).forEach( (attr) => {
+      $('#datos thead').append(`<th>${attr}</th>`);
+    });
+    response.forEach((row) => {
+      let html = '<tr>';
+      Object.keys(row).forEach( (attr) => {
+        html += `<td>${row[attr]}</td>`;
+      });
+      html += '</tr>';
+      $('#datos tbody').append(html);
+      debugger
+    });
+  });
+</script>
+</body>
+</html>

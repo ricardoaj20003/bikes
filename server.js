@@ -41,6 +41,9 @@ app.get('/terminos-condiciones', (req, res) => {
 app.get('/landing', (req, res) => {
   res.render('landing.html');
 })
+app.get('/reporte_semanal', (req, res) => {
+  res.render('reporte_semanal.html');
+})
 app.get('*', (req, res) => {
   res.redirect('/');
 })
