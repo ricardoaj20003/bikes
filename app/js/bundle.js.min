@@ -313,10 +313,10 @@ function GetRoute() {
         var duration = response.rows[0].elements[0].duration.text;
         var price;
         var metros = parseFloat(distance.replace(' km', '')) * 1000;
-        if(metros <= 3000){
+        if(metros <= 6000){
           price = '$35.00';
         }else{
-          var calc = (35 + ((metros - 3000)/1000) * 5.5).toFixed(2);
+          var calc = (35 + ((metros - 6000)/1000) * 5);
           if (parseInt(calc.toString().split('.')[1]) > 0) {
 	    calc = parseInt(calc.toString().split('.')[0]) + 1;
           }

@@ -231,7 +231,7 @@ module.exports = function(fastify, opts, next){
 				    let price = order.relations.paymentDetail.attributes.total;
 			            let notes = address.attributes.references_notes;
 				    let message = `Origen: ${address.attributes.origin}, Destino: ${address.attributes.destination}, Nombre: ${name}, Celular: ${cel}, Precio: ${price}, Comentarios: ${notes}`;
-				    roundsman.assign_order(message);
+				    roundsman.assign_order(message, orderId);
 				    return response.send(order);
 				  });
 			  })
