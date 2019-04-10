@@ -13,9 +13,8 @@ let Roundsman = bookshelf.Model.extend({
   conversation_code: function(){
     return this.hasOne(ConversationCode);
   },
-  assign_order: function(message){
-    let order_control = this.relations.order_control;
-    return this.sendCloseMessage(this.attributes.senderID, order_control.attributes.order_id, message);
+  assign_order: function(message,orderId){
+    return this.sendCloseMessage(this.attributes.senderID, orderId, message);
   },
   updateCode: function(){
     let conversation_code = this.relations.conversation_code;

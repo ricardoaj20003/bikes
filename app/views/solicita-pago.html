@@ -313,7 +313,7 @@
 <script>
   var idPedido = localStorage.getItem('idPedido');
   $.ajax({
-    url: 'https://api.donmandon.mx/pedidos/' + idPedido,
+    url: 'https://api.donmandon.com.mx/pedidos/' + idPedido,
     type: "GET",
     headers: {"token": localStorage.getItem('tokenKey')},
     success: function(response){
@@ -323,10 +323,10 @@
       var distance = response.address.distance;
       var price;
       var metros = distance * 1000;
-      if(metros <= 3000){
+      if(metros <= 6000){
         price = '$35.00';
       }else{
-        var calc =(35 + ((metros - 3000)/1000) * 5.5).toFixed(2);
+        var calc =(35 + ((metros - 6000)/1000) * 5).toFixed(2);
         price = '$' + calc;
       }
       $('.priceValue, .totalValue').html(price);
