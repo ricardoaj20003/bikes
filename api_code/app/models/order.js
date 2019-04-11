@@ -3,6 +3,7 @@ const baseModel      = require('./base'),
       Person         = require('./person').Person,
       Address        = require('./address').Address,
       OrderControl   = require('./order_control').OrderControl,
+      CouponControl   = require('./coupon_control').CouponControl,
       PaymentDetail  = require('./payment_detail.js').PaymentDetail;
 
 let Order = bookshelf.Model.extend({
@@ -19,6 +20,9 @@ let Order = bookshelf.Model.extend({
   },
   orderControl: function() {
     return this.hasOne(OrderControl);
+  },
+  couponControl: function() {
+    return this.hasOne(CouponControl);
   }
 });
 
