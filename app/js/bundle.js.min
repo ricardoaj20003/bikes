@@ -4,7 +4,7 @@ function toggleHandler(t){t.addEventListener("click",function(t){t.preventDefaul
 if (!localStorage.getItem('tokenKey'))
 {
   $.ajax({
-    url: 'https://api.donmandon.mx/users/sign_in',
+    url: 'https://api.donmandon.com.mx/users/sign_in',
     type: "POST",
     data: JSON.stringify({"username" : "donmandon", "password" : "12345678"}),
     contentType: "application/json; charset=utf-8",
@@ -46,10 +46,10 @@ if($('.mainPage').length){
       }
     }
   }
-}else{
-  $('.schedule-hide').show();
-        $('.schedule-show').hide();
-        $('.distance-form :input').attr("disabled", false);
+} else {
+	$('.schedule-hide').show();
+	$('.schedule-show').hide();
+	$('.distance-form :input').attr("disabled", false);
 }
 
 $('.text-center.solicita').click(function(){
@@ -83,7 +83,7 @@ $('.text-center.solicita').click(function(){
       }
     
       $.ajax({
-        url: 'https://api.donmandon.mx/pedidos',
+        url: 'https://api.donmandon.com.mx/pedidos',
         type: "POST",
         headers: {"token": localStorage.getItem('tokenKey')},
         data: JSON.stringify(data),
@@ -132,7 +132,7 @@ $('.theiaStickySidebar a[href=solicita-pago]').click(function(){
 
   var idPedido = localStorage.getItem('idPedido');
   $.ajax({
-    url: 'https://api.donmandon.mx/pedidos/' + idPedido  + '/add_person',
+    url: 'https://api.donmandon.com.mx/pedidos/' + idPedido  + '/add_person',
     type: "POST",
     headers: {"token": localStorage.getItem('tokenKey')},
     data: JSON.stringify(data),
@@ -161,7 +161,7 @@ $('.btn_full[href=solicita-gracias]').click(function(){
 
   var idPedido = localStorage.getItem('idPedido');
   $.ajax({
-    url: 'https://api.donmandon.mx/pedidos/' + idPedido  + '/add_payment_detail',
+    url: 'https://api.donmandon.com.mx/pedidos/' + idPedido  + '/add_payment_detail',
     type: "POST",
     headers: {"token": localStorage.getItem('tokenKey')},
     data: JSON.stringify(data),
@@ -184,7 +184,7 @@ var directionsService = new google.maps.DirectionsService();
 google.maps.event.addDomListener(window, 'load', function () {
     var circle = new google.maps.Circle({
         radius: 5500,
-        center: {lat: 19.2399156, lng: -103.7245426}
+	center: {lat: 19.2399156, lng: -103.7245426}
     });
     new google.maps.places.Autocomplete(document.getElementById('txtSource'), {
       types: ['geocode'],
@@ -217,8 +217,8 @@ if (navigator.geolocation) {
         };
 
 	    var circle = new google.maps.Circle({
-    radius: 5500,
-    center: {lat: 19.2399156, lng: -103.7245426}
+		radius: 5500,
+                center: {lat: 19.2399156, lng: -103.7245426}
 	    });
 
         geocoder.geocode({'location': latlng, bounds: circle.getBounds()}, function(results, status) {
@@ -313,7 +313,7 @@ function GetRoute() {
         var duration = response.rows[0].elements[0].duration.text;
         var price;
         var metros = parseFloat(distance.replace(' km', '')) * 1000;
-        
+
 
         if($("#landing-negocios").length){
           //business-plan
@@ -322,24 +322,22 @@ function GetRoute() {
           }else{
             var calc = (30 + ((metros - 15000)/1000) * 5);
             if (parseInt(calc.toString().split('.')[1]) > 0) {
-            calc = parseInt(calc.toString().split('.')[0]) + 1;
+              calc = parseInt(calc.toString().split('.')[0]) + 1;
             }
             price = '$' + calc + '.00';
           }
         }else{
-
           //normal-plan
           if(metros <= 6000){
             price = '$35.00';
           }else{
             var calc = (35 + ((metros - 6000)/1000) * 5);
             if (parseInt(calc.toString().split('.')[1]) > 0) {
-            calc = parseInt(calc.toString().split('.')[0]) + 1;
+              calc = parseInt(calc.toString().split('.')[0]) + 1;
             }
             price = '$' + calc + '.00';
           }
         }
-
 
         
         document.getElementById("distance-value").innerHTML = "Distancia: " + distance;

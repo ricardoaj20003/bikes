@@ -11,7 +11,7 @@ BEGIN
   END IF;
   NEW.roundsman_id = last_roundsman;
   IF EXISTS (SELECT id FROM roundsman WHERE id > last_roundsman AND "senderID" IS NOT NULL) THEN
-    SELECT id INTO next_roundsman FROM roundsman WHERE id > last_roundsman WHERE "senderID" IS NOT NULL ORDER BY id ASC LIMIT 1;
+    SELECT id INTO next_roundsman FROM roundsman WHERE id > last_roundsman AND "senderID" IS NOT NULL ORDER BY id ASC LIMIT 1;
   ELSE
     SELECT id INTO next_roundsman FROM roundsman WHERE "senderID" IS NOT NULL ORDER BY ID ASC LIMIT 1;
   END IF;
