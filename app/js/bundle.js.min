@@ -313,15 +313,33 @@ function GetRoute() {
         var duration = response.rows[0].elements[0].duration.text;
         var price;
         var metros = parseFloat(distance.replace(' km', '')) * 1000;
-        if(metros <= 6000){
-          price = '$35.00';
-        }else{
-          var calc = (35 + ((metros - 6000)/1000) * 5);
-          if (parseInt(calc.toString().split('.')[1]) > 0) {
-	    calc = parseInt(calc.toString().split('.')[0]) + 1;
+
+
+        if($("#landing-negocios").length){
+          //business-plan
+          if(metros <= 15000){
+            price = '$30.00';
+          }else{
+            var calc = (30 + ((metros - 15000)/1000) * 5);
+            if (parseInt(calc.toString().split('.')[1]) > 0) {
+              calc = parseInt(calc.toString().split('.')[0]) + 1;
+            }
+            price = '$' + calc + '.00';
           }
-          price = '$' + calc + '.00';
+        }else{
+          //normal-plan
+          if(metros <= 6000){
+            price = '$35.00';
+          }else{
+            var calc = (35 + ((metros - 6000)/1000) * 5);
+            if (parseInt(calc.toString().split('.')[1]) > 0) {
+              calc = parseInt(calc.toString().split('.')[0]) + 1;
+            }
+            price = '$' + calc + '.00';
+          }
         }
+
+        
         document.getElementById("distance-value").innerHTML = "Distancia: " + distance;
         document.getElementById("time-value").innerHTML = "Duración: " + duration ;
         document.getElementById("price-value").innerHTML = "Precio: " + price ;

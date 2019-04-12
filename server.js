@@ -37,7 +37,9 @@ app.get('/solicita-gracias', (req, res) => {
 app.get('/terminos-condiciones', (req, res) => {
   res.render('terminos-condiciones.html');
 })
-
+app.get('/negocios', (req, res) => {
+  res.render('negocios.html');
+})
 app.get('/landing', (req, res) => {
   res.render('landing.html');
 })
