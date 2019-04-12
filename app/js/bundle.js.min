@@ -46,6 +46,10 @@ if($('.mainPage').length){
       }
     }
   }
+}else{
+  $('.schedule-hide').show();
+        $('.schedule-show').hide();
+        $('.distance-form :input').attr("disabled", false);
 }
 
 $('.text-center.solicita').click(function(){
@@ -309,12 +313,28 @@ function GetRoute() {
         var duration = response.rows[0].elements[0].duration.text;
         var price;
         var metros = response.rows[0].elements[0].distance.value;
-        if(metros <= 3000){
-          price = '$35.00';
+
+        if($("#landing-negocios").length){
+          //business-plan
+          if(metros <= 15000){
+            price = '$30.00';
+          }else{
+            var calc =(30 + ((metros - 15000)/1000) * 5.5).toFixed(2);
+            price = '$' + calc;
+          }
         }else{
-          var calc =(35 + ((metros - 3000)/1000) * 5.5).toFixed(2);
-          price = '$' + calc;
+
+          //normal-plan
+          if(metros <= 3000){
+            price = '$35.00';
+          }else{
+            var calc =(35 + ((metros - 3000)/1000) * 5.5).toFixed(2);
+            price = '$' + calc;
+          }
         }
+
+
+        
         document.getElementById("distance-value").innerHTML = "Distancia: " + distance;
         document.getElementById("time-value").innerHTML = "Duración: " + duration ;
         document.getElementById("price-value").innerHTML = "Precio: " + price ;
