@@ -14,10 +14,6 @@ let User = bookshelf.Model.extend({
       });
     }, this);
   },
-  couponControl: function() {
-    let  CouponControl   = require('./coupon_control').CouponControl;
-    return this.hasMany(CouponControl);
-  },
   hashPassword: function(){
     return bcrypt.hash(md5(this.attributes.password), 18);
   },

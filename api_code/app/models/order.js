@@ -23,7 +23,11 @@ let Order = bookshelf.Model.extend({
   },
   couponControl: function() {
     return this.hasOne(CouponControl);
-  }
+  },
+  user : function() {
+    let User = require('./user').User;
+    return this.belongsTo(User);
+  },
 });
 
 module.exports = {

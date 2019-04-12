@@ -7,6 +7,10 @@ let PaymentDetail = bookshelf.Model.extend({
   hasTimestamps: true,
   pedido: function(){
     return this.belongsTo(Pedido);
+  },
+  couponControl: function(){
+    let CouponControl = require('./coupon_control').CouponControl;
+    return this.belongsTo(CouponControl);
   }
 });
 

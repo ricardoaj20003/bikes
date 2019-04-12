@@ -98,6 +98,7 @@ module.exports = function (fastify, opts, next) {
           if (!validationObject.isValid)
             return response.send({message: `Cupon no valido ${validationObject.reason}`, invalid: true}).code(403);
           
+          delete coupon.relations.couponControls;
           return response.send(coupon);
         });
       });
@@ -122,10 +123,9 @@ module.exports = function (fastify, opts, next) {
       body: {
         type: 'object',
         properties: {
-          order_id: {type: 'integer'},
-          user_id: {type: 'integer'}
+          order_id: {type: 'integer'}
         },
-        required: ['order_id', 'user_id']
+        required: ['order_id']
       },
       response: {
         201: {
