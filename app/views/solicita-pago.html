@@ -246,6 +246,15 @@
                         </td>
                     </tr>
                     <tr>
+                        <td>
+                            <strong>Copon</strong>
+                        </td>
+                        <td>
+                            <input class="pull-right couponValue" type="text" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><button id='validateCoupon'>Aplicar</button></td>
                     </tr>
                     </tbody>
                     </table>
@@ -313,7 +322,7 @@
 <script>
   var idPedido = localStorage.getItem('idPedido');
   $.ajax({
-    url: 'https://api.donmandon.com.mx/pedidos/' + idPedido,
+    url: 'http://localhost:3000/pedidos/' + idPedido,
     type: "GET",
     headers: {"token": localStorage.getItem('tokenKey')},
     success: function(response){
@@ -337,8 +346,14 @@
       $('.distanceValue').html(distance + ' KM ')
     }
   });
-  $('#sidebar').theiaStickySidebar({
-    additionalMarginTop: 80
+
+  $('#validateCoupon').click(function(){
+    $.get(`http://localhost:3000/cupones/${$('.couponValue').val()}/is_valid`, (response) => {
+      if (response.invalid)
+        return response.message;
+      
+      localStorage.setItem('coupon', response.code);
+    });
   });
 </script>
 

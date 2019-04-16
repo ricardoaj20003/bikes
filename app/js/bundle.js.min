@@ -4,7 +4,7 @@ function toggleHandler(t){t.addEventListener("click",function(t){t.preventDefaul
 if (!localStorage.getItem('tokenKey'))
 {
   $.ajax({
-    url: 'https://api.donmandon.com.mx/users/sign_in',
+    url: 'http://localhost:3000/users/sign_in',
     type: "POST",
     data: JSON.stringify({"username" : "donmandon", "password" : "12345678"}),
     contentType: "application/json; charset=utf-8",
@@ -82,7 +82,7 @@ $('.text-center.solicita').click(function(){
       }
     
       $.ajax({
-        url: 'https://api.donmandon.com.mx/pedidos',
+        url: 'http://localhost:3000/pedidos',
         type: "POST",
         headers: {"token": localStorage.getItem('tokenKey')},
         data: JSON.stringify(data),
@@ -131,7 +131,7 @@ $('.theiaStickySidebar a[href=solicita-pago]').click(function(){
 
   var idPedido = localStorage.getItem('idPedido');
   $.ajax({
-    url: 'https://api.donmandon.com.mx/pedidos/' + idPedido  + '/add_person',
+    url: 'http://localhost:3000/pedidos/' + idPedido  + '/add_person',
     type: "POST",
     headers: {"token": localStorage.getItem('tokenKey')},
     data: JSON.stringify(data),
@@ -158,9 +158,30 @@ $('.btn_full[href=solicita-gracias]').click(function(){
     }
   }
 
-  var idPedido = localStorage.getItem('idPedido');
+  let idPedido = localStorage.getItem('idPedido');
+  let cb = () => { return window.location.href = '/solicita-gracias'; };
+  if (localStorage.getItem('coupon')){
+    cb = () => {
+      $.ajax({
+        url: `http://localhost:3000/cupones/${localStorage.getItem('coupon')}/apply`,
+        type: "POST",
+        headers: { "token": localStorage.getItem('tokenKey') },
+        data: JSON.stringify({ order_id: idPedido }),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (response) {
+          localStorage.clear();
+
+          if (response.invalid)
+            return response.message;
+
+          return window.location.href = '/solicita-gracias';
+        }
+      });
+    };
+  }
   $.ajax({
-    url: 'https://api.donmandon.com.mx/pedidos/' + idPedido  + '/add_payment_detail',
+    url: 'http://localhost:3000/pedidos/' + idPedido  + '/add_payment_detail',
     type: "POST",
     headers: {"token": localStorage.getItem('tokenKey')},
     data: JSON.stringify(data),
@@ -170,7 +191,7 @@ $('.btn_full[href=solicita-gracias]').click(function(){
       if (response.error)
         alert(response.error);
 
-      window.location.href = '/solicita-gracias';
+      cb();
     }
   });
 
@@ -313,7 +334,7 @@ function GetRoute() {
         var price;
         var metros = parseFloat(distance.replace(' km', '')) * 1000;
 
-        $.get(`https://api.donmandon.com.mx/users/${localStorage.getItem('user_id')}/price_rate`, (response) => {
+        $.get(`http://localhost:3000/users/${localStorage.getItem('user_id')}/price_rate`, (response) => {
           let basePrice = parseFloat(response.price);
           let baseDistance = parseFloat(response.distance);
           let baseMinDistance = parseFloat(response.unit_distance);
