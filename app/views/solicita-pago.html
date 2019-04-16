@@ -322,7 +322,7 @@
 <script>
   var idPedido = localStorage.getItem('idPedido');
   $.ajax({
-    url: 'http://localhost:3000/pedidos/' + idPedido,
+    url: 'https://api.donmandon.com.mx/pedidos/' + idPedido,
     type: "GET",
     headers: {"token": localStorage.getItem('tokenKey')},
     success: function(response){
@@ -348,7 +348,7 @@
   });
 
   $('#validateCoupon').click(function(){
-    $.get(`http://localhost:3000/cupones/${$('.couponValue').val()}/is_valid`, (response) => {
+    $.get(`https://api.donmandon.com.mx/cupones/${$('.couponValue').val()}/is_valid`, (response) => {
       if (response.invalid)
         return response.message;
       
