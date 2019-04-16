@@ -55,6 +55,7 @@ fastify.addHook('preHandler', (request, response, next) => {
 });
 
 fastify.register(require('./app/routes/users'));
+fastify.register(require('./app/routes/price_rates'));
 fastify.register(require('./app/routes/coupons'));
 fastify.register(require('./app/routes/orders'));
 fastify.register(require('./app/routes/facebook_logic'));

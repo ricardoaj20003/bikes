@@ -4,6 +4,10 @@ const config = require('./base'),
 let CouponControl = bookshelf.Model.extend({
   tableName: 'coupon_controls',
   hasTimestamps: true,
+  paymentDetaial : function() {
+    let PaymentDetail = require('./price_rate').PaymentDetail;
+    return this.hasOne(PaymentDetail);
+  },
   order : function() {
     let Order = require('./order').Order;
     return this.belongsTo(Order);

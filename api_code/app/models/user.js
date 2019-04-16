@@ -14,6 +14,18 @@ let User = bookshelf.Model.extend({
       });
     }, this);
   },
+  priceRate : function() {
+    let PriceRate = require('./price_rate').PriceRate;
+    return this.belongsTo(PriceRate);
+  },
+  orders: function () {
+    let Order = require('./order').Order;
+    return this.hasMany(Order);
+  },
+  priceRateObject: function(){
+    return this.priceRate()
+      .where({id: this.attributes.price_rate_id}).fetch();
+  },
   hashPassword: function(){
     return bcrypt.hash(md5(this.attributes.password), 18);
   },
