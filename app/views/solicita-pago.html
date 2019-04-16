@@ -246,6 +246,15 @@
                         </td>
                     </tr>
                     <tr>
+                        <td>
+                            <strong>Copon</strong>
+                        </td>
+                        <td>
+                            <input class="pull-right couponValue" type="text" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><button id='validateCoupon'>Aplicar</button></td>
                     </tr>
                     </tbody>
                     </table>
@@ -323,18 +332,28 @@
       var distance = response.address.distance;
       var price;
       var metros = distance * 1000;
-      if(metros <= 6000){
-        price = '$35.00';
+      let basePrice = parseFloat(localStorage.getItem('basePrice'));
+      let baseDistance = parseFloat(localStorage.getItem('baseDistance'));
+      let baseMinDistance = parseFloat(localStorage.getItem('baseMinDistance'));
+      let baseMinPrice = parseFloat(localStorage.getItem('baseMinPrice'));
+      if(metros <= localStorage.getItem('baseDistance')){
+        price = `$${localStorage.getItem('basePrice')}`;
       }else{
-        var calc =(35 + ((metros - 6000)/1000) * 5).toFixed(2);
+        let calc = (basePrice + ((metros - baseDistance) / baseMinDistance) * baseMinPrice);
         price = '$' + calc;
       }
       $('.priceValue, .totalValue').html(price);
       $('.distanceValue').html(distance + ' KM ')
     }
   });
-  $('#sidebar').theiaStickySidebar({
-    additionalMarginTop: 80
+
+  $('#validateCoupon').click(function(){
+    $.get(`https://api.donmandon.com.mx/cupones/${$('.couponValue').val()}/is_valid`, (response) => {
+      if (response.invalid)
+        return response.message;
+      
+      localStorage.setItem('coupon', response.code);
+    });
   });
 </script>
 

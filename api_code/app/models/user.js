@@ -1,6 +1,6 @@
 const config = require('./base'),
       md5 = require('md5'),
-      bcrypt = require('bcrypt');
+      bcrypt = require('bcrypt'),
       bookshelf = require('bookshelf')(config.knex);
 
 let User = bookshelf.Model.extend({
@@ -13,6 +13,18 @@ let User = bookshelf.Model.extend({
         return that.set('password', hash);
       });
     }, this);
+  },
+  priceRate : function() {
+    let PriceRate = require('./price_rate').PriceRate;
+    return this.belongsTo(PriceRate);
+  },
+  orders: function () {
+    let Order = require('./order').Order;
+    return this.hasMany(Order);
+  },
+  priceRateObject: function(){
+    return this.priceRate()
+      .where({id: this.attributes.price_rate_id}).fetch();
   },
   hashPassword: function(){
     return bcrypt.hash(md5(this.attributes.password), 18);

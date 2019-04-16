@@ -35,12 +35,76 @@ module.exports = function(fastify, opts, next){
     }
   },
   (request, response) => {
-    return new User({username: 'donmandon', password: '12345678', email: 'ohcl87@hotmail.com'}).save()
+    return new User(request.body).save()
       .then(function (user) {
         return response.send(user);
       })
       .catch(function (err) {
         return response.send(err);
+      });
+  });
+
+  fastify.get(`${prefix}/:id`,
+  {
+    schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
+      description: ' Codigo para el repartidor.',
+      tags: ['Repartidores'],
+      summary: 'Devuelve el codigo al repartidor',
+      description: 'Entrega el codigo al repartidor',
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string'
+            }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {
+    return User.where(request.params).fetch()
+      .then(function (user) {
+        return response.send(user);
+      });
+  });
+
+  fastify.get(`${prefix}/:id/price_rate`,
+  {
+    schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
+      description: ' Codigo para el repartidor.',
+      tags: ['Repartidores'],
+      summary: 'Devuelve el codigo al repartidor',
+      description: 'Entrega el codigo al repartidor',
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string'
+            }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {
+    return User.where(request.params).fetch()
+      .then(function (user) {
+        return user.priceRateObject().then( (priceRate) => {
+          return response.send(priceRate);
+        } );
       });
   });
 

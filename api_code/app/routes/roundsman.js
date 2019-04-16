@@ -2,7 +2,8 @@ const prefix            = '/repartidores',
       Roundsman         = require('../models/roundsman').Roundsman,
       ConversationCode  = require('../models/conversation_code').ConversationCode;
 
-module.exports = function(fastify, opts, next){fastify.get(`${prefix}`,
+module.exports = function(fastify, opts, next){
+  fastify.get(`${prefix}`,
   {
     schema: {
       security: [
@@ -28,7 +29,7 @@ module.exports = function(fastify, opts, next){fastify.get(`${prefix}`,
     }
   },
   (request, response) => {
-    Roundsman.fetchAll({withRelated: ['conversation_code'
+    return Roundsman.fetchAll({withRelated: ['conversation_code'
       ]
     }).then(function(roundsmans){
       return response.send(roundsmans);

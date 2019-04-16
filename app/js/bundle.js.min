@@ -16,7 +16,6 @@ if (!localStorage.getItem('tokenKey'))
   });
 }
 
-
 if($('.mainPage').length){
   var date = new Date;
   var minutes = date.getMinutes();
@@ -47,9 +46,9 @@ if($('.mainPage').length){
     }
   }
 } else {
-	$('.schedule-hide').show();
-	$('.schedule-show').hide();
-	$('.distance-form :input').attr("disabled", false);
+  $('.schedule-hide').show();
+  $('.schedule-show').hide();
+  $('.distance-form :input').attr("disabled", false);
 }
 
 $('.text-center.solicita').click(function(){
@@ -159,7 +158,28 @@ $('.btn_full[href=solicita-gracias]').click(function(){
     }
   }
 
-  var idPedido = localStorage.getItem('idPedido');
+  let idPedido = localStorage.getItem('idPedido');
+  let cb = () => { return window.location.href = '/solicita-gracias'; };
+  if (localStorage.getItem('coupon')){
+    cb = () => {
+      $.ajax({
+        url: `https://api.donmandon.com.mx/cupones/${localStorage.getItem('coupon')}/apply`,
+        type: "POST",
+        headers: { "token": localStorage.getItem('tokenKey') },
+        data: JSON.stringify({ order_id: idPedido }),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (response) {
+          localStorage.clear();
+
+          if (response.invalid)
+            return response.message;
+
+          return window.location.href = '/solicita-gracias';
+        }
+      });
+    };
+  }
   $.ajax({
     url: 'https://api.donmandon.com.mx/pedidos/' + idPedido  + '/add_payment_detail',
     type: "POST",
@@ -171,7 +191,7 @@ $('.btn_full[href=solicita-gracias]').click(function(){
       if (response.error)
         alert(response.error);
 
-      window.location.href = '/solicita-gracias';
+      cb();
     }
   });
 
@@ -217,7 +237,7 @@ if (navigator.geolocation) {
         };
 
 	    var circle = new google.maps.Circle({
-		radius: 5500,
+                radius: 5500,
                 center: {lat: 19.2399156, lng: -103.7245426}
 	    });
 
@@ -314,35 +334,28 @@ function GetRoute() {
         var price;
         var metros = parseFloat(distance.replace(' km', '')) * 1000;
 
-
-        if($("#landing-negocios").length){
-          //business-plan
-          if(metros <= 15000){
-            price = '$30.00';
-          }else{
-            var calc = (30 + ((metros - 15000)/1000) * 5);
+        $.get(`https://api.donmandon.com.mx/users/${localStorage.getItem('user_id')}/price_rate`, (response) => {
+          let basePrice = parseFloat(response.price);
+          let baseDistance = parseFloat(response.distance);
+          let baseMinDistance = parseFloat(response.unit_distance);
+          let baseMinPrice = parseFloat(response.unit_price);
+          localStorage.setItem('basePrice', basePrice);
+          localStorage.setItem('baseDistance', baseDistance);
+          localStorage.setItem('baseMinDistance', baseMinDistance);
+          localStorage.setItem('baseMinPrice', baseMinPrice);
+          if (metros <= baseDistance) {
+            price = `$${basePrice}`;
+          } else {
+            let calc = (basePrice + ((metros - baseDistance) / baseMinDistance) * baseMinPrice);
             if (parseInt(calc.toString().split('.')[1]) > 0) {
               calc = parseInt(calc.toString().split('.')[0]) + 1;
             }
             price = '$' + calc + '.00';
           }
-        }else{
-          //normal-plan
-          if(metros <= 6000){
-            price = '$35.00';
-          }else{
-            var calc = (35 + ((metros - 6000)/1000) * 5);
-            if (parseInt(calc.toString().split('.')[1]) > 0) {
-              calc = parseInt(calc.toString().split('.')[0]) + 1;
-            }
-            price = '$' + calc + '.00';
-          }
-        }
-
-        
-        document.getElementById("distance-value").innerHTML = "Distancia: " + distance;
-        document.getElementById("time-value").innerHTML = "Duración: " + duration ;
-        document.getElementById("price-value").innerHTML = "Precio: " + price ;
+          document.getElementById("distance-value").innerHTML = "Distancia: " + distance;
+          document.getElementById("time-value").innerHTML = "Duración: " + duration;
+          document.getElementById("price-value").innerHTML = "Precio: " + price;
+        });
       } else {
         alert("Unable to find the distance via road.");
       }

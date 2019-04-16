@@ -38,32 +38,32 @@ let FacebookConversationLogic = bookshelf.Model.extend({
       }
     });
   },
-  evaluateFunction: function(senderId, message){
+  evaluateFunction: function (senderId, message) {
     return {
-      getmeCode: function(that, message){
-        let roundsmanId = message.replace('Claro es el $-','');
+      getmeCode: function (that, message) {
+        let roundsmanId = message.replace('Claro es el $-', '');
         if (isNaN(roundsmanId) || roundsmanId.length === 0)
-	  return new Promise((resolve, reject) => {
-	    return resolve('Es un placer atenderte');
+          return new Promise((resolve, reject) => {
+            return resolve('Es un placer atenderte');
           });
-       
-	return Roundsman.where({id: roundsmanId}).fetch().then((roundsman) => {
-	  if (roundsman)
-	    return that.attributes.response.replace('$xName$', roundsman.attributes.name);
-          
-	  return 'Es un placer atenderte';
+
+        return Roundsman.where({ id: roundsmanId }).fetch().then((roundsman) => {
+          if (roundsman)
+            return that.attributes.response.replace('$xName$', roundsman.attributes.name);
+
+          return 'Es un placer atenderte';
         });
       },
-      registerRoundsman: function(that, message, senderId){
-        let codeMessage = message.replace('Si es $-','')
-	return ConversationCode.where({message: codeMessage})
-	  .fetch().then((conversationCode) => {
-	     if (!conversationCode)
-	       return 'Es un placer atenderte';
+      registerRoundsman: function (that, message, senderId) {
+        let codeMessage = message.replace('Si es $-', '')
+        return ConversationCode.where({ message: codeMessage })
+          .fetch().then((conversationCode) => {
+            if (!conversationCode)
+              return 'Es un placer atenderte';
 
-	      return conversationCode.setSenderId(senderId);
+            return conversationCode.setSenderId(senderId);
 
-	    });
+          });
       }
     }[this.attributes.function_name](this, message, senderId);
   }
