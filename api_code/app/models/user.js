@@ -22,6 +22,11 @@ let User = bookshelf.Model.extend({
     let Order = require('./order').Order;
     return this.hasMany(Order);
   },
+  ordersWithAllData () {
+    let Order = require('./order').Order;
+    let ids = this.relations.orders.map(order => order.id)
+    return Order.where('id', 'IN', ids).fetchAll({ withRelated: ['address', 'person', 'paymentDetail'] });
+  },
   priceRateObject: function(){
     return this.priceRate()
       .where({id: this.attributes.price_rate_id}).fetch();

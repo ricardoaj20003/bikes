@@ -1,5 +1,5 @@
 const config = require('./base'),
-      Pedido    = require('./person').Pedido,
+      Pedido    = require('./order').Pedido,
       bookshelf = require('bookshelf')(config.knex);
 
 let PaymentDetail = bookshelf.Model.extend({

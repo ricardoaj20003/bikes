@@ -75,6 +75,39 @@ module.exports = function(fastify, opts, next){
       });
   });
 
+  fastify.get(`${prefix}/:id/pedidos`,
+  {
+    schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
+      description: 'Codigo para el repartidor.',
+      tags: ['Repartidores'],
+      summary: 'Devuelve el codigo al repartidor',
+      description: 'Entrega el codigo al repartidor',
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string'
+            }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {
+    return User.where(request.params).fetch({withRelated: ['orders']})
+      .then(function (user) {
+        return user.ordersWithAllData().then( (orders) => {
+          response.send(orders);
+        });
+      });
+  });
+
   fastify.get(`${prefix}/:id/price_rate`,
   {
     schema: {

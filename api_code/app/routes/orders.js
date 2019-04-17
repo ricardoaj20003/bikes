@@ -282,9 +282,40 @@ module.exports = function (fastify, opts, next) {
       }
     },
     (request, response) => {
-      WeekReport.fetchAll().then(function (report_data) {
+      return WeekReport.fetchAll().then(function (report_data) {
         return response.send(report_data);
       });
+    });
+  fastify.delete(`${prefix}/:id`,
+    {
+      schema: {
+        security: [
+          {
+            Bearer: []
+          }
+        ],
+        description: 'Obtener el reporte semanal',
+        tags: ['Pedidos'],
+        summary: 'Reporte semanal',
+        response: {
+          201: {
+            description: 'Succesful response',
+            type: 'object',
+            properties: {
+              hello: { type: 'string' }
+            }
+          }
+        }
+      }
+    },
+    (request, response) => {
+      return Order.forge(request.params).fetch({ withRelated: ['address', 'person', 'paymentDetail'] })
+        .then((order) => {
+          if (!order)
+            return response.status(404).send({ error: true, message: 'Pedido no encontrado' });
+          
+          return response.send(order.removeRelations());
+        });
     });
   fastify.get(`${prefix}/:id/close`,
     {
