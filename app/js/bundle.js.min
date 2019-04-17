@@ -367,8 +367,6 @@ function GetRoute() {
         putDistanceAndDuration(source, destination);
     });
 
-    
-
     var request = {
         origin: source,
         destination: destination,
@@ -382,10 +380,6 @@ function GetRoute() {
 
   }
 
-
-
-
-  
  function putDistanceAndDuration(source, destination){
     var service = new google.maps.DistanceMatrixService();
     service.getDistanceMatrix({
@@ -400,7 +394,7 @@ function GetRoute() {
         var distance = response.rows[0].elements[0].distance.text;
         var duration = response.rows[0].elements[0].duration.text;
         var price;
-	var metros = distance.match(/km/) ? parseFloat(distance.replace(' km', '').replace(',','.')) * 1000 : parseFloat(distance.replace(' m', '').replace(',','.'));
+        var metros = distance.match(/km/) ? parseFloat(distance.replace(' km', '').replace(',','.')) * 1000 : parseFloat(distance.replace(' m', '').replace(',','.'));
 
         $.get(`https://api.donmandon.com.mx/users/${localStorage.getItem('user_id')}/price_rate`, (response) => {
           let basePrice = parseFloat(response.price);
