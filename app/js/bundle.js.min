@@ -198,6 +198,26 @@ $('.btn_full[href=solicita-gracias]').click(function(){
   return false;
 });
 
+$('.action-Adress1').click(function() {
+  $(".distance-form")[0].reset();
+  $('#txtSource').val($("#search1").val());
+  $('#newadress').modal('toggle');
+});
+$('.action-Adress2').click(function() {
+  $(".distance-form")[0].reset();
+  $('#txtSource').val($("#search2").val());
+  $('#newadress').modal('toggle');
+});
+$('.action-Adress3').click(function() {
+  $(".distance-form")[0].reset();
+  $('#txtSource').val($("#search3").val());
+  $('#newadress').modal('toggle');
+});$('.action-Adress4').click(function() {
+  $(".distance-form")[0].reset();
+  $('#txtSource').val($("#search4").val());
+  $('#newadress').modal('show');
+});
+
 var source, destination;
 var directionsDisplay;
 var directionsService = new google.maps.DirectionsService();
@@ -206,6 +226,28 @@ google.maps.event.addDomListener(window, 'load', function () {
         radius: 5500,
 	center: {lat: 19.2399156, lng: -103.7245426}
     });
+    if($('.adminsection').length){
+      new google.maps.places.Autocomplete(document.getElementById('search1'), {
+        types: ['geocode'],
+        bounds: circle.getBounds(),
+        strictBounds: true
+      });
+      new google.maps.places.Autocomplete(document.getElementById('search2'), {
+        types: ['geocode'],
+        bounds: circle.getBounds(),
+        strictBounds: true
+      });
+      new google.maps.places.Autocomplete(document.getElementById('search3'), {
+        types: ['geocode'],
+        bounds: circle.getBounds(),
+        strictBounds: true
+      });
+      new google.maps.places.Autocomplete(document.getElementById('search4'), {
+        types: ['geocode'],
+        bounds: circle.getBounds(),
+        strictBounds: true
+      });
+    }
     new google.maps.places.Autocomplete(document.getElementById('txtSource'), {
       types: ['geocode'],
       bounds: circle.getBounds(),
@@ -240,18 +282,6 @@ if (navigator.geolocation) {
                 radius: 5500,
                 center: {lat: 19.2399156, lng: -103.7245426}
 	    });
-
-        geocoder.geocode({'location': latlng, bounds: circle.getBounds()}, function(results, status) {
-          if (status === 'OK') {
-            if (results[0]) {
-              $('#txtSource').val(results[0].formatted_address)
-            } else {
-              window.alert('No results found');
-            }
-          } else {
-            window.alert('Geocoder failed due to: ' + status);
-          }
-        });
 
         var pos = {
           lat: position.coords.latitude,
