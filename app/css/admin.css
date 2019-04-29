@@ -295,3 +295,8 @@ hr.styled_2{
 .pac-container.pac-logo{
 	z-index: 999999999;
 }
+
+
+#newadress .main_title h2, #newadress label{
+		color: #fff;
+}

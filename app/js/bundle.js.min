@@ -199,23 +199,60 @@ $('.btn_full[href=solicita-gracias]').click(function(){
 });
 
 $('.action-Adress1').click(function() {
-  $(".distance-form")[0].reset();
-  $('#txtSource').val($("#search1").val());
-  $('#newadress').modal('toggle');
+  if($("#search1").val() != ""){
+    $(".distance-form")[0].reset();
+    $('#txtSource').val($("#search1").val());
+    $('#newadress').modal('toggle');
+  }else{
+    alert("Falta seleccionar el campo ubicación 1");
+  }
 });
+
 $('.action-Adress2').click(function() {
-  $(".distance-form")[0].reset();
-  $('#txtSource').val($("#search2").val());
-  $('#newadress').modal('toggle');
+  if($("#search2").val() != ""){
+    $(".distance-form")[0].reset();
+    $('#txtSource').val($("#search2").val());
+    $('#newadress').modal('toggle');
+  }else{
+    alert("Falta seleccionar el campo ubicación 2");
+  }
 });
+
 $('.action-Adress3').click(function() {
-  $(".distance-form")[0].reset();
-  $('#txtSource').val($("#search3").val());
-  $('#newadress').modal('toggle');
-});$('.action-Adress4').click(function() {
-  $(".distance-form")[0].reset();
-  $('#txtSource').val($("#search4").val());
-  $('#newadress').modal('show');
+  if($("#search3").val() != ""){
+    $(".distance-form")[0].reset();
+    $('#txtSource').val($("#search3").val());
+    $('#newadress').modal('toggle');
+  }else{
+    alert("Falta seleccionar el campo ubicación 3");
+  }
+});
+
+$('.action-Adress4').click(function() {
+  if($("#search4").val() != ""){
+    $(".distance-form")[0].reset();
+    $('#txtSource').val($("#search4").val());
+    $('#newadress').modal('show');
+  }else{
+    alert("Falta seleccionar el campo ubicación 4");
+  }
+});
+
+$('.edit_search1').click(function() {
+  event.preventDefault();
+  $('#search1').prop("disabled", false);
+});
+$('.edit_search2').click(function() {
+  event.preventDefault();
+  $('#search2').prop("disabled", false);
+});
+$('.edit_search3').click(function() {
+  event.preventDefault();
+  $('#search3').prop("disabled", false);
+});
+$('.edit_search4').click(function() {
+  event.preventDefault();
+  $('#search4').prop("disabled", false);
 });
 
 var source, destination;
@@ -305,6 +342,7 @@ if (navigator.geolocation) {
   handleLocationError(false, infoWindow, map.getCenter());
 }
 function GetRoute() {
+
   let source = document.getElementById("txtSource").value;
   let destination = document.getElementById("txtDestination").value;
 
