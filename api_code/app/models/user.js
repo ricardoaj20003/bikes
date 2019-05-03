@@ -1,5 +1,4 @@
 const config = require('./base'),
-      md5 = require('md5'),
       bcrypt = require('bcrypt'),
       bookshelf = require('bookshelf')(config.knex);
 
@@ -32,10 +31,10 @@ let User = bookshelf.Model.extend({
       .where({id: this.attributes.price_rate_id}).fetch();
   },
   hashPassword: function(){
-    return bcrypt.hash(md5(this.attributes.password), 18);
+    return bcrypt.hash(this.attributes.password, 8);
   },
   validatePassord: function(comparePassword){
-    return bcrypt.compare(md5(comparePassword), this.attributes.password);
+    return bcrypt.compare(comparePassword, this.attributes.password);
   }
 });
 

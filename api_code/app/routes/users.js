@@ -1,6 +1,7 @@
 require('dotenv').config();
 const prefix = '/users',
       jwt = require('jsonwebtoken'),
+      PriceRate = require('../models/price_rate').PriceRate,
       User = require('../models/user').User;
 
 module.exports = function(fastify, opts, next){
@@ -102,8 +103,11 @@ module.exports = function(fastify, opts, next){
   (request, response) => {
     return User.where(request.params).fetch({withRelated: ['orders']})
       .then(function (user) {
+        if (user === null)
+          return response.send({error: true, message: 'usuario no valido'});
+
         return user.ordersWithAllData().then( (orders) => {
-          response.send(orders);
+          return response.send(orders);
         });
       });
   });
@@ -135,6 +139,13 @@ module.exports = function(fastify, opts, next){
   (request, response) => {
     return User.where(request.params).fetch()
       .then(function (user) {
+        if (user === null) {
+          return PriceRate.where({id: 1}).fetch()
+            .then( (priceRate) => {
+              return response.send(priceRate);
+            });
+        }
+
         return user.priceRateObject().then( (priceRate) => {
           return response.send(priceRate);
         } );

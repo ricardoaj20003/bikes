@@ -4,7 +4,7 @@ function toggleHandler(t){t.addEventListener("click",function(t){t.preventDefaul
 if (!localStorage.getItem('tokenKey'))
 {
   $.ajax({
-    url: 'https://api.donmandon.com.mx/users/sign_in',
+    url: 'http://localhost:3000/users/sign_in',
     type: "POST",
     data: JSON.stringify({"username" : "donmandon", "password" : "12345678"}),
     contentType: "application/json; charset=utf-8",
@@ -82,7 +82,7 @@ $('.text-center.solicita').click(function(){
       }
     
       $.ajax({
-        url: 'https://api.donmandon.com.mx/pedidos',
+        url: 'http://localhost:3000/pedidos',
         type: "POST",
         headers: {"token": localStorage.getItem('tokenKey')},
         data: JSON.stringify(data),
@@ -131,7 +131,7 @@ $('.theiaStickySidebar a[href=solicita-pago]').click(function(){
 
   var idPedido = localStorage.getItem('idPedido');
   $.ajax({
-    url: 'https://api.donmandon.com.mx/pedidos/' + idPedido  + '/add_person',
+    url: 'http://localhost:3000/pedidos/' + idPedido  + '/add_person',
     type: "POST",
     headers: {"token": localStorage.getItem('tokenKey')},
     data: JSON.stringify(data),
@@ -163,7 +163,7 @@ $('.btn_full[href=solicita-gracias]').click(function(){
   if (localStorage.getItem('coupon')){
     cb = () => {
       $.ajax({
-        url: `https://api.donmandon.com.mx/cupones/${localStorage.getItem('coupon')}/apply`,
+        url: `http://localhost:3000/cupones/${localStorage.getItem('coupon')}/apply`,
         type: "POST",
         headers: { "token": localStorage.getItem('tokenKey') },
         data: JSON.stringify({ order_id: idPedido }),
@@ -181,7 +181,7 @@ $('.btn_full[href=solicita-gracias]').click(function(){
     };
   }
   $.ajax({
-    url: 'https://api.donmandon.com.mx/pedidos/' + idPedido  + '/add_payment_detail',
+    url: 'http://localhost:3000/pedidos/' + idPedido  + '/add_payment_detail',
     type: "POST",
     headers: {"token": localStorage.getItem('tokenKey')},
     data: JSON.stringify(data),
@@ -198,93 +198,19 @@ $('.btn_full[href=solicita-gracias]').click(function(){
   return false;
 });
 
-$('.action-Adress1').click(function() {
-  if($("#search1").val() != ""){
-    $(".distance-form")[0].reset();
-    $('#txtSource').val($("#search1").val());
-    $('#newadress').modal('toggle');
-  }else{
-    alert("Falta seleccionar el campo ubicación 1");
-  }
-});
+console.log(data);
 
-$('.action-Adress2').click(function() {
-  if($("#search2").val() != ""){
-    $(".distance-form")[0].reset();
-    $('#txtSource').val($("#search2").val());
-    $('#newadress').modal('toggle');
-  }else{
-    alert("Falta seleccionar el campo ubicación 2");
-  }
-});
-
-$('.action-Adress3').click(function() {
-  if($("#search3").val() != ""){
-    $(".distance-form")[0].reset();
-    $('#txtSource').val($("#search3").val());
-    $('#newadress').modal('toggle');
-  }else{
-    alert("Falta seleccionar el campo ubicación 3");
-  }
-});
-
-$('.action-Adress4').click(function() {
-  if($("#search4").val() != ""){
-    $(".distance-form")[0].reset();
-    $('#txtSource').val($("#search4").val());
-    $('#newadress').modal('show');
-  }else{
-    alert("Falta seleccionar el campo ubicación 4");
-  }
-});
-
-$('.edit_search1').click(function() {
-  event.preventDefault();
-  $('#search1').prop("disabled", false);
-});
-$('.edit_search2').click(function() {
-  event.preventDefault();
-  $('#search2').prop("disabled", false);
-});
-$('.edit_search3').click(function() {
-  event.preventDefault();
-  $('#search3').prop("disabled", false);
-});
-$('.edit_search4').click(function() {
-  event.preventDefault();
-  $('#search4').prop("disabled", false);
-});
+if ($('.adminsection').length === 1)
+  $('#login_2').modal('show');
 
 var source, destination;
 var directionsDisplay;
 var directionsService = new google.maps.DirectionsService();
 google.maps.event.addDomListener(window, 'load', function () {
-    var circle = new google.maps.Circle({
-        radius: 5500,
-	center: {lat: 19.2399156, lng: -103.7245426}
+  var circle = new google.maps.Circle({
+    radius: 5500,
+    center: { lat: 19.2399156, lng: -103.7245426 }
     });
-    if($('.adminsection').length){
-      new google.maps.places.Autocomplete(document.getElementById('search1'), {
-        types: ['geocode'],
-        bounds: circle.getBounds(),
-        strictBounds: true
-      });
-      new google.maps.places.Autocomplete(document.getElementById('search2'), {
-        types: ['geocode'],
-        bounds: circle.getBounds(),
-        strictBounds: true
-      });
-      new google.maps.places.Autocomplete(document.getElementById('search3'), {
-        types: ['geocode'],
-        bounds: circle.getBounds(),
-        strictBounds: true
-      });
-      new google.maps.places.Autocomplete(document.getElementById('search4'), {
-        types: ['geocode'],
-        bounds: circle.getBounds(),
-        strictBounds: true
-      });
-    }
     new google.maps.places.Autocomplete(document.getElementById('txtSource'), {
       types: ['geocode'],
       bounds: circle.getBounds(),
@@ -396,7 +322,7 @@ function GetRoute() {
         var price;
         var metros = distance.match(/km/) ? parseFloat(distance.replace(' km', '').replace(',','.')) * 1000 : parseFloat(distance.replace(' m', '').replace(',','.'));
 
-        $.get(`https://api.donmandon.com.mx/users/${localStorage.getItem('user_id')}/price_rate`, (response) => {
+        $.get(`http://localhost:3000/users/${userId}/price_rate`, (response) => {
           let basePrice = parseFloat(response.price);
           let baseDistance = parseFloat(response.distance);
           let baseMinDistance = parseFloat(response.unit_distance);
