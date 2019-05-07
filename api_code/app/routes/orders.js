@@ -240,13 +240,12 @@ module.exports = function (fastify, opts, next) {
                                     let re = new RegExp(`${coupon.attributes.remove_message}.*,`, "g");
                                     message = message.replace(re,' Pedido sin cobro,');
                                   }
-                                  console.log(message);
-                                  //roundsman.assign_order(message, orderId);
+                                  roundsman.assign_order(message, orderId);
                                   return response.send(order);
                                 });
                               });
 
-                            //roundsman.assign_order(message, orderId);
+                            roundsman.assign_order(message, orderId);
                             return response.send(order);
                           });
                         })
