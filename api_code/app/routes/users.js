@@ -22,7 +22,8 @@ module.exports = function(fastify, opts, next){
           username: {type: 'string'},
           password: {type: 'string'},
           email: {type: 'string'},
-        }
+        },
+        required: ['price_rate_id']
       },
       response: {
         201: {

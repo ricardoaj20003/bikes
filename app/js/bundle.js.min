@@ -12,21 +12,6 @@ $('#sign_in').click( () => {
   return false;
 });
 
-if (!localStorage.getItem('tokenKey'))
-{
-  $.ajax({
-    url: 'http://localhost:3000/users/sign_in',
-    type: "POST",
-    data: JSON.stringify({"username" : "donmandon", "password" : "12345678"}),
-    contentType: "application/json; charset=utf-8",
-    dataType: "json",
-    success: function(response){
-      if (response.token)
-        localStorage.setItem('tokenKey', response.token);
-    }
-  });
-}
-
 if($('.mainPage').length){
   var date = new Date;
   var minutes = date.getMinutes();
@@ -93,18 +78,16 @@ $('.text-center.solicita').click(function(){
       }
     
       $.ajax({
-        url: 'http://localhost:3000/pedidos',
+        url: '/pedidos',
         type: "POST",
-        headers: {"token": localStorage.getItem('tokenKey')},
         data: JSON.stringify(data),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function(response){
           if (response.error)
-            alert(response.error);
-    
-          localStorage.setItem('idPedido', response.id);
-          window.location.href = '/solicita';
+            return alert(response.error);
+
+          window.location.href = response.next_url;
         }
       });
     
@@ -144,7 +127,6 @@ $('.theiaStickySidebar a[href=solicita-pago]').click(function(){
   $.ajax({
     url: 'http://localhost:3000/pedidos/' + idPedido  + '/add_person',
     type: "POST",
-    headers: {"token": localStorage.getItem('tokenKey')},
     data: JSON.stringify(data),
     contentType: "application/json; charset=utf-8",
     dataType: "json",
@@ -176,7 +158,6 @@ $('.btn_full[href=solicita-gracias]').click(function(){
       $.ajax({
         url: `http://localhost:3000/cupones/${localStorage.getItem('coupon')}/apply`,
         type: "POST",
-        headers: { "token": localStorage.getItem('tokenKey') },
         data: JSON.stringify({ order_id: idPedido }),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
@@ -194,7 +175,6 @@ $('.btn_full[href=solicita-gracias]').click(function(){
   $.ajax({
     url: 'http://localhost:3000/pedidos/' + idPedido  + '/add_payment_detail',
     type: "POST",
-    headers: {"token": localStorage.getItem('tokenKey')},
     data: JSON.stringify(data),
     contentType: "application/json; charset=utf-8",
     dataType: "json",

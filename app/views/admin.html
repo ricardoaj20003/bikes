@@ -513,7 +513,7 @@
 		if (<%= userId %>) {
 			$.ajaxSetup({
 				beforeSend: function (xhr) {
-					xhr.setRequestHeader("Authorization", "Token token=\"<%= token %>\"");
+					xhr.setRequestHeader("token", "<%= token %>");
 				}
 			});
 
@@ -521,7 +521,15 @@
 				if (orders.error)
 					setTimeout( () => {
 						alert(orders.message);
-					}, 300);
+          }, 300);
+          
+          orders.push({
+            address: {
+              id: '1_1',
+              origin: '',
+              destination: ''
+            }
+          });
 
 					orders.forEach(order => {
 						if (!order.address.id)

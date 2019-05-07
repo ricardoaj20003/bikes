@@ -281,11 +281,9 @@
     });
 </script>
 <script>
-  var idPedido = localStorage.getItem('idPedido');
   $.ajax({
-    url: 'http://localhost:3000/pedidos/' + idPedido,
+    url: '/pedidos/<%= idPedido %>',
     type: "GET",
-    headers: {"token": localStorage.getItem('tokenKey')},
     success: function(response){
       if (response.error)
         alert(response.error);
