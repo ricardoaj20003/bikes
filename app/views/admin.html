@@ -111,7 +111,7 @@
 	<!-- End SubHeader ============================================ -->
 
 	<!-- Content ================================================== -->
-	<div class="container margin_60 hidden">
+	<div class="container margin_60 hidden" id='jsAdminDataBlock'>
 		<div id="tabs" class="tabs">
 			<nav>
 				<ul>
@@ -319,18 +319,18 @@
 	<!-- Mobile menu overlay mask -->
 
 	<!-- Login modal -->
-	<div class="modal fade" id="login_2" tabindex="-1" role="dialog" aria-labelledby="myLogin" aria-hidden="true">
+	<div class="modal fade" id="login_2" tabindex="-1" role="dialog" aria-labelledby="myLogin" aria-hidden="true" data-backdrop="static" data-keyboard="false">
 		<div class="modal-dialog">
 			<div class="modal-content modal-popup">
 				<form action="#" class="popup-form" id="myLogin">
 					<div class="login_icon"><i class="icon_lock_alt"></i>
 					</div>
-					<input type="text" class="form-control form-white" placeholder="Usuario">
-					<input type="text" class="form-control form-white" placeholder="Contraseña">
+					<input type="text" class="form-control form-white" name='username' placeholder="Usuario">
+					<input type="password" class="form-control form-white" name='password' placeholder="Contraseña">
 					<div class="text-left">
 						<a  href="#0" data-toggle="modal" data-target="#password">¿Olvidaste tu contraseña?</a>
 					</div>
-					<button type="submit" class="btn btn-submit">Iniciar</button>
+					<button type="submit" id='sign_in' class="btn btn-submit">Iniciar</button>
 				</form>
 			</div>
 		</div>
@@ -488,67 +488,80 @@
 	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAz2qXwxC0KJSPvR3-PZUtcrOlqhxmPC2k&sensor=false&&region=MX&language=es&libraries=places"></script>
 	<script src="js/bundle.js.min"></script>
 	<script>
-      function orderForm(orderData) {
-        return `<tr id='orderInfo_${orderData.id}' >` +
-          '<td style="width:70%">' +
-          '<div class="col-sm-12">' +
-          '<div class="form-group">' +
-          '<label>Mi ubicación 1</label>' +
-          `<input type="text" id="search_${orderData.id}" name="street_${orderData.id}" class="form-control" disabled value='${orderData.origin}'>` +
-          `<input type="hidden" id="destination_${orderData.id}" name="destination_${orderData.id}" disabled value='${orderData.destination}'>` +
-          '</div>' +
-          '</div>' +
-          '</td>' +
-          '<td style="widows: 5%; text-align: center;">' +
-          '<div class="delete-recurrent">' +
-          `<a href="#" class="close-link edit_search${orderData.id}"><i class="icon_pencil"></i></a>` +
-          '</div>' +
-          '</td>' +
-          '<td style="widows: 10%; text-align: center;">' +
-          `<button class="btn_1 action-Adress${orderData.id}" >Hacer pedido</button>` +
-          '</td>' +
-          '</tr>';
-      }
-    $.get(`http://localhost:3000/users/${localStorage.getItem('user_id')}/pedidos`, (orders) => { 
-      if (orders.error)
-        setTimeout( () => {
-          alert(orders.message);
-        }, 300);
+		function orderForm(orderData) {
+			return `<tr id='orderInfo_${orderData.id}' >` +
+				'<td style="width:70%">' +
+				'<div class="col-sm-12">' +
+				'<div class="form-group">' +
+				'<label>Mi ubicación 1</label>' +
+				`<input type="text" id="search_${orderData.id}" name="street_${orderData.id}" class="form-control" disabled value='${orderData.origin}'>` +
+				`<input type="hidden" id="destination_${orderData.id}" name="destination_${orderData.id}" disabled value='${orderData.destination}'>` +
+				'</div>' +
+				'</div>' +
+				'</td>' +
+				'<td style="widows: 5%; text-align: center;">' +
+				'<div class="delete-recurrent">' +
+				`<a href="#" class="close-link edit_search${orderData.id}"><i class="icon_pencil"></i></a>` +
+				'</div>' +
+				'</td>' +
+				'<td style="widows: 10%; text-align: center;">' +
+				`<button class="btn_1 action-Adress${orderData.id}" >Hacer pedido</button>` +
+				'</td>' +
+				'</tr>';
+		}
 
-        orders.forEach(order => {
-          if (!order.address.id)
-            return console.log('not address');
+		if (<%= userId %>) {
+			$.ajaxSetup({
+				beforeSend: function (xhr) {
+					xhr.setRequestHeader("Authorization", "Token token=\"<%= token %>\"");
+				}
+			});
 
-          $('#jsListPedidos').append(orderForm(order.address));
+			$.get(`http://localhost:3000/users/<%= userId %>/pedidos`, (orders) => { 
+				if (orders.error)
+					setTimeout( () => {
+						alert(orders.message);
+					}, 300);
 
-          $(`.action-Adress${order.address.id}`).click(function() {
-            if($("#search1").val() != ""){
-              $(".distance-form")[0].reset();
-              $('#newadress #txtSource').val($(`#search_${order.address.id}`).val());
-              $('#newadress #txtDestination').val($(`#destination_${order.address.id}`).val());
-              $('#newadress').modal('toggle');
-            }else{
-              alert("Falta seleccionar el campo ubicación 1");
-            }
-          });
+					orders.forEach(order => {
+						if (!order.address.id)
+							return console.log('not address');
 
-          $(`.edit_search${order.address.id}`).click(function () {
-            event.preventDefault();
-            $(`#search_${order.address.id}`).prop("disabled", false);
-          });
-          var circle = new google.maps.Circle({
-            radius: 5500,
-            center: { lat: 19.2399156, lng: -103.7245426 }
-          });
+						$('#jsListPedidos').append(orderForm(order.address));
 
-          new google.maps.places.Autocomplete(document.getElementById(`search_${order.address.id}`), {
-            types: ['geocode'],
-            bounds: circle.getBounds(),
-            strictBounds: true
-          });
+						$(`.action-Adress${order.address.id}`).click(function() {
+							if($("#search1").val() != ""){
+								$(".distance-form")[0].reset();
+								$('#newadress #txtSource').val($(`#search_${order.address.id}`).val());
+								$('#newadress #txtDestination').val($(`#destination_${order.address.id}`).val());
+								$('#newadress').modal('toggle');
+							}else{
+								alert("Falta seleccionar el campo ubicación 1");
+							}
+						});
 
-        });
-    });
+						$(`.edit_search${order.address.id}`).click(function () {
+							event.preventDefault();
+							$(`#search_${order.address.id}`).prop("disabled", false);
+						});
+						var circle = new google.maps.Circle({
+							radius: 5500,
+							center: { lat: 19.2399156, lng: -103.7245426 }
+						});
+
+						new google.maps.places.Autocomplete(document.getElementById(`search_${order.address.id}`), {
+							types: ['geocode'],
+							bounds: circle.getBounds(),
+							strictBounds: true
+						});
+					});
+
+				$('#jsAdminDataBlock').removeClass('hidden');
+			});
+		}
+		else
+			$('#login_2').modal('show');
+
 	</script>
 	
 
