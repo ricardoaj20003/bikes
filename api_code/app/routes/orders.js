@@ -8,7 +8,6 @@ const prefix = '/pedidos',
   CouponControl = require('../models/coupon_control').CouponControl,
   Person = require('../models/person').Person;
 
-
 module.exports = function (fastify, opts, next) {
   fastify.get(`${prefix}`,
     {
@@ -351,10 +350,56 @@ module.exports = function (fastify, opts, next) {
           if (!order)
             return response.send('Pedido no localizado');
 
-          return order.save({ active: false }, { patch: true }).then(function (order) {
+          if (order.attributes.close_at)
+            return response.send(order);
+
+          return order.save({ active: false, close_at: new Date() }, { patch: true }).then(function (order) {
             return response.send(order);
           });
         });
     });
+
+  fastify.get(`${prefix}/:id/start`,
+  {
+    schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
+      description: 'Comienza el proceso de entrega un pedido en base a su id',
+      tags: ['Pedidos'],
+      summary: 'Iniciar pedido',
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer' },
+        }
+      },
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {
+    return Order.where(request.params).fetch({ withRelated: ['address', 'person', 'paymentDetail'] })
+      .then(function (order) {
+        if (!order)
+          return response.send('Pedido no localizado');
+
+        if (order.attributes.start_at)
+          return response.send(order);
+
+        return order.save({ active: false, start_at: new Date() }, { patch: true }).then(function (order) {
+          return response.send(order);
+        });
+      });
+  });
   return next();
 };
