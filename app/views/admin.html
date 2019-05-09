@@ -89,7 +89,7 @@
                 </div>
                 <a href="#" class="open_close" id="close_in"><i class="icon_close"></i></a>
                  <ul>
-                    <li><a href="#0" data-toggle="modal" data-target="#login_2">Ingresar</a></li>
+                    <li><a id="jsSessionControl" href="#0" data-toggle="modal" data-target="#login_2">Ingresar</a></li>
                     <li><a href="#0" data-toggle="modal" data-target="#register">Registro</a></li>
                 </ul>
             </div><!-- End main-menu -->
@@ -180,7 +180,7 @@
 											<table class="table table-striped edit-options">
 												<thead>
 													<tr>
-														<td style="width: 10%; text-align: center;">
+														<td style="width: 7%; text-align: center;">
 															Dia
 														</td>
 														<td style="width: 35%; text-align: center;">
@@ -189,35 +189,18 @@
 														<td style="width: 35%; text-align: center;">
 															Destino
 														</td>
-														<td style="width: 10%; text-align: center;">
+														<td style="width: 7%; text-align: center;">
 															Precio
 														</td>
 														<td style="widows: 10%; text-align: center;">
 															Status 
 														</td>
+														<td style="widows: 7%; text-align: center;">
+															Acciones 
+														</td>
 													</tr>
 												</thead>
-												<tbody>
-													<tr>
-														<td style="width: 10%; text-align: center;">
-																04/20/2019	
-														</td>
-														<td style="width: 35%; text-align: center;">
-																Calle General Silverio Núñez 302, Centro, Colima, Col.	 
-														</td>
-														<td style="width: 35%; text-align: center;">
-																Almolonia 101-C, Villa Izcalli Caxitlan, Villa de Álvarez, Col.	
-														</td>
-														<td style="width: 10%; text-align: center;">
-																35.00	
-														</td>
-														<td style="widows: 10%; text-align: center;">
-															<p class="bg-primary btn-block" style="padding: 10px 0">Entregado </p>
-															<p class="bg-success btn-block" style="padding: 10px 0">En camino </p>
-															<p class="bg-info btn-block" style="padding: 10px 0">Pendiente </p>
-														</td>
-													</tr>
-										
+												<tbody id="jsOrdersDetails">
 												</tbody>
 											</table>
 										</div>
@@ -510,30 +493,52 @@
 				'</tr>';
 		}
 
-		if (<%= userId %>) {
-			$.ajaxSetup({
-				beforeSend: function (xhr) {
-					xhr.setRequestHeader("token", "<%= token %>");
-				}
-			});
+		function orderDetail(orderData){
+			return '<tr>' +
+				`<td style="width: 7%; text-align: center;">${new Intl.DateTimeFormat('es-MX').format(new Date(orderData.updated_at))
+				}</td>` +
+				`<td style="width: 35%; text-align: center;"> ${orderData.address.origin} </td>` +
+				`<td style="width: 35%; text-align: center;"> ${orderData.address.destination} </td>` +
+				`<td style="width: 7%; text-align: center;"> $${orderData.paymentDetail.total} </td>` +
+				getStatus(orderData)
+			'</tr>';
+		}
 
-			$.get(`http://localhost:3000/users/<%= userId %>/pedidos`, (orders) => { 
+		function getStatus(orderData){
+			if (orderData.close_at)
+				return `<td style="widows: 10%; text-align: center;"> <p class="bg-primary btn-block" style="padding: 10px 0">Entregado </p> </td>` +
+				`<td style="widows: 6%; text-align: center;"> <a ></a> </td>`; 
+			
+			if (orderData.start_at)
+				return `<td style="widows: 10%; text-align: center;"> <p class="bg-success btn-block" style="padding: 10px 0">En camino </p> </td>` +
+				`<td style="widows: 6%; text-align: center;"> <a ></a> </td>`; 
+
+			return `<td style="widows: 10%; text-align: center;"> <p class="bg-info btn-block" style="padding: 10px 0">Pendiente </p> </td>` +
+				`<td style="widows: 6%; text-align: center;"> <a id="jsCancel_${orderData.id}">Cancelar</a> </td>`; 
+		}
+
+		if (<%= userId %>) {
+			$.get(`/users/pedidos`, (orders) => { 
 				if (orders.error)
 					setTimeout( () => {
 						alert(orders.message);
           }, 300);
           
-          orders.push({
+          orders.unshift({
             address: {
               id: '1_1',
               origin: '',
               destination: ''
-            }
+						},
+						paymentDetail: {id: '1_1'}
           });
 
-					orders.forEach(order => {
-						if (!order.address.id)
-							return console.log('not address');
+					orders.forEach((order, index) => {
+						if (!order.paymentDetail.id)
+							return console.log('not form complete');
+
+						if (index > 0)
+							$('#jsOrdersDetails').append(orderDetail(order));
 
 						$('#jsListPedidos').append(orderForm(order.address));
 
@@ -546,6 +551,10 @@
 							}else{
 								alert("Falta seleccionar el campo ubicación 1");
 							}
+						});
+
+						$(`#jsCancel_${order.id}`).click(() => {
+							debugger
 						});
 
 						$(`.edit_search${order.address.id}`).click(function () {

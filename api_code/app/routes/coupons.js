@@ -96,7 +96,7 @@ module.exports = function (fastify, opts, next) {
       .then((coupon) => {
         return coupon.isValid(coupon).then((validationObject) => {
           if (!validationObject.isValid)
-            return response.send({message: `Cupon no valido ${validationObject.reason}`, invalid: true}).code(403);
+            return response.code(403).send({message: `Cupon no valido ${validationObject.reason}`, invalid: true});
           
           delete coupon.relations.couponControls;
           return response.send(coupon);

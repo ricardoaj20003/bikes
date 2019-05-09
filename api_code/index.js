@@ -43,7 +43,8 @@ fastify.addHook('preHandler', (request, response, next) => {
     urlData.path !== '/users/sign_in' &&
     !urlData.path.match(/\/documentation\//) &&
     !urlData.path.match(/\/facebook_logic\//) &&
-    !urlData.path.match(/close/)
+    !urlData.path.match(/close/) &&
+    !urlData.path.match(/start/)
   ){
     if (!request.headers.token)
       response.send({ error: 'Token invalido' });
@@ -58,7 +59,7 @@ fastify.addHook('preHandler', (request, response, next) => {
   if (tokenDecode.data)
     aditionId(request, tokenDecode.data);
 
-  next();
+  return next();
 });
 
 function aditionId(request, userData){

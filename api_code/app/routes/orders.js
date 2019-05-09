@@ -66,10 +66,9 @@ module.exports = function (fastify, opts, next) {
       }
     },
     (request, response) => {
-      return Order.where(request.params).fetch({ withRelated: ['address', 'person', 'paymentDetail'] })
-        .then(function (order) {
-          return response.send(order);
-        });
+      return new Order.withUserDetails(request.params).then( (order) => {
+        return response.send(order);
+      });
     });
 
   fastify.post(`${prefix}`,
@@ -244,7 +243,7 @@ module.exports = function (fastify, opts, next) {
                                 });
                               });
 
-                            roundsman.assign_order(message, orderId);
+                            //roundsman.assign_order(message, orderId);
                             return response.send(order);
                           });
                         })
@@ -391,12 +390,54 @@ module.exports = function (fastify, opts, next) {
     return Order.where(request.params).fetch({ withRelated: ['address', 'person', 'paymentDetail'] })
       .then(function (order) {
         if (!order)
-          return response.send('Pedido no localizado');
+          return response.send({ error: 'Pedido no localizado' });
 
         if (order.attributes.start_at)
           return response.send(order);
 
-        return order.save({ active: false, start_at: new Date() }, { patch: true }).then(function (order) {
+        return order.save({ start_at: new Date() }, { patch: true }).then(function (order) {
+          return response.send(order);
+        });
+      });
+  });
+  fastify.get(`${prefix}/:id/cancel`,
+  {
+    schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
+      description: 'Cancela un pedido solo si esta en pendiente en base a su id',
+      tags: ['Pedidos'],
+      summary: 'Cancela pedido',
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer' },
+        }
+      },
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {
+    return Order.where(request.params).fetch()
+      .then(function (order) {
+        if (!order)
+          return response.send({error: 'Pedido no localizado'});
+        
+        if (order.start_at)
+          return response.send({error: 'Tu pedido ya se encuentra en camino'});
+
+        return order.save({ active: false, cancel_at: new Date() }, { patch: true }).then(function (order) {
           return response.send(order);
         });
       });

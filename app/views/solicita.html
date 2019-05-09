@@ -282,21 +282,21 @@
 </script>
 <script>
   $.ajax({
-    url: '/pedidos/<%= idPedido %>',
+    url: '/pedidos/1',
     type: "GET",
     success: function(response){
       if (response.error)
-        alert(response.error);
+        return alert(response.error);
 
       var distance = response.address.distance;
       var price;
       var metros = distance * 1000;
-      let basePrice = parseFloat(localStorage.getItem('basePrice'));
-      let baseDistance = parseFloat(localStorage.getItem('baseDistance'));
-      let baseMinDistance = parseFloat(localStorage.getItem('baseMinDistance'));
-      let baseMinPrice = parseFloat(localStorage.getItem('baseMinPrice'));
-      if(metros <= localStorage.getItem('baseDistance')){
-        price = `$${localStorage.getItem('basePrice')}`;
+      let basePrice = parseFloat(response.priceDetail.price);
+      let baseDistance = parseFloat(response.priceDetail.distance);
+      let baseMinDistance = parseFloat(response.priceDetail.unit_distance);
+      let baseMinPrice = parseFloat(response.priceDetail.unit_price);
+      if(metros <= baseDistance){
+        price = `$${basePrice}`;
       }else{
         let calc = (basePrice + ((metros - baseDistance) / baseMinDistance) * baseMinPrice);
         price = '$' + calc;

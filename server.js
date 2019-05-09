@@ -19,7 +19,7 @@ app.use(session({
   saveUninitialized: true,
   resave: true,
   store: new FileStore(),
-  cookie: { maxAge: 10 * 60 * 1000 }
+  cookie: { maxAge: 5 * 60 * 1000 }
 }));
 
 app.use(express.static(__dirname + '/app'));
@@ -65,15 +65,99 @@ app.get('/reporte_semanal', (req, res) => {
   res.render('reporte_semanal.html');
 });
 
-app.get('/pedidos/:id', (req, res) => {
-  let requestConfig = {
-    headers: {
-      'Content-Type': 'application/json',
-      'token' : req.session.token
-    }
-  };
+app.get('/users/pedidos', (req, res) => {
+  makeApiRequest(req, {url: `/users/${req.session.userId}/pedidos`})
+    .then(response => {
+      return res.send(response.data);
+    })
+    .catch(error => {
+      return res.send(error.response.data);
+    });
+});
 
-  return axios.get(`http://localhost:3000/pedidos/${req.params.id}`, requestConfig)
+app.delete('/sign_out', (req, res) => {
+  req.session.destroy( err => {
+    if (err)
+      return res.send(error);
+    
+    return res.send({success: true});
+  });
+});
+
+function makeApiRequest(req, params = {url: '', headers: {}}){
+  let requestConfig = {
+    headers: Object.assign({
+      'Content-Type': 'application/json',
+      'token' : req.session.token || ''
+    }, params.headers)
+  },
+    baseUrl = 'http://localhost:3000';
+  if (req.method === 'POST')
+    return axios.post(baseUrl + params.url, req.body, requestConfig);
+  
+  return axios.get(baseUrl + params.url, requestConfig);
+}
+
+app.post('/pedidos/:id/add_payment_detail', (req, res) => {
+  return makeApiRequest(req, {url: `/pedidos/${req.session.order_id}/add_payment_detail`})
+    .then(function (response) {
+      let data = response.data;
+      data.next_url = '/solicita-gracias'
+
+      if (req.session.coupon)
+        return makeApiRequest({url: `/cupones/${req.session.coupon}/apply`})
+          .then(response => {
+            console.log(req.session.coupon);
+            return res.send(data);
+          })
+          .catch(function (error) {
+            return res.send(error.response.data);
+          });
+
+      return res.send(data);
+    })
+    .catch(function (error) {
+      return res.send(error.response.data);
+    });
+});
+
+app.get('/cupones/:coupon/is_valid', (req, res) => {
+  return makeApiRequest(req, {url: `/cupones/${req.params.coupon}/is_valid`})
+    .then(function (response) {
+      req.session.coupon = null;
+      if (response.data.code)
+        req.session.coupon = response.data.code;
+
+      return res.send(response.data);
+    })
+    .catch(function (error) {
+      return res.send(error.response.data);
+    });
+});
+
+app.get('/users/price_rate', (req, res) => {
+  return makeApiRequest(req, {url: `/users/${req.session.userId}/price_rate`})
+    .then(function (response) {
+      return res.send(response.data);
+    })
+    .catch(function (error) {
+      return res.send(error.response.data);
+    });
+});
+
+app.post('/pedidos/:id/add_person', (req, res) => {
+  return makeApiRequest(req, {url: `/pedidos/${req.session.order_id}/add_person`})
+    .then(function (response) {
+      response.data.next_url = '/solicita-pago';
+      return res.send(response.data);
+    })
+    .catch(function (error) {
+      return res.send(error.response.data);
+    });
+});
+
+app.get('/pedidos/:id', (req, res) => {
+  return makeApiRequest(req, {url: `/pedidos/${req.session.order_id}`})
     .then(function (response) {
       return res.send(response.data);
     })
@@ -83,14 +167,7 @@ app.get('/pedidos/:id', (req, res) => {
 });
 
 app.post('/pedidos', (req, res) => {
-  let requestConfig = {
-    headers: {
-      'Content-Type': 'application/json',
-      'token' : req.session.token
-    }
-  };
-
-  return axios.post('http://localhost:3000/pedidos', req.body, requestConfig)
+  return makeApiRequest(req, {url: '/pedidos'})
     .then(function (response) {
       if (response.data.error)
         return res.send(response.data);
@@ -105,14 +182,7 @@ app.post('/pedidos', (req, res) => {
 });
 
 app.post('/sign_in', (req, res) => {
-  let requestConfig = {
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  };
-
-  return axios.post('http://localhost:3000/users/sign_in', req.body, requestConfig)
-    .then(function (response) {
+    return makeApiRequest(req, {url: '/users/sign_in'}).then(function (response) {
       let jwt = require('jsonwebtoken');
       let userData = response.data;
 

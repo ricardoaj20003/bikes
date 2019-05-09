@@ -36,6 +36,18 @@ let Order = bookshelf.Model.extend({
     });
     return this;
   }
+}, {
+  withUserDetails: function(params){
+    return Order.where(params).fetch({ withRelated: ['address'] })
+      .then(function (order) {
+        let orderDetail = order;
+        return order.user().where({id: order.attributes.user_id}).fetch().then( (user) => {
+          return user.priceRateObject().then( priceRate => {
+            return Object.assign(orderDetail.attributes, {address: orderDetail.relations.address.attributes}, {priceDetail: priceRate});
+          });
+        });
+      });
+  },
 });
 
 module.exports = {
