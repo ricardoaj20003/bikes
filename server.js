@@ -199,6 +199,10 @@ app.post('/sign_in', (req, res) => {
     });
 });
 
+app.get('/admin/prepagos', (req, res) => {
+  res.render('admin/prepagos.html');
+});
+
 app.get('*', (req, res) => {
   res.redirect('/');
 });
