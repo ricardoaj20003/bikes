@@ -293,22 +293,27 @@ function GetRoute() {
         let userId = localStorage.getItem('user_id') ? localStorage.getItem('user_id') : 0;
 
         $.get(`/users/price_rate`, (response) => {
-          let basePrice = parseFloat(response.price);
-          let baseDistance = parseFloat(response.distance);
-          let baseMinDistance = parseFloat(response.unit_distance);
-          let baseMinPrice = parseFloat(response.unit_price);
-          if (metros <= baseDistance) {
-            price = `$${basePrice}`;
-          } else {
-            let calc = (basePrice + ((metros - baseDistance) / baseMinDistance) * baseMinPrice);
-            if (parseInt(calc.toString().split('.')[1]) > 0) {
-              calc = parseInt(calc.toString().split('.')[0]) + 1;
+          if (response.availables) 
+            document.getElementById("price-value").innerHTML = "Disponibles: " + response.availables;
+          else {
+            let basePrice = parseFloat(response.price);
+            let baseDistance = parseFloat(response.distance);
+            let baseMinDistance = parseFloat(response.unit_distance);
+            let baseMinPrice = parseFloat(response.unit_price);
+            if (metros <= baseDistance) {
+              price = `$${basePrice}`;
+            } else {
+              let calc = (basePrice + ((metros - baseDistance) / baseMinDistance) * baseMinPrice);
+              if (parseInt(calc.toString().split('.')[1]) > 0) {
+                calc = parseInt(calc.toString().split('.')[0]) + 1;
+              }
+              price = '$' + calc + '.00';
             }
-            price = '$' + calc + '.00';
+            document.getElementById("price-value").innerHTML = "Precio: " + price;
           }
+
           document.getElementById("distance-value").innerHTML = "Distancia: " + distance;
           document.getElementById("time-value").innerHTML = "Duración: " + duration;
-          document.getElementById("price-value").innerHTML = "Precio: " + price;
         });
       } else {
         alert("Unable to find the distance via road.");

@@ -27,12 +27,10 @@ let User = bookshelf.Model.extend({
     return Order.where('id', 'IN', ids).fetchAll({ withRelated: ['address', 'person', 'paymentDetail'] });
   },
   priceRateObject: function(){
-    let that = this;
     return this.priceRate()
       .where({id: this.attributes.price_rate_id}).fetch().then(priceRate => {
-        if (priceRate.attributes.prepago){
+        if (priceRate.attributes.prepago_id)
           return prepagoLogic(priceRate, this.attributes);
-        }
 
         return priceRate;
       });
@@ -47,11 +45,11 @@ let User = bookshelf.Model.extend({
 
 function prepagoLogic(priceRate, user){
   let Order = require('./order').Order;
-  Order.query({where: {user_id: user.id, active: true}, andWhereRaw: `EXTRACT(MONTH FROM created_at::date) = ${new Date().getMonth()}`}).fetchAll().then( orders => {
-    console.log(orders.length);
-    console.log(priceRate);
+  return Order.query({where: {user_id: user.id, active: true}, andWhereRaw: `EXTRACT(MONTH FROM created_at::date) = ${new Date().getMonth() + 1}`}).fetchAll().then( orders => {
+    return priceRate.prepagoObject().then( (prepago) => {
+      return {availables: parseInt(prepago.attributes.orders) - orders.length}
+    });
   });
-  return priceRate;
 }
 
 module.exports = {

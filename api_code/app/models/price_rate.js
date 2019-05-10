@@ -7,6 +7,14 @@ let PriceRate = bookshelf.Model.extend({
   users: function () {
     let User = require('./user').User;
     return this.hasMany(User);
+  },
+  prepago: function () {
+    let Prepago = require('./prepago').Prepago;
+    return this.belongsTo(Prepago);
+  },
+  prepagoObject: function () {
+    return this.prepago()
+      .where({id: this.attributes.prepago_id}).fetch();
   }
 });
 
