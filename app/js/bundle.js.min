@@ -77,7 +77,7 @@ $('.text-center.solicita').click(function(){
           "references_notes": $('textarea[name=notes]').val(),
           "origin": $('.distance-form #txtSource').val(),
           "destination": $('.distance-form #txtDestination').val(),
-          "distance": Math.round(parseFloat(distance.replace(',','.')) * 100) / 100
+          "distance": textoseparado[2] === 'm' ? parseFloat(distance.replace(',','.')) / 1000 : Math.round(parseFloat(distance.replace(',','.')) * 100) / 100
         }
       }
     
@@ -400,7 +400,7 @@ function GetRoute() {
         var distance = response.rows[0].elements[0].distance.text;
         var duration = response.rows[0].elements[0].duration.text;
         var price;
-        var metros = parseFloat(distance.replace(' km', '').replace(',','.')) * 1000;
+	var metros = distance.match(/m/) ? parseFloat(distance.replace(' m', '').replace(',','.')) : parseFloat(distance.replace(' km', '').replace(',','.')) * 1000;
 
         $.get(`https://api.donmandon.com.mx/users/${localStorage.getItem('user_id')}/price_rate`, (response) => {
           let basePrice = parseFloat(response.price);
