@@ -24,6 +24,13 @@ app.use(session({
 
 app.use(express.static(__dirname + '/app'));
 
+app.use(function (req, res, next) {
+  if (req.url.match(/admin/) && req.url !== '/admin' && !req.session.token)
+    return res.redirect('/admin');
+
+  next();
+});
+
 app.set('views', __dirname + '/app/views');
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
@@ -32,6 +39,9 @@ app.get('/', (req, res) => {
   res.render('index.html');
 });
 app.get('/admin', (req, res) => {
+  if (req.session.admin)
+    return res.redirect('/admin/prepagos');
+
   if (req.session.userId)
     return res.render('admin.html', {userId: req.session.userId, token: req.session.token});
 
@@ -63,6 +73,37 @@ app.get('/landing', (req, res) => {
 });
 app.get('/reporte_semanal', (req, res) => {
   res.render('reporte_semanal.html');
+});
+
+app.get('/prepagos', (req, res) => {
+  makeApiRequest(req, {url: `/prepagos`})
+    .then(response => {
+      return res.send(response.data);
+    })
+    .catch(error => {
+      return res.send(error.response.data);
+    });
+});
+
+app.post('/prepagos', (req, res) => {
+  req.method = 'GET';
+  return makeApiRequest(req, {url: `/prepagos/${req.body.prepago_id}`})
+    .then( response => {
+      req.body.price_rate_id = response.data.id;
+      delete req.body.prepago_id;
+      req.method = 'POST';
+      return makeApiRequest(req, { url: `/users` })
+        .then(function (response) {
+          response.data.next_url = '/admin/prepagos';
+          return res.send(response.data);
+        })
+        .catch(function (error) {
+          return res.send(error.response.data);
+        });
+    })
+    .catch(function (error) {
+      return res.send(error.response.data);
+    });
 });
 
 app.get('/users/pedidos', (req, res) => {
@@ -107,7 +148,6 @@ app.post('/pedidos/:id/add_payment_detail', (req, res) => {
       if (req.session.coupon)
         return makeApiRequest({url: `/cupones/${req.session.coupon}/apply`})
           .then(response => {
-            console.log(req.session.coupon);
             return res.send(data);
           })
           .catch(function (error) {
@@ -182,29 +222,35 @@ app.post('/pedidos', (req, res) => {
 });
 
 app.post('/sign_in', (req, res) => {
-    return makeApiRequest(req, {url: '/users/sign_in'}).then(function (response) {
-      let jwt = require('jsonwebtoken');
-      let userData = response.data;
+  return makeApiRequest(req, { url: '/users/sign_in' }).then(function (response) {
+    let jwt = require('jsonwebtoken');
+    let userData = response.data;
 
-      req.session.token = userData.token
-      if (userData.token){
-        userData = jwt.verify(response.data.token, 'unacosasecretamas').data;
-      }
+    req.session.token = userData.token
+    if (userData.token) {
+      userData = jwt.verify(response.data.token, 'unacosasecretamas').data;
+    }
 
-      req.session.userId = userData.id;
-      return res.send(userData);
-    })
+    req.session.userId = userData.id;
+    req.session.admin = userData.is_admin;
+    console.log(req.session.admin);
+    return res.send(userData);
+  })
     .catch(function (error) {
       return res.send(error.response.data);
     });
 });
 
 app.get('/admin/prepagos', (req, res) => {
-  res.render('admin/prepagos.html');
+  return res.render('admin/prepagos/index.html');
+});
+
+app.get('/admin/prepagos/agregar', (req, res) => {
+  return res.render('admin/prepagos/agregar.html');
 });
 
 app.get('*', (req, res) => {
-  res.redirect('/');
+  return res.redirect('/');
 });
 
 app.listen(port, host);

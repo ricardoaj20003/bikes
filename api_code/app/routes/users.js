@@ -37,6 +37,7 @@ module.exports = function(fastify, opts, next){
     }
   },
   (request, response) => {
+    delete request.body.user_id;
     return new User(request.body).save()
       .then(function (user) {
         return response.send(user);
