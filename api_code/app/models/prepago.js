@@ -6,7 +6,36 @@ let Prepago = bookshelf.Model.extend({
   priceRate: function () {
     let PriceRate = require('./price_rate').PriceRate;
     return this.hasOne(PriceRate);
-  },
+  }
+}, {
+  userLists: function(){
+    return this.fetchAll().then( prepagos => {
+      let prepagoObjects = {};
+      let prepagoIds = prepagos.map( prepago => { 
+        prepagoObjects[prepago.id] = prepago.attributes;
+        return prepago.id 
+      });
+      let PriceRate = require('./price_rate').PriceRate;
+      return PriceRate.where('prepago_id', 'IN', prepagoIds).fetchAll().then( prices => {
+        let pricesIds = prices.map( price => { 
+          prepagoObjects[price.id] = prepagoObjects[price.attributes.prepago_id];
+          return price.id 
+        });
+        let User = require('./user').User;
+        return User.where('price_rate_id', 'IN', pricesIds).orderBy('id', 'DESC').fetchAll().then( users => {
+          return new Promise( (resolve, reject) => {
+            let usersObject = [];
+            users.forEach(user => {
+              let userObject = user.attributes;
+              userObject.prepagoData = prepagoObjects[userObject.price_rate_id];
+              usersObject.push(userObject);
+              resolve(usersObject);
+            });
+          });
+        });
+      });
+    });
+  }
 });
 
 module.exports = {

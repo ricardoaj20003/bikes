@@ -6,6 +6,7 @@
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/metisMenu/2.5.2/metisMenu.css">
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-sb-admin-2/3.3.7/css/sb-admin-2.css">
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="/css/admin/style.css">
 </head>
 <body>
@@ -239,8 +240,9 @@
                                               <span class="caret"></span>
                                           </button>
                       <ul class="dropdown-menu pull-right" role="menu">
-                        <li><a href="#">Activar</a> </li>
-                        <li><a href="#">Cancelar</a> </li>
+                        <li><a href="#" id='activateUser'>Activar</a> </li>
+                        <li><a href="#" id='unActivateUser'>Desactivar</a> </li>
+                        <li><a href="#" id='cancelPrepagoUser'>Cancelar</a> </li>
                         <li class="divider"></li>
                         <li><a href="prepagos/agregar">Agregar nuevo</a> </li>
                       </ul>
@@ -248,15 +250,22 @@
                   </div>
                 </div>
                 <!-- /.panel-heading -->
-                <div class="panel-body">
-                    adfadfa
-                    dfa
-                    sdf
-                    asdf
-                    asdf
-                    a
-                    sf
-                    asdf
+                <div class="panel-body" id='prepagoUserLists'>
+                    <table id="userListTable" class="table table-striped table-bordered" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>ID</th>
+                                <th>Usuario</th>
+                                <th>Numero de viajes</th>
+                                <th>Price</th>
+                                <th>Vence</th>
+                                <th>Estatus</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
                 </div>
                 <!-- /.panel-body -->
               </div>
@@ -453,6 +462,8 @@
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/metisMenu/2.5.2/metisMenu.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-sb-admin-2/3.3.7/js/sb-admin-2.js"></script>
-      <script src="/js/admin/functions.js"></script>
+      <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+      <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap.min.js"></script>
+      <script src="/js/admin/prepagos.js"></script>
 </body>
 </html>

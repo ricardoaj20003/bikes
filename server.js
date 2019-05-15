@@ -85,6 +85,46 @@ app.get('/prepagos', (req, res) => {
     });
 });
 
+app.get('/prepagos/users_list', (req, res) => {
+  makeApiRequest(req, {url: `/prepagos/users_list`})
+    .then(response => {
+      return res.send(response.data);
+    })
+    .catch(error => {
+      return res.send(error.response.data);
+    });
+});
+
+app.post('/prepagos/active_user/:id', (req, res) => {
+  makeApiRequest(req, {url: `/prepagos/active_user/${req.params.id}`})
+    .then(response => {
+      return res.send(response.data);
+    })
+    .catch(error => {
+      return res.send(error.response.data);
+    });
+});
+
+app.post('/prepagos/unactive_user/:id', (req, res) => {
+  makeApiRequest(req, {url: `/prepagos/unactive_user/${req.params.id}`})
+    .then(response => {
+      return res.send(response.data);
+    })
+    .catch(error => {
+      return res.send(error.response.data);
+    });
+});
+
+app.post('/prepagos/cancel_user/:id', (req, res) => {
+  makeApiRequest(req, {url: `/prepagos/cancel_user/${req.params.id}`})
+    .then(response => {
+      return res.send(response.data);
+    })
+    .catch(error => {
+      return res.send(error.response.data);
+    });
+});
+
 app.post('/prepagos', (req, res) => {
   req.method = 'GET';
   return makeApiRequest(req, {url: `/prepagos/${req.body.prepago_id}`})
@@ -233,7 +273,6 @@ app.post('/sign_in', (req, res) => {
 
     req.session.userId = userData.id;
     req.session.admin = userData.is_admin;
-    console.log(req.session.admin);
     return res.send(userData);
   })
     .catch(function (error) {
