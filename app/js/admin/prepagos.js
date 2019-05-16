@@ -127,27 +127,55 @@ $(document).ready(function ($) {
       });
     });
 
-  $.get('/prepagos', prepagos => {
-    if (prepagos.error)
-      return alert(prepagos.error);
+  function addUserData(data){
+    return `<option value="${data.id}">${data.username}|${data.name}</option>`;
+  }
 
-    prepagos.forEach(prepago => {
-      $('#jsPrepagoList').append(prepagoListElement(prepago));
+  if ($('#addNewPrepagoUserForm').length){
+    $.get('/prepagos', prepagos => {
+      if (prepagos.error)
+        return alert(prepagos.error);
+
+      prepagos.forEach(prepago => {
+        $('#jsPrepagoList').append(prepagoListElement(prepago));
+      });
     });
-  });
+
+    $.get('/users/not_prepago', users => {
+      if (users.error)
+        return alert(users.error);
+
+      users.forEach(user => {
+        $('#actualUserList').append(addUserData(user));
+      });
+    });
+  }
 
   $('#save_prepago').click( () => {
-    $.ajax({
-      url: '/prepagos',
-      type: "POST",
-      data: $('#add_prepagoUser').serialize(),
-      success: function (response) {
-        if (response.error)
-          return alert(response.error);
+    if ($('#actualUserList').val() === '')
+      $.ajax({
+        url: '/prepagos',
+        type: "POST",
+        data: $('#add_prepagoUser').serialize(),
+        success: function (response) {
+          if (response.error)
+            return alert(response.error);
 
-        window.location.href = response.next_url;
-      }
-    });
+          window.location.href = response.next_url;
+        }
+      });
+
+      $.ajax({
+        url: `/users/${$('#actualUserList').val()}/make_prepago`,
+        type: "POST",
+        data: { prepagoId: $('input[type=radio]:checked').val() },
+        success: function (response) {
+          if (response.error)
+            return alert(response.error);
+
+          window.location.href = response.next_url;
+        }
+      });
 
     return false;
   });

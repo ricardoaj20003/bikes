@@ -40,12 +40,37 @@ let User = bookshelf.Model.extend({
   },
   validatePassord: function(comparePassword){
     return bcrypt.compare(comparePassword, this.attributes.password);
+  },
+  makePrepago: function(data){
+    console.log(data);
+    let PriceRate = require('./price_rate').PriceRate;
+    let that = this;
+    return PriceRate.where({prepago_id: data.prepagoId}).fetch().then( priceRate => {
+      return that.save({ price_rate_id: priceRate.id, prepago_active: false, prepago_start_at: null }, { patch: true }).then(function (user) {
+        return user;
+      });
+    });
+  }
+}, {
+  notPrepago: function(){
+    let Prepago = require('./prepago').Prepago;
+    let User = this;
+    return Prepago.fetchAll().then( prepagos => {
+      let PriceRate = require('./price_rate').PriceRate;
+      let ids = prepagos.map(prepago => { return prepago.id });
+      return PriceRate.where('prepago_id', 'IN', ids).fetchAll().then( priceRates => {
+        let ids = priceRates.map(priceRate => { return priceRate.id });
+        return User.where('price_rate_id', 'NOT IN', ids).fetchAll();
+      });
+    });
   }
 });
 
 function prepagoLogic(priceRate, user){
   let Order = require('./order').Order;
-  return Order.query({where: {user_id: user.id, active: true}, andWhereRaw: `EXTRACT(MONTH FROM created_at::date) = ${new Date().getMonth() + 1}`}).fetchAll().then( orders => {
+  let endDateProcess = new Date(user.prepago_start_at);
+  endDateProcess.setMonth(endDateProcess.getMonth() + 1);
+  return Order.query({where: {user_id: user.id, active: true}, whereBetween: ['created_at', [user.prepago_start_at, endDateProcess]] }).fetchAll().then( orders => {
     return priceRate.prepagoObject().then( (prepago) => {
       return {availables: parseInt(prepago.attributes.orders) - orders.length}
     });

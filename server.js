@@ -146,6 +146,27 @@ app.post('/prepagos', (req, res) => {
     });
 });
 
+app.get('/users/not_prepago', (req, res) => {
+  makeApiRequest(req, {url: `/users/not_prepago`})
+    .then(response => {
+      return res.send(response.data);
+    })
+    .catch(error => {
+      return res.send(error.response.data);
+    });
+});
+
+app.post('/users/:id/make_prepago', (req, res) => {
+  makeApiRequest(req, {url: `/users/${req.params.id}/make_prepago`})
+    .then(response => {
+      response.data.next_url = '/admin/prepagos';
+      return res.send(response.data);
+    })
+    .catch(error => {
+      return res.send(error.response.data);
+    });
+});
+
 app.get('/users/pedidos', (req, res) => {
   makeApiRequest(req, {url: `/users/${req.session.userId}/pedidos`})
     .then(response => {

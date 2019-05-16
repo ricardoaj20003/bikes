@@ -14,12 +14,9 @@ INSERT INTO price_rates (distance, price, unit_price, unit_distance, created_at,
        VALUES (15000.00, 30.00, 5.00, 1000, current_timestamp, current_timestamp);
 
 INSERT INTO price_rates (distance, price, unit_price, unit_distance, created_at, updated_at)
-       VALUES (15000.00, 25.00, 5.00, 1000, current_timestamp, current_timestamp);
+       VALUES (11000.00, 20.00, 4.50, 1000, current_timestamp, current_timestamp);
 
 INSERT INTO price_rates (distance, price, unit_price, unit_distance, created_at, updated_at)
-       VALUES (15000.00, 20.00, 5.00, 1000, current_timestamp, current_timestamp);
-
-INSERT INTO price_rates (distance, price, unit_price, unit_distance, created_at, updated_at)
-       VALUES (15000.00, 10.00, 5.00, 1000, current_timestamp, current_timestamp);
+       VALUES (11000.00, 15.00, 4.50, 1000, current_timestamp, current_timestamp);
 
 UPDATE users SET price_rate_id = 1;

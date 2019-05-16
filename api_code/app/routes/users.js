@@ -114,6 +114,36 @@ module.exports = function(fastify, opts, next){
       });
   });
 
+  fastify.get(`${prefix}/not_prepago`,
+  {
+    schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
+      description: ' Codigo para el repartidor.',
+      tags: ['Repartidores'],
+      summary: 'Devuelve el codigo al repartidor',
+      description: 'Entrega el codigo al repartidor',
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string'
+            }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {
+    return User.notPrepago().then( users => {
+      return response.send(users);
+    });
+  });
+
   fastify.get(`${prefix}/:id/price_rate`,
   {
     schema: {
@@ -199,6 +229,48 @@ module.exports = function(fastify, opts, next){
 
           return response.send({token: token});
         });
+      });
+  });
+  fastify.post(`${prefix}/:id/make_prepago`,
+  {
+    schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
+      description: 'Proceso para activar el prepago de un usuario',
+      tags: ['Prepago'],
+      summary: 'Activar un usuario',
+      body: {
+        type: 'object',
+        properties: {
+          Username: {type: 'string'},
+          password: {type: 'string'},
+        }
+      },
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {
+    return User.where(request.params).fetch()
+      .then((user) => {
+        if (!user)
+          return response.send({error: 'datos no coinciden'});
+
+        return user.makePrepago(request.body).then(user => {
+          return response.send(user);
+        });
+
+
       });
   });
 
