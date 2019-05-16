@@ -23,13 +23,13 @@ if($('.mainPage').length){
   var day = date.getDate();
   var dayOfWeek = date.getDay(); // Sunday = 0, Monday = 1, etc.
 
-  if(hour < 9 || hour >= 18 ){
+  if(hour < 8 || hour >= 19 ){
     $('.schedule-hide').hide();
     $('.schedule-show').show();
     $('.distance-form :input').attr("disabled", true);
     
   }else{
-    if(hour == 17 && minutes>40){
+    if(hour == 18 && minutes>40){
       $('.schedule-hide').hide();
       $('.schedule-show').show();
       $('.distance-form :input').attr("disabled", true);
@@ -400,7 +400,7 @@ function GetRoute() {
         var distance = response.rows[0].elements[0].distance.text;
         var duration = response.rows[0].elements[0].duration.text;
         var price;
-	var metros = distance.match(/m/) ? parseFloat(distance.replace(' m', '').replace(',','.')) : parseFloat(distance.replace(' km', '').replace(',','.')) * 1000;
+	var metros = distance.match(/km/) ? parseFloat(distance.replace(' km', '').replace(',','.')) * 1000 : parseFloat(distance.replace(' m', '').replace(',','.'));
 
         $.get(`https://api.donmandon.com.mx/users/${localStorage.getItem('user_id')}/price_rate`, (response) => {
           let basePrice = parseFloat(response.price);
