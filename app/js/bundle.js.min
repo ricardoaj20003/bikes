@@ -60,11 +60,12 @@ $('.text-center.solicita').click(function(){
     document.getElementById("txtDestination").focus();
     return false;
   }else{
-    var response = grecaptcha.getResponse();
+    var response = $('.adminsection').length === 1 ? 1 : grecaptcha.getResponse();
+    debugger
 
     if(response.length == 0){
       document.getElementById("g-recaptcha").focus();
-      alert("Captcha no verificado")
+      alert("Captcha no verificado");
       return false;
 
     } else {
@@ -76,6 +77,9 @@ $('.text-center.solicita').click(function(){
           "distance": textoseparado[2] === 'm' ? parseFloat(distance.replace(',','.')) / 1000 : Math.round(parseFloat(distance.replace(',','.')) * 100) / 100
         }
       }
+
+      if ($('#price-value').html().match('Costo adicional'))
+        data.extraCost = parseFloat($('#price-value').html().split('$').pop());
     
       $.ajax({
         url: '/pedidos',
@@ -96,7 +100,6 @@ $('.text-center.solicita').click(function(){
     
   }
 
- 
 });
 
 $('.theiaStickySidebar a[href=solicita-pago]').click(function(){
@@ -275,6 +278,17 @@ function GetRoute() {
 
   }
 
+  function createPrepagoText(data, metros){
+    if (metros < parseFloat(data.priceRate.distance))
+      return "Disponibles: " + data.availables;
+
+    let exceso = metros - parseFloat(data.priceRate.distance);
+    let extraDistance = Math.ceil(exceso / parseFloat(data.priceRate.unit_distance));
+    let extraCost = parseFloat(data.priceRate.unit_price) * extraDistance;
+
+    return `Disponibles: ${data.availables} - Costo adicional $ ${extraCost.toFixed(2)}`;
+  }
+
  function putDistanceAndDuration(source, destination){
     var service = new google.maps.DistanceMatrixService();
     service.getDistanceMatrix({
@@ -294,7 +308,7 @@ function GetRoute() {
 
         $.get(`/users/price_rate`, (response) => {
           if (response.availables) 
-            document.getElementById("price-value").innerHTML = "Disponibles: " + response.availables;
+            document.getElementById("price-value").innerHTML = createPrepagoText(response, metros);
           else {
             let basePrice = parseFloat(response.price);
             let baseDistance = parseFloat(response.distance);

@@ -8,7 +8,7 @@ exports.up = function(knex, Promise) {
 };
 
 exports.down = function(knex, Promise) {
-  return knex.schema.table('accounts', table => {
+  return knex.schema.table('users', table => {
     table.dropColumn('phone');
     table.dropColumn('name');
     table.dropColumn('is_admin');

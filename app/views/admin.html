@@ -29,7 +29,6 @@
 	<!-- BASE CSS -->
 	<link href="css/admin.css" rel="stylesheet">
 		
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <!-- Facebook Pixel Code -->
   <script>
     !function(f,b,e,v,n,t,s)
@@ -446,9 +445,6 @@
 										</div>
 									</div>
 									<div class="row">
-										<div class="col-dm-12 " id="g-recaptcha">
-												<div class="g-recaptcha" data-sitekey="6Ld345MUAAAAAI8Pmkxncrl7q9OD3rvglzVLHIJk"></div>
-										</div>
 										<div class="col-sm-12 col-md-12 col-lg-12">
 											<div class="text-center solicita">
 													<button id="actionMainrequest" class="btn btn_full" disabled> ¡SOLICITA AHORA!</button>
@@ -539,6 +535,9 @@
 
 						if (index > 0)
 							$('#jsOrdersDetails').append(orderDetail(order));
+
+						if (order.close_at === null)
+							return false;
 
 						$('#jsListPedidos').append(orderForm(order.address));
 

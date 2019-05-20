@@ -139,6 +139,12 @@ $(document).ready(function ($) {
       prepagos.forEach(prepago => {
         $('#jsPrepagoList').append(prepagoListElement(prepago));
       });
+
+      let custom = '<label class="radio-inline">' +
+        `<input type="radio" name="prepago_id" id="optionsRadiosInline_custom" value="custom"><input id='jsCustomPrepagoValue' name='customValue' class="form-control"></input>`
+        '</label>';
+
+      $('#jsPrepagoList').append(custom);
     });
 
     $.get('/users/not_prepago', users => {
@@ -158,17 +164,23 @@ $(document).ready(function ($) {
         type: "POST",
         data: $('#add_prepagoUser').serialize(),
         success: function (response) {
+          debugger
           if (response.error)
             return alert(response.error);
 
-          window.location.href = response.next_url;
+          //window.location.href = response.next_url;
         }
       });
+    else {
+      let data = { prepagoId: $('input[type=radio]:checked').val() };
+
+      if (data.prepagoId === 'custom')
+        data.value = $('#jsCustomPrepagoValue').val();
 
       $.ajax({
         url: `/users/${$('#actualUserList').val()}/make_prepago`,
         type: "POST",
-        data: { prepagoId: $('input[type=radio]:checked').val() },
+        data: data,
         success: function (response) {
           if (response.error)
             return alert(response.error);
@@ -176,6 +188,7 @@ $(document).ready(function ($) {
           window.location.href = response.next_url;
         }
       });
+    }
 
     return false;
   });

@@ -204,6 +204,11 @@ module.exports = function (fastify, opts, next) {
       }
     },
     (request, response) => {
+      if (request.query.customValue)
+        return PriceRate.createCustom(request.query.customValue).then( priceRate => {
+          return response.send(priceRate);
+        });
+
       return PriceRate.where({prepago_id: request.params.prepago_id}).fetch().then(function (priceRate) {
         return response.send(priceRate);
       });

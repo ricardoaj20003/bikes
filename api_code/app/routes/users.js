@@ -270,7 +270,6 @@ module.exports = function(fastify, opts, next){
           return response.send(user);
         });
 
-
       });
   });
 

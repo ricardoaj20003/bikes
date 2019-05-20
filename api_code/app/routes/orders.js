@@ -3,9 +3,7 @@ const prefix = '/pedidos',
   OrderControl = require('../models/order_control').OrderControl,
   Address = require('../models/address').Address,
   PaymentDetail = require('../models/payment_detail.js').PaymentDetail,
-  Roundsman = require('../models/roundsman.js').Roundsman,
   WeekReport = require('../models/week_report').WeekReport,
-  CouponControl = require('../models/coupon_control').CouponControl,
   Person = require('../models/person').Person;
 
 module.exports = function (fastify, opts, next) {
@@ -210,49 +208,18 @@ module.exports = function (fastify, opts, next) {
       }
     },
     (request, response) => {
-      let orderId = request.params.id;
       return Order.where(request.params).fetch({ withRelated: ['address', 'person', 'paymentDetail'] })
         .then(function (order) {
           if (order.relations.paymentDetail.attributes.id)
             return response.send(order);
 
-          return new PaymentDetail(request.body.payment_detail).save({ 'order_id': orderId })
-            .then(function (PaymentDetail) {
-              return Order.where(request.params).fetch({ withRelated: ['address', 'person', 'paymentDetail'] })
-                .then(function (order) {
-                  if (order) {
-                    return new OrderControl({ order_id: order.id }).save(null, { method: 'insert' })
-                      .then(function (order_control) {
-                        return OrderControl.where({ order_id: order.id }).fetch().then((order_control) => {
-                          return Roundsman.where({ id: order_control.attributes.roundsman_id }).fetch({ withRelated: ['order_control'] }).then(function (roundsman) {
-                            let address = order.relations.address;
-                            let name = order.relations.person.attributes.name;
-                            let cel = order.relations.person.attributes.celular;
-                            let price = order.relations.paymentDetail.attributes.total;
-                            let notes = address.attributes.references_notes;
-                            let message = `Origen: ${address.attributes.origin}, Destino: ${address.attributes.destination}, Nombre: ${name}, Celular: ${cel}, Precio: ${price}, Comentarios: ${notes}`;
-                            if (request.body.coupon_control_id)
-                              return CouponControl.where({id: request.body.coupon_control_id}).fetch().then((couponControl) => {
-                                return couponControl.couponObject().then((coupon) => {
-                                  if (coupon.attributes.remove_message){
-                                    let re = new RegExp(`${coupon.attributes.remove_message}.*,`, "g");
-                                    message = message.replace(re,' Pedido sin cobro,');
-                                  }
-                                  //roundsman.assign_order(message, orderId);
-                                  return response.send(order);
-                                });
-                              });
-
-                            //roundsman.assign_order(message, orderId);
-                            return response.send(order);
-                          });
-                        })
-                      })
-                      .catch(function (err) {
-                        return response.send(err);
-                      });
-                  }
-                });
+          let data = request.body;
+          data.orderId = request.params.id;
+          return new PaymentDetail(data.payment_detail).save({ 'order_id': data.orderId })
+            .then(paymentDetail => {
+              paymentDetail.makeLastOrderProcess(data).then((order) => {
+                return response.send(order);
+              });
             });
         });
 
@@ -442,5 +409,53 @@ module.exports = function (fastify, opts, next) {
         });
       });
   });
+  fastify.post(`${prefix}/complete_process`,
+    {
+      schema: {
+        security: [
+          {
+            Bearer: []
+          }
+        ],
+        description: 'Crea los pedidos',
+        tags: ['Pedidos'],
+        summary: 'crea la peticion',
+        body: {
+          type: 'object',
+          properties: {
+            address: {
+              type: 'object',
+              properties: {
+                references_notes: { type: 'string' },
+                origin: { type: 'string' },
+                destination: { type: 'string' },
+                distance: { type: 'number' }
+              }
+            }
+          }
+        },
+        response: {
+          201: {
+            description: 'Succesful response',
+            type: 'object',
+            properties: {
+              hello: { type: 'string' }
+            }
+          }
+        }
+      }
+    },
+    (request, response) => {
+      return User.where({id: request.body.user_id}).fetch()
+        .then( user => {
+          return user.makeOrder(request.body)
+            .then(order => {
+              return response.send(order);
+            })
+            .catch(err => {
+              return response.send(err);
+            });
+        });
+    });
   return next();
 };

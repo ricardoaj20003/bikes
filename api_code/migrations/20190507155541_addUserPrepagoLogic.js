@@ -5,6 +5,7 @@ exports.up = function(knex, Promise) {
       table.increments();
       table.decimal('price', 9, 2);
       table.decimal('orders', 6, 2);
+      table.unique('orders');
       table.timestamps();
     }),
     knex.schema.table('price_rates', table => {
@@ -15,9 +16,9 @@ exports.up = function(knex, Promise) {
 
 exports.down = function(knex, Promise) {
   return Promise.all([
-    knex.schema.dropTable('prepago_rates'),
     knex.schema.table('price_rates', table => {
       table.dropColumn('prepago_id');
-    })
+    }),
+    knex.schema.dropTable('prepagos')
   ]); 
 };

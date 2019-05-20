@@ -19,7 +19,7 @@ app.use(session({
   saveUninitialized: true,
   resave: true,
   store: new FileStore(),
-  cookie: { maxAge: 5 * 60 * 1000 }
+  cookie: { maxAge: 1 * 60 * 60 * 1000 }
 }));
 
 app.use(express.static(__dirname + '/app'));
@@ -42,8 +42,12 @@ app.get('/admin', (req, res) => {
   if (req.session.admin)
     return res.redirect('/admin/prepagos');
 
-  if (req.session.userId)
-    return res.render('admin.html', {userId: req.session.userId, token: req.session.token});
+  if (req.session.userId){
+    if (req.session.userSession)
+      return res.render('admin.html', { userId: req.session.userId, token: req.session.token });
+
+    return res.render('admin.html', { userId: false, token: false });
+  }
 
   return res.render('admin.html', {userId: false, token: false});
 });
@@ -127,7 +131,13 @@ app.post('/prepagos/cancel_user/:id', (req, res) => {
 
 app.post('/prepagos', (req, res) => {
   req.method = 'GET';
-  return makeApiRequest(req, {url: `/prepagos/${req.body.prepago_id}`})
+  let url = `/prepagos/${req.body.prepago_id}`;
+  if (req.body.prepago_id === 'custom'){
+    url += `?customValue=${req.body.customValue}`;
+    delete req.body.customValue;
+  }
+
+  return makeApiRequest(req, {url: url})
     .then( response => {
       req.body.price_rate_id = response.data.id;
       delete req.body.prepago_id;
@@ -236,14 +246,49 @@ app.get('/cupones/:coupon/is_valid', (req, res) => {
     });
 });
 
-app.get('/users/price_rate', (req, res) => {
-  return makeApiRequest(req, {url: `/users/${req.session.userId}/price_rate`})
-    .then(function (response) {
-      return res.send(response.data);
+function sign_in(req){
+  return new Promise((resolve, reject) => {
+    if (req.session.token)
+      return resolve({});
+
+    req.body.username = 'donmandonBase';
+    req.body.password = '123456789';
+    req.method = 'POST';
+    return makeApiRequest(req, { url: '/users/sign_in' }).then(function (response) {
+      let jwt = require('jsonwebtoken');
+      let userData = response.data;
+      let token = userData.token;
+
+      if (token) {
+        userData = jwt.verify(response.data.token, 'unacosasecretamas').data;
+      }
+
+      userData.token = token;
+      return resolve(userData);
     })
-    .catch(function (error) {
-      return res.send(error.response.data);
-    });
+      .catch(function (error) {
+        return reject(error.response.data);
+      });
+  });
+}
+
+app.get('/users/price_rate', (req, res) => {
+  return sign_in(req).then( (loginData) => {
+    if (loginData.username){
+      req.session.token = loginData.token;
+      req.session.userId = loginData.id;
+      req.session.admin = false;
+      req.session.userSession = false;
+      req.method = 'GET';
+    }
+    return makeApiRequest(req, { url: `/users/${req.session.userId}/price_rate` })
+      .then(function (response) {
+        return res.send(response.data);
+      })
+      .catch(function (error) {
+        return res.send(error.response.data);
+      });
+  });
 });
 
 app.post('/pedidos/:id/add_person', (req, res) => {
@@ -260,6 +305,9 @@ app.post('/pedidos/:id/add_person', (req, res) => {
 app.get('/pedidos/:id', (req, res) => {
   return makeApiRequest(req, {url: `/pedidos/${req.session.order_id}`})
     .then(function (response) {
+      if (req.session.extraCost)
+        response.data.extraCost = req.session.extraCost;
+
       return res.send(response.data);
     })
     .catch(function (error) {
@@ -268,6 +316,28 @@ app.get('/pedidos/:id', (req, res) => {
 });
 
 app.post('/pedidos', (req, res) => {
+  if (req.session.userSession){
+    req.body.payment_detail = {
+      total: req.body.extraCost,
+      extraCost: req.body.extraCost
+    }
+    return makeApiRequest(req, { url: '/pedidos/complete_process' })
+      .then(function (response) {
+        if (response.data.error)
+          return res.send(response.data);
+
+        req.session.order_id = response.data.id;
+        return res.send({ next_url: '/admin' });
+      })
+      .catch(function (error) {
+        return res.send(error.response.data);
+      });
+  }
+
+  if (req.body.extraCost) {
+    req.session.extraCost = req.body.extraCost;
+  }
+
   return makeApiRequest(req, {url: '/pedidos'})
     .then(function (response) {
       if (response.data.error)
@@ -292,8 +362,12 @@ app.post('/sign_in', (req, res) => {
       userData = jwt.verify(response.data.token, 'unacosasecretamas').data;
     }
 
+    if (!userData.prepago_active && userData.price_rate_id > 4)
+      return res.send({error: 'Prepago no activo, Comunicarse a soporte'});
+
     req.session.userId = userData.id;
     req.session.admin = userData.is_admin;
+    req.session.userSession = true;
     return res.send(userData);
   })
     .catch(function (error) {

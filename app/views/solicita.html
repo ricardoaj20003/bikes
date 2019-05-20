@@ -211,6 +211,14 @@
 							<strong class="pull-right priceValue">$45</strong>
 						</td>
 					</tr>
+					<tr class='hidden' id='extraCostBlock'>
+						<td>
+							<a href="#0" class="remove_item"><i class="icon_minus_alt"></i></a> <strong class="extraValue">5 KM</strong> Distancia adicional
+						</td>
+						<td>
+							<strong class="pull-right priceExtraValue">$45</strong>
+						</td>
+					</tr>
 					<tr>
 					</tr>
 					</tbody>
@@ -281,12 +289,32 @@
     });
 </script>
 <script>
+  function prepagoLogicProcess(data){
+    let extraCost = data.extraCost;
+    $('.distanceValue').html(data.address.distance + ' KM ');
+    $('.priceValue').html('$0.00');
+    let total = 0;
+
+    if (extraCost){
+      let maxDistance = parseFloat(data.priceDetail.priceRate.distance) / 1000; 
+      extraDistance = (data.address.distance - maxDistance).toFixed(2);
+      $('.distanceValue').html( maxDistance + ' KM ');
+      $('.priceExtraValue').html(`$${extraCost.toFixed(2)}`);
+      $('.extraValue').html(`${extraDistance} KM`);
+      total += extraCost;
+    }
+
+    $('.totalValue').html(`$${total.toFixed(2)}`);
+  }
   $.ajax({
     url: '/pedidos/1',
     type: "GET",
     success: function(response){
       if (response.error)
         return alert(response.error);
+
+      if (response.priceDetail.availables)
+        return prepagoLogicProcess(response);
 
       var distance = response.address.distance;
       var price;
