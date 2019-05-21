@@ -3,11 +3,8 @@ const prefix = '/pedidos',
   OrderControl = require('../models/order_control').OrderControl,
   Address = require('../models/address').Address,
   PaymentDetail = require('../models/payment_detail.js').PaymentDetail,
-  Roundsman = require('../models/roundsman.js').Roundsman,
   WeekReport = require('../models/week_report').WeekReport,
-  CouponControl = require('../models/coupon_control').CouponControl,
   Person = require('../models/person').Person;
-
 
 module.exports = function (fastify, opts, next) {
   fastify.get(`${prefix}`,
@@ -67,10 +64,9 @@ module.exports = function (fastify, opts, next) {
       }
     },
     (request, response) => {
-      return Order.where(request.params).fetch({ withRelated: ['address', 'person', 'paymentDetail'] })
-        .then(function (order) {
-          return response.send(order);
-        });
+      return new Order.withUserDetails(request.params).then( (order) => {
+        return response.send(order);
+      });
     });
 
   fastify.post(`${prefix}`,
@@ -212,49 +208,18 @@ module.exports = function (fastify, opts, next) {
       }
     },
     (request, response) => {
-      let orderId = request.params.id;
       return Order.where(request.params).fetch({ withRelated: ['address', 'person', 'paymentDetail'] })
         .then(function (order) {
           if (order.relations.paymentDetail.attributes.id)
             return response.send(order);
 
-          return new PaymentDetail(request.body.payment_detail).save({ 'order_id': orderId })
-            .then(function (PaymentDetail) {
-              return Order.where(request.params).fetch({ withRelated: ['address', 'person', 'paymentDetail'] })
-                .then(function (order) {
-                  if (order) {
-                    return new OrderControl({ order_id: order.id }).save(null, { method: 'insert' })
-                      .then(function (order_control) {
-                        return OrderControl.where({ order_id: order.id }).fetch().then((order_control) => {
-                          return Roundsman.where({ id: order_control.attributes.roundsman_id }).fetch({ withRelated: ['order_control'] }).then(function (roundsman) {
-                            let address = order.relations.address;
-                            let name = order.relations.person.attributes.name;
-                            let cel = order.relations.person.attributes.celular;
-                            let price = order.relations.paymentDetail.attributes.total;
-                            let notes = address.attributes.references_notes;
-                            let message = `Origen: ${address.attributes.origin}, Destino: ${address.attributes.destination}, Nombre: ${name}, Celular: ${cel}, Precio: ${price}, Comentarios: ${notes}`;
-                            if (request.body.coupon_control_id)
-                              return CouponControl.where({id: request.body.coupon_control_id}).fetch().then((couponControl) => {
-                                return couponControl.couponObject().then((coupon) => {
-                                  if (coupon.attributes.remove_message){
-                                    let re = new RegExp(`${coupon.attributes.remove_message}.*,`, "g");
-                                    message = message.replace(re,' Pedido sin cobro,');
-                                  }
-                                  roundsman.assign_order(message, orderId);
-                                  return response.send(order);
-                                });
-                              });
-
-                            roundsman.assign_order(message, orderId);
-                            return response.send(order);
-                          });
-                        })
-                      })
-                      .catch(function (err) {
-                        return response.send(err);
-                      });
-                  }
-                });
+          let data = request.body;
+          data.orderId = request.params.id;
+          return new PaymentDetail(data.payment_detail).save({ 'order_id': data.orderId })
+            .then(paymentDetail => {
+              paymentDetail.makeLastOrderProcess(data).then((order) => {
+                return response.send(order);
+              });
             });
         });
 
@@ -282,9 +247,40 @@ module.exports = function (fastify, opts, next) {
       }
     },
     (request, response) => {
-      WeekReport.fetchAll().then(function (report_data) {
+      return WeekReport.fetchAll().then(function (report_data) {
         return response.send(report_data);
       });
+    });
+  fastify.delete(`${prefix}/:id`,
+    {
+      schema: {
+        security: [
+          {
+            Bearer: []
+          }
+        ],
+        description: 'Obtener el reporte semanal',
+        tags: ['Pedidos'],
+        summary: 'Reporte semanal',
+        response: {
+          201: {
+            description: 'Succesful response',
+            type: 'object',
+            properties: {
+              hello: { type: 'string' }
+            }
+          }
+        }
+      }
+    },
+    (request, response) => {
+      return Order.forge(request.params).fetch({ withRelated: ['address', 'person', 'paymentDetail'] })
+        .then((order) => {
+          if (!order)
+            return response.status(404).send({ error: true, message: 'Pedido no encontrado' });
+          
+          return response.send(order.removeRelations());
+        });
     });
   fastify.get(`${prefix}/:id/close`,
     {
@@ -320,9 +316,145 @@ module.exports = function (fastify, opts, next) {
           if (!order)
             return response.send('Pedido no localizado');
 
-          return order.save({ active: false }, { patch: true }).then(function (order) {
+          if (order.attributes.close_at)
+            return response.send(order);
+
+          return order.save({ active: false, close_at: new Date() }, { patch: true }).then(function (order) {
             return response.send(order);
           });
+        });
+    });
+
+  fastify.get(`${prefix}/:id/start`,
+  {
+    schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
+      description: 'Comienza el proceso de entrega un pedido en base a su id',
+      tags: ['Pedidos'],
+      summary: 'Iniciar pedido',
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer' },
+        }
+      },
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {
+    return Order.where(request.params).fetch({ withRelated: ['address', 'person', 'paymentDetail'] })
+      .then(function (order) {
+        if (!order)
+          return response.send({ error: 'Pedido no localizado' });
+
+        if (order.attributes.start_at)
+          return response.send(order);
+
+        return order.save({ start_at: new Date() }, { patch: true }).then(function (order) {
+          return response.send(order);
+        });
+      });
+  });
+  fastify.get(`${prefix}/:id/cancel`,
+  {
+    schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
+      description: 'Cancela un pedido solo si esta en pendiente en base a su id',
+      tags: ['Pedidos'],
+      summary: 'Cancela pedido',
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer' },
+        }
+      },
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {
+    return Order.where(request.params).fetch()
+      .then(function (order) {
+        if (!order)
+          return response.send({error: 'Pedido no localizado'});
+        
+        if (order.start_at)
+          return response.send({error: 'Tu pedido ya se encuentra en camino'});
+
+        return order.save({ active: false, cancel_at: new Date() }, { patch: true }).then(function (order) {
+          return response.send(order);
+        });
+      });
+  });
+  fastify.post(`${prefix}/complete_process`,
+    {
+      schema: {
+        security: [
+          {
+            Bearer: []
+          }
+        ],
+        description: 'Crea los pedidos',
+        tags: ['Pedidos'],
+        summary: 'crea la peticion',
+        body: {
+          type: 'object',
+          properties: {
+            address: {
+              type: 'object',
+              properties: {
+                references_notes: { type: 'string' },
+                origin: { type: 'string' },
+                destination: { type: 'string' },
+                distance: { type: 'number' }
+              }
+            }
+          }
+        },
+        response: {
+          201: {
+            description: 'Succesful response',
+            type: 'object',
+            properties: {
+              hello: { type: 'string' }
+            }
+          }
+        }
+      }
+    },
+    (request, response) => {
+      return User.where({id: request.body.user_id}).fetch()
+        .then( user => {
+          return user.makeOrder(request.body)
+            .then(order => {
+              return response.send(order);
+            })
+            .catch(err => {
+              return response.send(err);
+            });
         });
     });
   return next();

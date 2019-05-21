@@ -28,6 +28,26 @@ let Order = bookshelf.Model.extend({
     let User = require('./user').User;
     return this.belongsTo(User);
   },
+  removeRelations: function(){
+    Object.keys(this.relations).forEach( (relationName, index) => {
+      let relationObject = this.relations[relationName];
+      if (Object.keys(relationObject.attributes).length > 0)
+        this.relations[relationName].destroy();
+    });
+    return this;
+  }
+}, {
+  withUserDetails: function(params){
+    return Order.where(params).fetch({ withRelated: ['address'] })
+      .then(function (order) {
+        let orderDetail = order;
+        return order.user().where({id: order.attributes.user_id}).fetch().then( (user) => {
+          return user.priceRateObject().then( priceRate => {
+            return Object.assign(orderDetail.attributes, {address: orderDetail.relations.address.attributes}, {priceDetail: priceRate});
+          });
+        });
+      });
+  },
 });
 
 module.exports = {

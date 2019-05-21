@@ -29,7 +29,6 @@
 	<!-- BASE CSS -->
 	<link href="css/admin.css" rel="stylesheet">
 		
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <!-- Facebook Pixel Code -->
   <script>
     !function(f,b,e,v,n,t,s)
@@ -89,7 +88,7 @@
                 </div>
                 <a href="#" class="open_close" id="close_in"><i class="icon_close"></i></a>
                  <ul>
-                    <li><a href="#0" data-toggle="modal" data-target="#login_2">Ingresar</a></li>
+                    <li><a id="jsSessionControl" href="#0" data-toggle="modal" data-target="#login_2">Ingresar</a></li>
                     <li><a href="#0" data-toggle="modal" data-target="#register">Registro</a></li>
                 </ul>
             </div><!-- End main-menu -->
@@ -111,7 +110,7 @@
 	<!-- End SubHeader ============================================ -->
 
 	<!-- Content ================================================== -->
-	<div class="container margin_60">
+	<div class="container margin_60 hidden" id='jsAdminDataBlock'>
 		<div id="tabs" class="tabs">
 			<nav>
 				<ul>
@@ -153,80 +152,7 @@
 												</tr>
 
 										</thead>
-										<tbody>
-											<tr>
-												<td style="width:70%">
-														<div class="col-sm-12">
-																<div class="form-group">
-																	<label>Mi ubicación 1</label>
-																	<input type="text" id="search1" name="street_5" class="form-control" disabled>
-																</div>
-															</div>
-												</td>
-												<td style="widows: 5%; text-align: center;">
-													<div class="delete-recurrent">
-														<a href="#" class="close-link edit_search1"><i class="icon_pencil"></i></a>
-													</div>
-												</td>
-												<td style="widows: 10%; text-align: center;">
-														<button class="btn_1 action-Adress1" >Hacer pedido</button>
-													</td>
-											</tr>
-											<tr>
-												<td style="width:70%">
-														<div class="col-sm-12">
-																<div class="form-group">
-																	<label>Mi ubicación 2</label>
-																	<input type="text" id="search2" name="street_5" class="form-control" disabled>
-																</div>
-															</div>
-												</td>
-												<td style="widows: 5%; text-align: center;">
-													<div class="delete-recurrent">
-														<a href="#" class="close-link edit_search2""><i class="icon_pencil"></i></a>
-													</div>
-												</td>
-												<td style="widows: 10%; text-align: center;">
-														<button class="btn_1 action-Adress2" >Hacer pedido</button>
-													</td>
-											</tr>
-											<tr>
-												<td style="width:70%">
-														<div class="col-sm-12">
-																<div class="form-group">
-																	<label>Mi ubicación 3</label>
-																	<input type="text" id="search3" name="street_5" class="form-control" disabled>
-																</div>
-															</div>
-												</td>
-												<td style="widows: 5%; text-align: center;">
-													<div class="delete-recurrent">
-														<a href="#" class="close-link edit_search3""><i class="icon_pencil"></i></a>
-													</div>
-												</td>
-												<td style="widows: 10%; text-align: center;">
-														<button class="btn_1 action-Adress3">Hacer pedido</button>
-													</td>
-											</tr>
-											<tr>
-												<td style="width:70%">
-														<div class="col-sm-12">
-																<div class="form-group">
-																	<label>Mi ubicación 4</label>
-																	<input type="text" id="search4" name="street_5" class="form-control" disabled>
-																</div>
-															</div>
-												</td>
-												<td style="widows: 5%; text-align: center;">
-													<div class="delete-recurrent">
-														<a href="#" class="close-link edit_search4"><i class="icon_pencil"></i></a>
-													</div>
-												</td>
-												<td style="widows: 10%; text-align: center;">
-														 <button class="btn_1 action-Adress4">Hacer pedido</button>
-													</td>
-											</tr>
-											
+										<tbody id='jsListPedidos'>
 										</tbody>
 									</table>
 								</div>
@@ -253,7 +179,7 @@
 											<table class="table table-striped edit-options">
 												<thead>
 													<tr>
-														<td style="width: 10%; text-align: center;">
+														<td style="width: 7%; text-align: center;">
 															Dia
 														</td>
 														<td style="width: 35%; text-align: center;">
@@ -262,35 +188,18 @@
 														<td style="width: 35%; text-align: center;">
 															Destino
 														</td>
-														<td style="width: 10%; text-align: center;">
+														<td style="width: 7%; text-align: center;">
 															Precio
 														</td>
 														<td style="widows: 10%; text-align: center;">
 															Status 
 														</td>
+														<td style="widows: 7%; text-align: center;">
+															Acciones 
+														</td>
 													</tr>
 												</thead>
-												<tbody>
-													<tr>
-														<td style="width: 10%; text-align: center;">
-																04/20/2019	
-														</td>
-														<td style="width: 35%; text-align: center;">
-																Calle General Silverio Núñez 302, Centro, Colima, Col.	 
-														</td>
-														<td style="width: 35%; text-align: center;">
-																Almolonia 101-C, Villa Izcalli Caxitlan, Villa de Álvarez, Col.	
-														</td>
-														<td style="width: 10%; text-align: center;">
-																35.00	
-														</td>
-														<td style="widows: 10%; text-align: center;">
-															<p class="bg-primary btn-block" style="padding: 10px 0">Entregado </p>
-															<p class="bg-success btn-block" style="padding: 10px 0">En camino </p>
-															<p class="bg-info btn-block" style="padding: 10px 0">Pendiente </p>
-														</td>
-													</tr>
-										
+												<tbody id="jsOrdersDetails">
 												</tbody>
 											</table>
 										</div>
@@ -392,19 +301,18 @@
 	<!-- Mobile menu overlay mask -->
 
 	<!-- Login modal -->
-	<div class="modal fade" id="login_2" tabindex="-1" role="dialog" aria-labelledby="myLogin" aria-hidden="true">
+	<div class="modal fade" id="login_2" tabindex="-1" role="dialog" aria-labelledby="myLogin" aria-hidden="true" data-backdrop="static" data-keyboard="false">
 		<div class="modal-dialog">
 			<div class="modal-content modal-popup">
-					<a href="#" class="close-link"><i class="icon_close_alt2"></i></a>
 				<form action="#" class="popup-form" id="myLogin">
 					<div class="login_icon"><i class="icon_lock_alt"></i>
 					</div>
-					<input type="text" class="form-control form-white" placeholder="Usuario">
-					<input type="text" class="form-control form-white" placeholder="Contraseña">
+					<input type="text" class="form-control form-white" name='username' placeholder="Usuario">
+					<input type="password" class="form-control form-white" name='password' placeholder="Contraseña">
 					<div class="text-left">
 						<a  href="#0" data-toggle="modal" data-target="#password">¿Olvidaste tu contraseña?</a>
 					</div>
-					<button type="submit" class="btn btn-submit">Guardar</button>
+					<button type="submit" id='sign_in' class="btn btn-submit">Iniciar</button>
 				</form>
 			</div>
 		</div>
@@ -537,9 +445,6 @@
 										</div>
 									</div>
 									<div class="row">
-										<div class="col-dm-12 " id="g-recaptcha">
-												<div class="g-recaptcha" data-sitekey="6Ld345MUAAAAAI8Pmkxncrl7q9OD3rvglzVLHIJk"></div>
-										</div>
 										<div class="col-sm-12 col-md-12 col-lg-12">
 											<div class="text-center solicita">
 													<button id="actionMainrequest" class="btn btn_full" disabled> ¡SOLICITA AHORA!</button>
@@ -561,6 +466,119 @@
 	<!-- COMMON SCRIPTS -->
 	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAz2qXwxC0KJSPvR3-PZUtcrOlqhxmPC2k&sensor=false&&region=MX&language=es&libraries=places"></script>
 	<script src="js/bundle.js.min"></script>
+	<script>
+		function orderForm(orderData) {
+			return `<tr id='orderInfo_${orderData.id}' >` +
+				'<td style="width:70%">' +
+				'<div class="col-sm-12">' +
+				'<div class="form-group">' +
+				'<label>Mi ubicación 1</label>' +
+				`<input type="text" id="search_${orderData.id}" name="street_${orderData.id}" class="form-control" disabled value='${orderData.origin}'>` +
+				`<input type="hidden" id="destination_${orderData.id}" name="destination_${orderData.id}" disabled value='${orderData.destination}'>` +
+				'</div>' +
+				'</div>' +
+				'</td>' +
+				'<td style="widows: 5%; text-align: center;">' +
+				'<div class="delete-recurrent">' +
+				`<a href="#" class="close-link edit_search${orderData.id}"><i class="icon_pencil"></i></a>` +
+				'</div>' +
+				'</td>' +
+				'<td style="widows: 10%; text-align: center;">' +
+				`<button class="btn_1 action-Adress${orderData.id}" >Hacer pedido</button>` +
+				'</td>' +
+				'</tr>';
+		}
+
+		function orderDetail(orderData){
+			return '<tr>' +
+				`<td style="width: 7%; text-align: center;">${new Intl.DateTimeFormat('es-MX').format(new Date(orderData.updated_at))
+				}</td>` +
+				`<td style="width: 35%; text-align: center;"> ${orderData.address.origin} </td>` +
+				`<td style="width: 35%; text-align: center;"> ${orderData.address.destination} </td>` +
+				`<td style="width: 7%; text-align: center;"> $${orderData.paymentDetail.total} </td>` +
+				getStatus(orderData)
+			'</tr>';
+		}
+
+		function getStatus(orderData){
+			if (orderData.close_at)
+				return `<td style="widows: 10%; text-align: center;"> <p class="bg-primary btn-block" style="padding: 10px 0">Entregado </p> </td>` +
+				`<td style="widows: 6%; text-align: center;"> <a ></a> </td>`; 
+			
+			if (orderData.start_at)
+				return `<td style="widows: 10%; text-align: center;"> <p class="bg-success btn-block" style="padding: 10px 0">En camino </p> </td>` +
+				`<td style="widows: 6%; text-align: center;"> <a ></a> </td>`; 
+
+			return `<td style="widows: 10%; text-align: center;"> <p class="bg-info btn-block" style="padding: 10px 0">Pendiente </p> </td>` +
+				`<td style="widows: 6%; text-align: center;"> <a id="jsCancel_${orderData.id}">Cancelar</a> </td>`; 
+		}
+
+		if (<%= userId %>) {
+			$.get(`/users/pedidos`, (orders) => { 
+				if (orders.error)
+					setTimeout( () => {
+						alert(orders.message);
+          }, 300);
+          
+          orders.unshift({
+            address: {
+              id: '1_1',
+              origin: '',
+              destination: ''
+						},
+						paymentDetail: {id: '1_1'}
+          });
+
+					orders.forEach((order, index) => {
+						if (!order.paymentDetail.id)
+							return console.log('not form complete');
+
+						if (index > 0)
+							$('#jsOrdersDetails').append(orderDetail(order));
+
+						if (order.close_at === null)
+							return false;
+
+						$('#jsListPedidos').append(orderForm(order.address));
+
+						$(`.action-Adress${order.address.id}`).click(function() {
+							if($("#search1").val() != ""){
+								$(".distance-form")[0].reset();
+								$('#newadress #txtSource').val($(`#search_${order.address.id}`).val());
+								$('#newadress #txtDestination').val($(`#destination_${order.address.id}`).val());
+								$('#newadress').modal('toggle');
+							}else{
+								alert("Falta seleccionar el campo ubicación 1");
+							}
+						});
+
+						$(`#jsCancel_${order.id}`).click(() => {
+							debugger
+						});
+
+						$(`.edit_search${order.address.id}`).click(function () {
+							event.preventDefault();
+							$(`#search_${order.address.id}`).prop("disabled", false);
+						});
+						var circle = new google.maps.Circle({
+							radius: 5500,
+							center: { lat: 19.2399156, lng: -103.7245426 }
+						});
+
+						new google.maps.places.Autocomplete(document.getElementById(`search_${order.address.id}`), {
+							types: ['geocode'],
+							bounds: circle.getBounds(),
+							strictBounds: true
+						});
+					});
+
+				$('#jsAdminDataBlock').removeClass('hidden');
+			});
+		}
+		else
+			$('#login_2').modal('show');
+
+	</script>
 	
 
 	<!-- Specific scripts -->

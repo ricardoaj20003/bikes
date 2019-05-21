@@ -4,7 +4,6 @@ const prefix = '/pedidos',
       PaymentDetail  = require('../models/payment_detail.js').PaymentDetail,
       Person  = require('../models/person').Person;
 
-
 module.exports = function(fastify, opts, next){
   fastify.get(`${prefix}`, 
   {
@@ -39,9 +38,9 @@ module.exports = function(fastify, opts, next){
     }
   }
 },
-  (request, response) => {
-      return response.send({ hello: 'world' });
-    });
+(request, response) => {
+  return response.send({ hello: 'world' });
+});
 
   fastify.get(`${prefix}/:id`, 
   {
@@ -73,7 +72,7 @@ module.exports = function(fastify, opts, next){
   (request, response) => {
     return Pedido.where(request.params).fetch({withRelated: ['address']})
       .then(function(pedido){
-        return response.send(pedido);
+        return response.send(pedido.withUserDetail);
       });
     });
 

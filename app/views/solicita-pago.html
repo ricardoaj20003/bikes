@@ -322,22 +322,21 @@
 <script>
   var idPedido = localStorage.getItem('idPedido');
   $.ajax({
-    url: 'https://api.donmandon.com.mx/pedidos/' + idPedido,
+    url: '/pedidos/1',
     type: "GET",
-    headers: {"token": localStorage.getItem('tokenKey')},
     success: function(response){
       if (response.error)
-        alert(response.error);
+        return alert(response.error);
 
       var distance = response.address.distance;
       var price;
       var metros = distance * 1000;
-      let basePrice = parseFloat(localStorage.getItem('basePrice'));
-      let baseDistance = parseFloat(localStorage.getItem('baseDistance'));
-      let baseMinDistance = parseFloat(localStorage.getItem('baseMinDistance'));
-      let baseMinPrice = parseFloat(localStorage.getItem('baseMinPrice'));
-      if(metros <= localStorage.getItem('baseDistance')){
-        price = `$${localStorage.getItem('basePrice')}`;
+      let basePrice = parseFloat(response.priceDetail.price);
+      let baseDistance = parseFloat(response.priceDetail.distance);
+      let baseMinDistance = parseFloat(response.priceDetail.unit_distance);
+      let baseMinPrice = parseFloat(response.priceDetail.unit_price);
+      if(metros <= baseDistance){
+        price = `$${basePrice}`;
       }else{
         let calc = (basePrice + ((metros - baseDistance) / baseMinDistance) * baseMinPrice);
         price = '$' + calc;
@@ -348,11 +347,9 @@
   });
 
   $('#validateCoupon').click(function(){
-    $.get(`https://api.donmandon.com.mx/cupones/${$('.couponValue').val()}/is_valid`, (response) => {
+    $.get(`/cupones/${$('.couponValue').val()}/is_valid`, (response) => {
       if (response.invalid)
         return response.message;
-      
-      localStorage.setItem('coupon', response.code);
     });
   });
 </script>

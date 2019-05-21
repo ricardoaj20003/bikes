@@ -37,22 +37,40 @@ fastify.use(cors());
 fastify.options('*', (request, reply) => { reply.send(); });
 
 fastify.addHook('preHandler', (request, response, next) => {
-  return next();
   let urlData = request.urlData();
+  let tokenDecode = {};
   if (
     urlData.path !== '/users/sign_in' &&
     !urlData.path.match(/\/documentation\//) &&
     !urlData.path.match(/\/facebook_logic\//) &&
-    !urlData.path.match(/close/)
-  )
-    try {
-      jwt.verify(request.headers.token, process.env.TOKEN_SECRET);
-    } catch (err){
-      response.send({error: 'Token invalido'});
-    }
+    !urlData.path.match(/close/) &&
+    !urlData.path.match(/start/)
+  ){
+    if (!request.headers.token)
+      response.send({ error: 'Token invalido' });
 
-  next();
+    try {
+      tokenDecode = jwt.verify(request.headers.token, process.env.TOKEN_SECRET);
+    } catch (err) {
+      response.send({ error: 'Token invalido' });
+    }
+  }
+
+  if (tokenDecode.data)
+    aditionId(request, tokenDecode.data);
+
+  return next();
 });
+
+function aditionId(request, userData){
+  if (request.body)
+    return request.body.user_id = userData.id;
+  
+  if (
+    request.urlData().path.match(/users/)
+  )
+    request.params.id = userData.id;
+}
 
 fastify.register(require('./app/routes/users'));
 fastify.register(require('./app/routes/price_rates'));
@@ -60,6 +78,7 @@ fastify.register(require('./app/routes/coupons'));
 fastify.register(require('./app/routes/orders'));
 fastify.register(require('./app/routes/facebook_logic'));
 fastify.register(require('./app/routes/roundsman'));
+fastify.register(require('./app/routes/prepagos'));
 fastify.register(require('./app/routes/conversation_codes'));
 
 fastify.listen(3000, (err, address) => {
