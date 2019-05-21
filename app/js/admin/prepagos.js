@@ -164,11 +164,10 @@ $(document).ready(function ($) {
         type: "POST",
         data: $('#add_prepagoUser').serialize(),
         success: function (response) {
-          debugger
           if (response.error)
             return alert(response.error);
 
-          //window.location.href = response.next_url;
+          window.location.href = response.next_url;
         }
       });
     else {
