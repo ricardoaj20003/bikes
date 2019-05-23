@@ -132,11 +132,10 @@ app.post('/prepagos/cancel_user/:id', (req, res) => {
 app.post('/prepagos', (req, res) => {
   req.method = 'GET';
   let url = `/prepagos/${req.body.prepago_id}`;
-  if (req.body.prepago_id === 'custom'){
+  if (req.body.prepago_id === 'custom')
     url += `?customValue=${req.body.customValue}`;
-    delete req.body.customValue;
-  }
 
+  delete req.body.customValue;
   return makeApiRequest(req, {url: url})
     .then( response => {
       req.body.price_rate_id = response.data.id;

@@ -44,11 +44,16 @@ let User = bookshelf.Model.extend({
   makePrepago: function(data){
     let PriceRate = require('./price_rate').PriceRate;
     let that = this;
-    return PriceRate.where({prepago_id: data.prepagoId}).fetch().then( priceRate => {
+    let promise = null;
+    promise = data.value ? PriceRate.createCustom(data.value)
+                                : PriceRate.where({ prepago_id: data.prepagoId }).fetch();
+
+    return promise.then(priceRate => {
       return that.save({ price_rate_id: priceRate.id, prepago_active: false, prepago_start_at: null }, { patch: true }).then(function (user) {
         return user;
       });
     });
+
   },
   makeOrder: function(data){
     let user = this;

@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Admin seccion - Prepagos</title>
+<title>Admin seccion - Prepagos - Agregar</title>
 <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/metisMenu/2.5.2/metisMenu.css">
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-sb-admin-2/3.3.7/css/sb-admin-2.css">
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.css">
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="/css/admin/style.css">
 </head>
 <body>
@@ -91,12 +90,12 @@
                 </li>
                 <li>
                   <a href="#"><i class="fa fa-sitemap fa-fw"></i> Usuarios</a>
-                  <ul class="nav nav-second-level">
+                  <ul class="nav nav-second-level collapse in">
                     <li>
-                      <a href="tarifas"><i class="fa fa-edit fa-fw"></i> Tarifa</a>
+                      <a href="tarifa"><i class="fa fa-edit fa-fw"></i> Tarifa</a>
                     </li>
                     <li>
-                      <a href="prepagos"><i class="fa fa-edit fa-fw"></i> Prepagos</a>
+                      <a class="active" href="/admin/prepagos"><i class="fa fa-edit fa-fw"></i> Prepagos</a>
                     </li>
                   </ul>
                 </li>
@@ -140,7 +139,7 @@
         <div id="page-wrapper">
           <div class="row">
             <div class="col-lg-12">
-              <h1 class="page-header">Prepagos</h1>
+              <h1 class="page-header">Prepagos - Agregar</h1>
             </div>
             <!-- /.col-lg-12 -->
           </div>
@@ -238,9 +237,9 @@
           <!-- /.row -->
           <div class="row">
             <div class="col-lg-8">
-              <div class="panel panel-default">
+              <div class="panel panel-default" id="addNewPrepagoUserForm">
                 <div class="panel-heading">
-                  <i class="fa fa-bar-chart-o fa-fw"></i> Resumen de prepagos 
+                  <i class="fa fa-tasks fa-fw"></i> Formulario 
                   <div class="pull-right">
                     <div class="btn-group">
                       <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
@@ -248,32 +247,47 @@
                                               <span class="caret"></span>
                                           </button>
                       <ul class="dropdown-menu pull-right" role="menu">
-                        <li><a href="#" id='activateUser'>Activar</a> </li>
-                        <li><a href="#" id='unActivateUser'>Desactivar</a> </li>
-                        <li><a href="#" id='cancelPrepagoUser'>Cancelar</a> </li>
-                        <li class="divider"></li>
-                        <li><a href="prepagos/agregar">Agregar nuevo</a> </li>
+                        <li><a href="#">Guardar</a> </li>
+                        <li><a href="#">Cancelar</a> </li>
                       </ul>
                     </div>
                   </div>
                 </div>
                 <!-- /.panel-heading -->
-                <div class="panel-body" id='prepagoUserLists'>
-                    <table id="userListTable" class="table table-striped table-bordered" style="width:100%">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>ID</th>
-                                <th>Usuario</th>
-                                <th>Numero de viajes</th>
-                                <th>Price</th>
-                                <th>Vence</th>
-                                <th>Estatus</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+                <div class="panel-body">
+                    <form role="form" id='add_prepagoUser'>
+                      <div class="form-group">
+                        <label>Usar usuario ya existente</label>
+                        <select class="form-control" id="actualUserList">
+                          <option></option>
+                        </select>
+                      </div>
+                      <div class="form-group" id="jsPrepagoList">
+                        <label>Tipo de prepago</label>
+                      </div>
+                      <div class="form-group">
+                        <label>Nombre usuario</label>
+                        <input name='username' class="form-control">
+                      </div>
+                      <div class="form-group">
+                        <label>Contraseña</label>
+                        <input type="password" name='password' class="form-control">
+                      </div>
+                      <div class="form-group">
+                        <label>Email</label>
+                        <input class="form-control" name='email'>
+                      </div>
+                      <div class="form-group">
+                        <label>Nombre</label>
+                        <input class="form-control" name='name'>
+                      </div>
+                      <div class="form-group">
+                        <label>Telefono</label>
+                        <input class="form-control" name='phone'>
+                      </div>
+                      <button type="submit" id='save_prepago' class="btn btn-primary">Guardar</button>
+                      <button type="reset" class="btn btn-default">Cancelar</button>
+                    </form>
                 </div>
                 <!-- /.panel-body -->
               </div>
@@ -470,8 +484,7 @@
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/metisMenu/2.5.2/metisMenu.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-sb-admin-2/3.3.7/js/sb-admin-2.js"></script>
-      <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
-      <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap.min.js"></script>
+      <script src="/js/admin/functions.js"></script>
       <script src="/js/admin/prepagos.js"></script>
 </body>
 </html>

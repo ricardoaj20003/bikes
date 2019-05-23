@@ -61,7 +61,6 @@ $('.text-center.solicita').click(function(){
     return false;
   }else{
     var response = $('.adminsection').length === 1 ? 1 : grecaptcha.getResponse();
-    debugger
 
     if(response.length == 0){
       document.getElementById("g-recaptcha").focus();
