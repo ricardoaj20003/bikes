@@ -14,7 +14,10 @@ let Roundsman = bookshelf.Model.extend({
     return this.hasOne(ConversationCode);
   },
   assign_order: function(message,orderId){
-    return this.sendCloseMessage(this.attributes.senderID, orderId, message);
+    return this.sendStartMessage(this.attributes.senderID, orderId, message);
+  },
+  start_order: function(orderId){
+    return this.sendCloseMessage(this.attributes.senderID, orderId);
   },
   updateCode: function(){
     let conversation_code = this.relations.conversation_code;
@@ -23,14 +26,26 @@ let Roundsman = bookshelf.Model.extend({
       message: this.relations.conversation_code.attributes.message
     }, {patch: true});
   },
-  sendCloseMessage: function(senderID, orderId, message){
-    let closePedidoUrl = `https://api.donmandon.com.mx/pedidos/${orderId}/close`;
+  sendCloseMessage: function(senderID, orderId){
+    let url = `https://www.donmandon.com.mx/pedidos/${orderId}/terminar`;
     let requestBody = {
       "recipient": {
         "id": senderID
       },
       "message": {
-        "text":  `Tienes un nuevo pedido \n ${message} \n ${closePedidoUrl}`
+        "text":  `Pedido iniciado \n Click para cerrar ${url}`
+      }
+    };
+    this.sendMessage(requestBody);
+  },
+  sendStartMessage: function(senderID, orderId, message){
+    let url = `https://wwww.donmandon.com.mx/pedidos/${orderId}/iniciar`;
+    let requestBody = {
+      "recipient": {
+        "id": senderID
+      },
+      "message": {
+        "text":  `Tienes un nuevo pedido \n ${message} \n Click para iniciar ${url}`
       }
     };
     this.sendMessage(requestBody);

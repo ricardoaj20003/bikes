@@ -309,6 +309,26 @@ function makeApiRequest(req, params = {url: '', headers: {}}){
   return axios.get(baseUrl + params.url, requestConfig);
 }
 
+app.get('/pedidos/:id/terminar', (req, res) => {
+  return makeApiRequest(req, {url: `/pedidos/${req.params.id}/close`})
+    .then(function (response) {
+      return res.redirect('/');
+    })
+    .catch(function (error) {
+      return res.send(error.response.data);
+    });
+});
+
+app.get('/pedidos/:id/iniciar', (req, res) => {
+  return makeApiRequest(req, {url: `/pedidos/${req.params.id}/start`})
+    .then(function (response) {
+      return res.redirect('/');
+    })
+    .catch(function (error) {
+      return res.send(error.response.data);
+    });
+});
+
 app.post('/pedidos/:id/add_payment_detail', (req, res) => {
   return makeApiRequest(req, {url: `/pedidos/${req.session.order_id}/add_payment_detail`})
     .then(function (response) {
@@ -397,7 +417,6 @@ app.get('/pedidos/:id', (req, res) => {
 
 app.post('/pedidos', (req, res) => {
   if (req.session.userSession){
-    console.log(req.body);
     req.body.payment_detail = {
       total: req.body.extraCost,
       extraCost: req.body.extraCost
@@ -453,35 +472,35 @@ app.post('/sign_in', (req, res) => {
 });
 
 app.get('/admin/prepagos', (req, res) => {
-  if (!req.session.is_admin)
+  if (!req.session.admin)
     return res.redirect('/');
 
   return res.render('admin/prepagos/index.html');
 });
 
 app.get('/admin/prepagos/agregar', (req, res) => {
-  if (!req.session.is_admin)
+  if (!req.session.admin)
     return res.redirect('/');
 
   return res.render('admin/prepagos/agregar.html');
 });
 
 app.get('/admin/tarifas', (req, res) => {
-  if (!req.session.is_admin)
+  if (!req.session.admin)
     return res.redirect('/');
 
   return res.render('admin/tarifas/index.html');
 });
 
 app.get('/admin/tarifas/agregar', (req, res) => {
-  if (!req.session.is_admin)
+  if (!req.session.admin)
     return res.redirect('/');
 
   return res.render('admin/tarifas/agregar.html');
 });
 
 app.get('/admin/tarifas/:id', (req, res) => {
-  if (!req.session.is_admin)
+  if (!req.session.admin)
     return res.redirect('/');
 
   return res.render('admin/tarifas/modificar.html', {id: req.params.id});

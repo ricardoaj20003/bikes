@@ -274,6 +274,10 @@ function GetRoute() {
         }
     });
 
+    $('#newadress').on('hidden.bs.modal', function () {
+      directionsDisplay.setMap(null);
+    });
+
   }
 
   function createPrepagoText(data, metros){
