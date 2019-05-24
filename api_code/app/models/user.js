@@ -38,6 +38,12 @@ let User = bookshelf.Model.extend({
   hashPassword: function(){
     return bcrypt.hash(this.attributes.password, 8);
   },
+  changePassword: function(newPassword){
+    let user = this;
+    return bcrypt.hash(newPassword, 8).then( hash => {
+      return user.save({password: hash}, { patch: true });
+    });
+  },
   validatePassord: function(comparePassword){
     return bcrypt.compare(comparePassword, this.attributes.password);
   },
@@ -64,14 +70,15 @@ let User = bookshelf.Model.extend({
         return new Address(data.address).save({ 'order_id': order.id })
           .then( () => {
             let personData = {
-              "name": user.name,
-              "celular": user.phone,
-              "email": user.email
+              "name": user.attributes.name,
+              "celular": user.attributes.phone,
+              "email": user.attributes.email
             }
             let Person = require('./person').Person;
             return new Person(personData).save({ 'order_id': order.id })
               .then(() => {
                 let PaymentDetail = require('./payment_detail').PaymentDetail;
+                data.payment_detail.credit = false;
                 return new PaymentDetail(data.payment_detail).save({ 'order_id': order.id })
                   .then(paymentDetail => {
                     data.orderId = order.id;

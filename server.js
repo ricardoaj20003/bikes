@@ -165,6 +165,50 @@ app.get('/users/not_prepago', (req, res) => {
     });
 });
 
+app.get('/users/pedidos', (req, res) => {
+  makeApiRequest(req, {url: `/users/${req.session.userId}/pedidos`})
+    .then(response => {
+      return res.send(response.data);
+    })
+    .catch(error => {
+      return res.send(error.response.data);
+    });
+});
+
+app.post('/users', (req, res) => {
+  req.body.price_rate_id = 3;
+  makeApiRequest(req, {url: `/users`})
+    .then(response => {
+      response.data.next_url = '/admin/tarifas';
+      return res.send(response.data);
+    })
+    .catch(error => {
+      return res.send(error.response.data);
+    });
+});
+
+app.post('/users/:id/update', (req, res) => {
+  makeApiRequest(req, {url: `/users/${req.params.id}/update`})
+    .then(response => {
+      response.data.next_url = '/admin/tarifas';
+      return res.send(response.data);
+    })
+    .catch(error => {
+      return res.send(error.response.data);
+    });
+});
+
+app.post('/users/:id/update_password', (req, res) => {
+  makeApiRequest(req, {url: `/users/${req.params.id}/change_password`})
+    .then(response => {
+      response.data.next_url = '/admin/tarifas';
+      return res.send(response.data);
+    })
+    .catch(error => {
+      return res.send(error.response.data);
+    });
+});
+
 app.post('/users/:id/make_prepago', (req, res) => {
   makeApiRequest(req, {url: `/users/${req.params.id}/make_prepago`})
     .then(response => {
@@ -176,8 +220,27 @@ app.post('/users/:id/make_prepago', (req, res) => {
     });
 });
 
-app.get('/users/pedidos', (req, res) => {
-  makeApiRequest(req, {url: `/users/${req.session.userId}/pedidos`})
+app.get('/users/price_rate', (req, res) => {
+  return sign_in(req).then( (loginData) => {
+    if (loginData.username){
+      req.session.token = loginData.token;
+      req.session.userId = loginData.id;
+      req.session.admin = false;
+      req.session.userSession = false;
+      req.method = 'GET';
+    }
+    return makeApiRequest(req, { url: `/users/${req.session.userId}/price_rate` })
+      .then(function (response) {
+        return res.send(response.data);
+      })
+      .catch(function (error) {
+        return res.send(error.response.data);
+      });
+  });
+});
+
+app.get('/users/:id', (req, res) => {
+  makeApiRequest(req, {url: `/users/${req.params.id}`})
     .then(response => {
       return res.send(response.data);
     })
@@ -271,25 +334,6 @@ function sign_in(req){
   });
 }
 
-app.get('/users/price_rate', (req, res) => {
-  return sign_in(req).then( (loginData) => {
-    if (loginData.username){
-      req.session.token = loginData.token;
-      req.session.userId = loginData.id;
-      req.session.admin = false;
-      req.session.userSession = false;
-      req.method = 'GET';
-    }
-    return makeApiRequest(req, { url: `/users/${req.session.userId}/price_rate` })
-      .then(function (response) {
-        return res.send(response.data);
-      })
-      .catch(function (error) {
-        return res.send(error.response.data);
-      });
-  });
-});
-
 app.post('/pedidos/:id/add_person', (req, res) => {
   return makeApiRequest(req, {url: `/pedidos/${req.session.order_id}/add_person`})
     .then(function (response) {
@@ -316,6 +360,7 @@ app.get('/pedidos/:id', (req, res) => {
 
 app.post('/pedidos', (req, res) => {
   if (req.session.userSession){
+    console.log(req.body);
     req.body.payment_detail = {
       total: req.body.extraCost,
       extraCost: req.body.extraCost
@@ -331,10 +376,6 @@ app.post('/pedidos', (req, res) => {
       .catch(function (error) {
         return res.send(error.response.data);
       });
-  }
-
-  if (req.body.extraCost) {
-    req.session.extraCost = req.body.extraCost;
   }
 
   return makeApiRequest(req, {url: '/pedidos'})
@@ -380,6 +421,18 @@ app.get('/admin/prepagos', (req, res) => {
 
 app.get('/admin/prepagos/agregar', (req, res) => {
   return res.render('admin/prepagos/agregar.html');
+});
+
+app.get('/admin/tarifas', (req, res) => {
+  return res.render('admin/tarifas/index.html');
+});
+
+app.get('/admin/tarifas/agregar', (req, res) => {
+  return res.render('admin/tarifas/agregar.html');
+});
+
+app.get('/admin/tarifas/:id', (req, res) => {
+  return res.render('admin/tarifas/modificar.html', {id: req.params.id});
 });
 
 app.get('*', (req, res) => {

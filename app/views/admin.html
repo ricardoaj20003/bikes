@@ -495,9 +495,13 @@
 				}</td>` +
 				`<td style="width: 35%; text-align: center;"> ${orderData.address.origin} </td>` +
 				`<td style="width: 35%; text-align: center;"> ${orderData.address.destination} </td>` +
-				`<td style="width: 7%; text-align: center;"> $${orderData.paymentDetail.total} </td>` +
+				`<td style="width: 7%; text-align: center;">${getPrice(orderData.paymentDetail.total)} </td>` +
 				getStatus(orderData)
 			'</tr>';
+		}
+
+		function getPrice(total){
+      return total === null ? 'Prepago' : ` $ ${total}`;
 		}
 
 		function getStatus(orderData){

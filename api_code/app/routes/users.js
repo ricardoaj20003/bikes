@@ -56,7 +56,7 @@ module.exports = function(fastify, opts, next){
         }
       ],
       description: ' Codigo para el repartidor.',
-      tags: ['Repartidores'],
+      tags: ['Users'],
       summary: 'Devuelve el codigo al repartidor',
       description: 'Entrega el codigo al repartidor',
       response: {
@@ -78,6 +78,74 @@ module.exports = function(fastify, opts, next){
       });
   });
 
+  fastify.post(`${prefix}/:id/update`,
+  {
+    schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
+      description: ' Codigo para el repartidor.',
+      tags: ['Users'],
+      summary: 'Devuelve el codigo al repartidor',
+      description: 'Entrega el codigo al repartidor',
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string'
+            }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {
+    delete request.body.user_id;
+    return User.where(request.params).fetch()
+      .then(function (user) {
+        return user.save(request.body, { patch: true }).then(function (user) {
+          return response.send(user);
+        });
+      });
+  });
+
+  fastify.post(`${prefix}/:id/change_password`,
+  {
+    schema: {
+      security: [
+        {
+          Bearer: []
+        }
+      ],
+      description: ' Codigo para el repartidor.',
+      tags: ['Users'],
+      summary: 'Devuelve el codigo al repartidor',
+      description: 'Entrega el codigo al repartidor',
+      response: {
+        201: {
+          description: 'Succesful response',
+          type: 'object',
+          properties: {
+            hello: { type: 'string'
+            }
+          }
+        }
+      }
+    }
+  },
+  (request, response) => {
+    delete request.body.user_id;
+    return User.where(request.params).fetch()
+      .then(function (user) {
+        return user.changePassword(request.body.password).then(function (user) {
+          return response.send(user);
+        });
+      });
+  });
+
   fastify.get(`${prefix}/:id/pedidos`,
   {
     schema: {
@@ -87,7 +155,7 @@ module.exports = function(fastify, opts, next){
         }
       ],
       description: 'Codigo para el repartidor.',
-      tags: ['Repartidores'],
+      tags: ['Users'],
       summary: 'Devuelve el codigo al repartidor',
       description: 'Entrega el codigo al repartidor',
       response: {
@@ -123,7 +191,7 @@ module.exports = function(fastify, opts, next){
         }
       ],
       description: ' Codigo para el repartidor.',
-      tags: ['Repartidores'],
+      tags: ['Users'],
       summary: 'Devuelve el codigo al repartidor',
       description: 'Entrega el codigo al repartidor',
       response: {
@@ -153,7 +221,7 @@ module.exports = function(fastify, opts, next){
         }
       ],
       description: ' Codigo para el repartidor.',
-      tags: ['Repartidores'],
+      tags: ['Users'],
       summary: 'Devuelve el codigo al repartidor',
       description: 'Entrega el codigo al repartidor',
       response: {
@@ -240,7 +308,7 @@ module.exports = function(fastify, opts, next){
         }
       ],
       description: 'Proceso para activar el prepago de un usuario',
-      tags: ['Prepago'],
+      tags: ['Users'],
       summary: 'Activar un usuario',
       body: {
         type: 'object',

@@ -92,7 +92,7 @@
                   <a href="#"><i class="fa fa-sitemap fa-fw"></i> Usuarios</a>
                   <ul class="nav nav-second-level collapse in">
                     <li>
-                      <a class="active" href="tarifas"><i class="fa fa-edit fa-fw"></i> Tarifa</a>
+                      <a class="active" href="/admin/tarifas"><i class="fa fa-edit fa-fw"></i> Tarifa</a>
                     </li>
                     <li>
                       <a href="/admin/prepagos"><i class="fa fa-edit fa-fw"></i> Prepagos</a>
@@ -237,7 +237,7 @@
           <!-- /.row -->
           <div class="row">
             <div class="col-lg-8">
-              <div class="panel panel-default" id="addNewUserForm">
+              <div class="panel panel-default" id="updateUserForm">
                 <div class="panel-heading">
                   <i class="fa fa-tasks fa-fw"></i> Formulario 
                   <div class="pull-right">
@@ -255,14 +255,10 @@
                 </div>
                 <!-- /.panel-heading -->
                 <div class="panel-body">
-                    <form role="form" id='addUser'>
+                    <form role="form" id='updateUser_<%= id %>'>
                       <div class="form-group required">
                         <label>Nombre usuario</label>
                         <input name='username' class="form-control">
-                      </div>
-                      <div class="form-group required">
-                        <label>Contraseña</label>
-                        <input type="password" name='password' class="form-control">
                       </div>
                       <div class="form-group required">
                         <label>Email</label>
@@ -276,7 +272,41 @@
                         <label>Telefono</label>
                         <input class="form-control" name='phone'>
                       </div>
-                      <button type="submit" id='saveUser' class="btn btn-primary">Guardar</button>
+                      <button type="submit" id='updateUserSave' class="btn btn-primary">Guardar</button>
+                      <button type="reset" class="btn btn-default">Cancelar</button>
+                    </form>
+                </div>
+                <!-- /.panel-body -->
+              </div>
+              <!-- /.panel -->
+              <div class="panel panel-default" id="updateUserPasswordForm">
+                <div class="panel-heading">
+                  <i class="fa fa-tasks fa-fw"></i> Formulario Cambio Contraseña
+                  <div class="pull-right">
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                                              Acciones
+                                              <span class="caret"></span>
+                                          </button>
+                      <ul class="dropdown-menu pull-right" role="menu">
+                        <li><a href="#">Guardar</a> </li>
+                        <li><a href="#">Cancelar</a> </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <form role="form" id='updateUserPassword_<%= id %>'>
+                      <div class="form-group required">
+                        <label>Contraseña</label>
+                        <input type="password" name='password' class="form-control">
+                      </div>
+                      <div class="form-group required">
+                        <label>Confirmación Contraseña</label>
+                        <input type="password" class="form-control" name='password_confirmation'>
+                      </div>
+                      <button type="submit" id='updateUserPasswordSave' class="btn btn-primary">Guardar</button>
                       <button type="reset" class="btn btn-default">Cancelar</button>
                     </form>
                 </div>
