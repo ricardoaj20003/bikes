@@ -187,6 +187,33 @@ app.post('/users', (req, res) => {
     });
 });
 
+app.post('/users/update', (req, res) => {
+  makeApiRequest(req, {url: `/users/${req.session.userId}/update`})
+    .then(response => {
+      response.data.next_url = '/admin';
+      return res.send(response.data);
+    })
+    .catch(error => {
+      return res.send(error.response.data);
+    });
+});
+
+app.post('/users/update_password', (req, res) => {
+  makeApiRequest(req, {url: `/users/${req.session.userId}/change_password`})
+    .then(response => {
+      req.session.destroy(err => {
+        if (err)
+          return res.send(error);
+
+        response.data.next_url = '/admin';
+        return res.send(response.data);
+      });
+    })
+    .catch(error => {
+      return res.send(error.response.data);
+    });
+});
+
 app.post('/users/:id/update', (req, res) => {
   makeApiRequest(req, {url: `/users/${req.params.id}/update`})
     .then(response => {
@@ -237,6 +264,16 @@ app.get('/users/price_rate', (req, res) => {
         return res.send(error.response.data);
       });
   });
+});
+
+app.get('/users/get_data', (req, res) => {
+  makeApiRequest(req, {url: `/users/${req.session.userId}`})
+    .then(response => {
+      return res.send(response.data);
+    })
+    .catch(error => {
+      return res.send(error.response.data);
+    });
 });
 
 app.get('/users/:id', (req, res) => {
@@ -416,22 +453,37 @@ app.post('/sign_in', (req, res) => {
 });
 
 app.get('/admin/prepagos', (req, res) => {
+  if (!req.session.is_admin)
+    return res.redirect('/');
+
   return res.render('admin/prepagos/index.html');
 });
 
 app.get('/admin/prepagos/agregar', (req, res) => {
+  if (!req.session.is_admin)
+    return res.redirect('/');
+
   return res.render('admin/prepagos/agregar.html');
 });
 
 app.get('/admin/tarifas', (req, res) => {
+  if (!req.session.is_admin)
+    return res.redirect('/');
+
   return res.render('admin/tarifas/index.html');
 });
 
 app.get('/admin/tarifas/agregar', (req, res) => {
+  if (!req.session.is_admin)
+    return res.redirect('/');
+
   return res.render('admin/tarifas/agregar.html');
 });
 
 app.get('/admin/tarifas/:id', (req, res) => {
+  if (!req.session.is_admin)
+    return res.redirect('/');
+
   return res.render('admin/tarifas/modificar.html', {id: req.params.id});
 });
 

@@ -226,13 +226,13 @@
 							<div class="wrapper_indent">
 								<div class="form-group">
 									<label>Nueva contraseña</label>
-									<input class="form-control" name="new_password" id="new_password" type="password">
+									<input class="form-control" name="password" id="new_password" type="password">
 								</div>
 								<div class="form-group">
 									<label>Confirmar nueva contraseña</label>
-									<input class="form-control" name="confirm_new_password" id="confirm_new_password" type="password">
+									<input class="form-control" name="password_confirmation" id="confirm_new_password" type="password">
 								</div>
-								<button type="submit" class="btn_1 green">Actualizar</button>
+								<button type="submit" class="btn_1 green" id="updateUserPasswordSave">Actualizar</button>
 							</div><!-- End wrapper_indent -->
 						</div>
                         
@@ -247,17 +247,17 @@
 							<div class="wrapper_indent">
 									<div class="form-group">
 										<label>Nombre</label>
-										<input class="form-control" name="new_email" id="new_email" type="email">
+										<input class="form-control" name="name" id="name" type="text">
 									</div>
 									<div class="form-group">
 										<label>Teléfono</label>
-										<input class="form-control" name="new_email" id="new_email" type="email">
+										<input class="form-control" name="phone" id="phone" type="text">
 									</div>
 								<div class="form-group">
 									<label>Correo</label>
-									<input class="form-control" name="new_email" id="new_email" type="email">
+									<input class="form-control" name="email" id="email" type="email">
 								</div>
-								<button type="submit" class="btn_1 green">Actualizar</button>
+								<button type="submit" class="btn_1 green" id="updateUserSave">Actualizar</button>
 							</div><!-- End wrapper_indent -->
 						</div>
                         
@@ -467,6 +467,79 @@
 	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAz2qXwxC0KJSPvR3-PZUtcrOlqhxmPC2k&sensor=false&&region=MX&language=es&libraries=places"></script>
 	<script src="js/bundle.js.min"></script>
 	<script>
+
+  $.get(`/users/get_data`, response => {
+    delete response.password;
+    Object.keys(response).forEach( attrName => {
+      $(`input[name=${attrName}]`).val(response[attrName])
+    });
+  });
+
+	$('#updateUserPasswordSave').click(() => {
+		if ($('input[name=password]').val() !== $('input[name=password_confirmation]').val() || $('input[name=password]').val() === '') {
+			alert('Contraseña no coincide');
+			return false;
+		}
+
+		let data = {
+			password : $('input[name=password]').val(),
+			password_confirmation : $('input[name=password_confirmation]').val()
+		}
+		$.ajax({
+			url: `/users/update_password`,
+			type: "POST",
+			data: data,
+			success: function (response) {
+				if (response.error)
+					return alert(response.error);
+
+				window.location.href = response.next_url;
+			}
+		});
+
+		return false;
+	});
+
+	function validateAllFill() {
+		var allFill = true;
+		$.each($('#addUser .form-group'), function () {
+			var value = $(this).find('input').val();
+			if ($(this).find('input').val() === '') {
+				allFill = false;
+				return false;
+			}
+
+		});
+
+		return allFill;
+	}
+
+	$('#updateUserSave').click(() => {
+		if (!validateAllFill()) {
+			alert('faltan campos');
+			return false;
+		}
+
+		let data = {
+			name: $('input[name=name]').val(),
+			phone: $('input[name=phone]').val(),
+			email: $('input[name=email]').val()
+		}
+
+		$.ajax({
+			url: `/users/update`,
+			type: "POST",
+			data: data,
+			success: function (response) {
+				if (response.error)
+				return alert(response.error);
+
+				window.location.href = response.next_url;
+		  }
+    });
+
+      return false;
+    });
 		function orderForm(orderData) {
 			return `<tr id='orderInfo_${orderData.id}' >` +
 				'<td style="width:70%">' +
