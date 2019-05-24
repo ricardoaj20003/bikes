@@ -88,8 +88,8 @@
                 </div>
                 <a href="#" class="open_close" id="close_in"><i class="icon_close"></i></a>
                  <ul>
-                    <li><a id="jsSessionControl" href="#0" data-toggle="modal" data-target="#login_2">Ingresar</a></li>
-                    <li><a href="#0" data-toggle="modal" data-target="#register">Registro</a></li>
+                    <li><a id="jsCloseSession" href="#0" >Cerrar Session</a></li>
+                    <li><a>Registro</a></li>
                 </ul>
             </div><!-- End main-menu -->
             </nav>
@@ -226,13 +226,13 @@
 							<div class="wrapper_indent">
 								<div class="form-group">
 									<label>Nueva contraseña</label>
-									<input class="form-control" name="new_password" id="new_password" type="password">
+									<input class="form-control" name="password" id="new_password" type="password">
 								</div>
 								<div class="form-group">
 									<label>Confirmar nueva contraseña</label>
-									<input class="form-control" name="confirm_new_password" id="confirm_new_password" type="password">
+									<input class="form-control" name="password_confirmation" id="confirm_new_password" type="password">
 								</div>
-								<button type="submit" class="btn_1 green">Actualizar</button>
+								<button type="submit" class="btn_1 green" id="updateUserPasswordSave">Actualizar</button>
 							</div><!-- End wrapper_indent -->
 						</div>
                         
@@ -247,17 +247,17 @@
 							<div class="wrapper_indent">
 									<div class="form-group">
 										<label>Nombre</label>
-										<input class="form-control" name="new_email" id="new_email" type="email">
+										<input class="form-control" name="name" id="name" type="text">
 									</div>
 									<div class="form-group">
 										<label>Teléfono</label>
-										<input class="form-control" name="new_email" id="new_email" type="email">
+										<input class="form-control" name="phone" id="phone" type="text">
 									</div>
 								<div class="form-group">
 									<label>Correo</label>
-									<input class="form-control" name="new_email" id="new_email" type="email">
+									<input class="form-control" name="email" id="email" type="email">
 								</div>
-								<button type="submit" class="btn_1 green">Actualizar</button>
+								<button type="submit" class="btn_1 green" id="updateUserSave">Actualizar</button>
 							</div><!-- End wrapper_indent -->
 						</div>
                         
@@ -466,13 +466,86 @@
 	<!-- COMMON SCRIPTS -->
 	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAz2qXwxC0KJSPvR3-PZUtcrOlqhxmPC2k&sensor=false&&region=MX&language=es&libraries=places"></script>
 	<script src="js/bundle.js.min"></script>
+	<script src="js/admin/functions.js"></script>
 	<script>
-		function orderForm(orderData) {
+		$.get(`/users/get_data`, response => {
+			delete response.password;
+			Object.keys(response).forEach(attrName => {
+				$(`input[name=${attrName}]`).val(response[attrName])
+			});
+		});
+
+		$('#updateUserPasswordSave').click(() => {
+			if ($('input[name=password]').val() !== $('input[name=password_confirmation]').val() || $('input[name=password]').val() === '') {
+				alert('Contraseña no coincide');
+				return false;
+			}
+
+			let data = {
+				password: $('input[name=password]').val(),
+				password_confirmation: $('input[name=password_confirmation]').val()
+			}
+			$.ajax({
+				url: `/users/update_password`,
+				type: "POST",
+				data: data,
+				success: function (response) {
+					if (response.error)
+						return alert(response.error);
+
+					window.location.href = response.next_url;
+				}
+			});
+
+			return false;
+		});
+
+		function validateAllFill() {
+			var allFill = true;
+			$.each($('#addUser .form-group'), function () {
+				var value = $(this).find('input').val();
+				if ($(this).find('input').val() === '') {
+					allFill = false;
+					return false;
+				}
+
+			});
+
+			return allFill;
+		}
+
+		$('#updateUserSave').click(() => {
+			if (!validateAllFill()) {
+				alert('faltan campos');
+				return false;
+			}
+
+			let data = {
+				name: $('input[name=name]').val(),
+				phone: $('input[name=phone]').val(),
+				email: $('input[name=email]').val()
+			}
+
+			$.ajax({
+				url: `/users/update`,
+				type: "POST",
+				data: data,
+				success: function (response) {
+					if (response.error)
+						return alert(response.error);
+
+					window.location.href = response.next_url;
+				}
+			});
+
+			return false;
+		});
+		function orderForm(orderData, index) {
 			return `<tr id='orderInfo_${orderData.id}' >` +
 				'<td style="width:70%">' +
 				'<div class="col-sm-12">' +
 				'<div class="form-group">' +
-				'<label>Mi ubicación 1</label>' +
+				`<label>Mi ubicación ${index}</label>` +
 				`<input type="text" id="search_${orderData.id}" name="street_${orderData.id}" class="form-control" disabled value='${orderData.origin}'>` +
 				`<input type="hidden" id="destination_${orderData.id}" name="destination_${orderData.id}" disabled value='${orderData.destination}'>` +
 				'</div>' +
@@ -489,97 +562,101 @@
 				'</tr>';
 		}
 
-		function orderDetail(orderData){
+		function orderDetail(orderData) {
 			return '<tr>' +
 				`<td style="width: 7%; text-align: center;">${new Intl.DateTimeFormat('es-MX').format(new Date(orderData.updated_at))
 				}</td>` +
 				`<td style="width: 35%; text-align: center;"> ${orderData.address.origin} </td>` +
 				`<td style="width: 35%; text-align: center;"> ${orderData.address.destination} </td>` +
-				`<td style="width: 7%; text-align: center;"> $${orderData.paymentDetail.total} </td>` +
+				`<td style="width: 7%; text-align: center;">${getPrice(orderData.paymentDetail.total)} </td>` +
 				getStatus(orderData)
 			'</tr>';
 		}
 
-		function getStatus(orderData){
+		function getPrice(total) {
+			return total === null ? 'Prepago' : ` $ ${total}`;
+		}
+
+		function getStatus(orderData) {
 			if (orderData.close_at)
 				return `<td style="widows: 10%; text-align: center;"> <p class="bg-primary btn-block" style="padding: 10px 0">Entregado </p> </td>` +
-				`<td style="widows: 6%; text-align: center;"> <a ></a> </td>`; 
-			
+					`<td style="widows: 6%; text-align: center;"> <a ></a> </td>`;
+
 			if (orderData.start_at)
 				return `<td style="widows: 10%; text-align: center;"> <p class="bg-success btn-block" style="padding: 10px 0">En camino </p> </td>` +
-				`<td style="widows: 6%; text-align: center;"> <a ></a> </td>`; 
+					`<td style="widows: 6%; text-align: center;"> <a ></a> </td>`;
 
 			return `<td style="widows: 10%; text-align: center;"> <p class="bg-info btn-block" style="padding: 10px 0">Pendiente </p> </td>` +
-				`<td style="widows: 6%; text-align: center;"> <a id="jsCancel_${orderData.id}">Cancelar</a> </td>`; 
+				`<td style="widows: 6%; text-align: center;"> <a id="jsCancel_${orderData.id}">Cancelar</a> </td>`;
 		}
 
 		if (<%= userId %>) {
-			$.get(`/users/pedidos`, (orders) => { 
-				if (orders.error)
-					setTimeout( () => {
+			$.get(`/users/pedidos`, (response) => {
+				if (response.error)
+					setTimeout(() => {
 						alert(orders.message);
-          }, 300);
-          
-          orders.unshift({
-            address: {
-              id: '1_1',
-              origin: '',
-              destination: ''
-						},
-						paymentDetail: {id: '1_1'}
-          });
+					}, 300);
 
-					orders.forEach((order, index) => {
-						if (!order.paymentDetail.id)
-							return console.log('not form complete');
+				response.orders.forEach(order => {
+					if (!order.paymentDetail.id)
+						return console.log('not form complete');
 
-						if (index > 0)
-							$('#jsOrdersDetails').append(orderDetail(order));
-
-						if (order.close_at === null)
-							return false;
-
-						$('#jsListPedidos').append(orderForm(order.address));
-
-						$(`.action-Adress${order.address.id}`).click(function() {
-							if($("#search1").val() != ""){
-								$(".distance-form")[0].reset();
-								$('#newadress #txtSource').val($(`#search_${order.address.id}`).val());
-								$('#newadress #txtDestination').val($(`#destination_${order.address.id}`).val());
-								$('#newadress').modal('toggle');
-							}else{
-								alert("Falta seleccionar el campo ubicación 1");
-							}
-						});
-
-						$(`#jsCancel_${order.id}`).click(() => {
-							debugger
-						});
-
-						$(`.edit_search${order.address.id}`).click(function () {
-							event.preventDefault();
-							$(`#search_${order.address.id}`).prop("disabled", false);
-						});
-						var circle = new google.maps.Circle({
-							radius: 5500,
-							center: { lat: 19.2399156, lng: -103.7245426 }
-						});
-
-						new google.maps.places.Autocomplete(document.getElementById(`search_${order.address.id}`), {
-							types: ['geocode'],
-							bounds: circle.getBounds(),
-							strictBounds: true
-						});
+					$('#jsOrdersDetails').append(orderDetail(order));
+					$(`#jsCancel_${order.id}`).click(() => {
+						debugger
 					});
+
+				});
+
+				response.addresses.push({
+					id: '1_1',
+					origin: '',
+					destination: ''
+				});
+				let count = 1;
+				response.addresses.forEach((address, index) => {
+					if (address.origin === null)
+						return console.log('no origen');
+
+					$('#jsListPedidos').append(orderForm(address, count));
+					count++;
+
+					$(`.action-Adress${address.id}`).click(function () {
+						document.getElementById("distance-value").innerHTML = "Distancia: ";
+						document.getElementById("price-value").innerHTML = "Precio: "
+						if ($("#search1").val() != "") {
+							$(".distance-form")[0].reset();
+							$('#newadress #txtSource').val($(`#search_${address.id}`).val());
+							$('#newadress #txtDestination').val($(`#destination_${address.id}`).val());
+							$('#newadress').modal('toggle');
+						} else {
+							alert("Falta seleccionar el campo ubicación");
+						}
+					});
+
+					$(`.edit_search${address.id}`).click(function () {
+						event.preventDefault();
+						$(`#search_${address.id}`).prop("disabled", false);
+					});
+					var circle = new google.maps.Circle({
+						radius: 5500,
+						center: { lat: 19.2399156, lng: -103.7245426 }
+					});
+
+					new google.maps.places.Autocomplete(document.getElementById(`search_${address.id}`), {
+						types: ['geocode'],
+						bounds: circle.getBounds(),
+						strictBounds: true
+					});
+				});
 
 				$('#jsAdminDataBlock').removeClass('hidden');
 			});
 		}
 		else
-			$('#login_2').modal('show');
+		$('#login_2').modal('show');
 
 	</script>
-	
 
 	<!-- Specific scripts -->
 	<script src="js/tabs.js"></script>

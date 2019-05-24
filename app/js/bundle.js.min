@@ -61,7 +61,6 @@ $('.text-center.solicita').click(function(){
     return false;
   }else{
     var response = $('.adminsection').length === 1 ? 1 : grecaptcha.getResponse();
-    debugger
 
     if(response.length == 0){
       document.getElementById("g-recaptcha").focus();
@@ -78,8 +77,7 @@ $('.text-center.solicita').click(function(){
         }
       }
 
-      if ($('#price-value').html().match('Costo adicional'))
-        data.extraCost = parseFloat($('#price-value').html().split('$').pop());
+      data.extraCost = parseFloat($('#price-value').html().split('$').pop());
     
       $.ajax({
         url: '/pedidos',
@@ -276,6 +274,10 @@ function GetRoute() {
         }
     });
 
+    $('#newadress').on('hidden.bs.modal', function () {
+      directionsDisplay.setMap(null);
+    });
+
   }
 
   function createPrepagoText(data, metros){
@@ -304,7 +306,6 @@ function GetRoute() {
         var duration = response.rows[0].elements[0].duration.text;
         var price;
         var metros = distance.match(/km/) ? parseFloat(distance.replace(' km', '').replace(',','.')) * 1000 : parseFloat(distance.replace(' m', '').replace(',','.'));
-        let userId = localStorage.getItem('user_id') ? localStorage.getItem('user_id') : 0;
 
         $.get(`/users/price_rate`, (response) => {
           if (response.availables) 

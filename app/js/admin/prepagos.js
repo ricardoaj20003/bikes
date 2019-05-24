@@ -158,6 +158,12 @@ $(document).ready(function ($) {
   }
 
   $('#save_prepago').click( () => {
+    let data = { prepagoId: $('input[type=radio]:checked').val() };
+    if (!data.prepagoId){
+      alert('Verificar tipo de prepago marcado');
+      return false;
+    }
+
     if ($('#actualUserList').val() === '')
       $.ajax({
         url: '/prepagos',
@@ -171,7 +177,6 @@ $(document).ready(function ($) {
         }
       });
     else {
-      let data = { prepagoId: $('input[type=radio]:checked').val() };
 
       if (data.prepagoId === 'custom')
         data.value = $('#jsCustomPrepagoValue').val();

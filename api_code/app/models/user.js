@@ -24,7 +24,35 @@ let User = bookshelf.Model.extend({
   ordersWithAllData () {
     let Order = require('./order').Order;
     let ids = this.relations.orders.map(order => order.id)
-    return Order.where('id', 'IN', ids).orderBy('close_at', 'DESC').orderBy('start_at', 'ASC').fetchAll({ withRelated: ['address', 'person', 'paymentDetail'] });
+    return Order.where('id', 'IN', ids).orderBy('close_at', 'DESC').orderBy('start_at', 'ASC').fetchAll({ withRelated: ['address', 'person', 'paymentDetail'] })
+      .then( orders => {
+        let returnObject = {
+              orders: orders
+            },
+            addressIds = orders.models.map( order => { return order.relations.address.id});
+
+        let Address = require('./address').Address;
+        return Address.query({
+          whereIn: ['id', addressIds], 
+          max: 'id as id',
+          select: 'origin', 
+          count: 'origin as orders', 
+          groupBy: 'origin', 
+          orderBy: ['orders', 'DESC'],
+          limit: 5
+        }).fetchAll()
+          .then(address => {
+            let groupedIds = address.models.map ( address => {return address.id});
+            return Address.where('id', 'IN', groupedIds).fetchAll()
+              .then( address => {
+                returnObject.addresses = address
+                return new Promise((resolve, reject) => {
+                  return resolve(returnObject);
+                });
+              });
+          });
+
+      });
   },
   priceRateObject: function(){
     return this.priceRate()
@@ -38,17 +66,28 @@ let User = bookshelf.Model.extend({
   hashPassword: function(){
     return bcrypt.hash(this.attributes.password, 8);
   },
+  changePassword: function(newPassword){
+    let user = this;
+    return bcrypt.hash(newPassword, 8).then( hash => {
+      return user.save({password: hash}, { patch: true });
+    });
+  },
   validatePassord: function(comparePassword){
     return bcrypt.compare(comparePassword, this.attributes.password);
   },
   makePrepago: function(data){
     let PriceRate = require('./price_rate').PriceRate;
     let that = this;
-    return PriceRate.where({prepago_id: data.prepagoId}).fetch().then( priceRate => {
+    let promise = null;
+    promise = data.value ? PriceRate.createCustom(data.value)
+                                : PriceRate.where({ prepago_id: data.prepagoId }).fetch();
+
+    return promise.then(priceRate => {
       return that.save({ price_rate_id: priceRate.id, prepago_active: false, prepago_start_at: null }, { patch: true }).then(function (user) {
         return user;
       });
     });
+
   },
   makeOrder: function(data){
     let user = this;
@@ -59,14 +98,15 @@ let User = bookshelf.Model.extend({
         return new Address(data.address).save({ 'order_id': order.id })
           .then( () => {
             let personData = {
-              "name": user.name,
-              "celular": user.phone,
-              "email": user.email
+              "name": user.attributes.name,
+              "celular": user.attributes.phone,
+              "email": user.attributes.email
             }
             let Person = require('./person').Person;
             return new Person(personData).save({ 'order_id': order.id })
               .then(() => {
                 let PaymentDetail = require('./payment_detail').PaymentDetail;
+                data.payment_detail.credit = false;
                 return new PaymentDetail(data.payment_detail).save({ 'order_id': order.id })
                   .then(paymentDetail => {
                     data.orderId = order.id;
@@ -95,7 +135,7 @@ function prepagoLogic(priceRate, user){
   let Order = require('./order').Order;
   let endDateProcess = new Date(user.prepago_start_at);
   endDateProcess.setMonth(endDateProcess.getMonth() + 1);
-  return Order.query({where: {user_id: user.id, active: true}, whereBetween: ['created_at', [user.prepago_start_at, endDateProcess]] }).fetchAll().then( orders => {
+  return Order.query({where: {user_id: user.id, active: false}, whereBetween: ['created_at', [user.prepago_start_at, endDateProcess]] }).fetchAll().then( orders => {
     return priceRate.prepagoObject().then( (prepago) => {
       return {availables: parseInt(prepago.attributes.orders) - orders.length, priceRate: priceRate}
     });

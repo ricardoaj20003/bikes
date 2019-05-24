@@ -132,11 +132,10 @@ app.post('/prepagos/cancel_user/:id', (req, res) => {
 app.post('/prepagos', (req, res) => {
   req.method = 'GET';
   let url = `/prepagos/${req.body.prepago_id}`;
-  if (req.body.prepago_id === 'custom'){
+  if (req.body.prepago_id === 'custom')
     url += `?customValue=${req.body.customValue}`;
-    delete req.body.customValue;
-  }
 
+  delete req.body.customValue;
   return makeApiRequest(req, {url: url})
     .then( response => {
       req.body.price_rate_id = response.data.id;
@@ -166,6 +165,77 @@ app.get('/users/not_prepago', (req, res) => {
     });
 });
 
+app.get('/users/pedidos', (req, res) => {
+  makeApiRequest(req, {url: `/users/${req.session.userId}/pedidos`})
+    .then(response => {
+      return res.send(response.data);
+    })
+    .catch(error => {
+      return res.send(error.response.data);
+    });
+});
+
+app.post('/users', (req, res) => {
+  req.body.price_rate_id = 3;
+  makeApiRequest(req, {url: `/users`})
+    .then(response => {
+      response.data.next_url = '/admin/tarifas';
+      return res.send(response.data);
+    })
+    .catch(error => {
+      return res.send(error.response.data);
+    });
+});
+
+app.post('/users/update', (req, res) => {
+  makeApiRequest(req, {url: `/users/${req.session.userId}/update`})
+    .then(response => {
+      response.data.next_url = '/admin';
+      return res.send(response.data);
+    })
+    .catch(error => {
+      return res.send(error.response.data);
+    });
+});
+
+app.post('/users/update_password', (req, res) => {
+  makeApiRequest(req, {url: `/users/${req.session.userId}/change_password`})
+    .then(response => {
+      req.session.destroy(err => {
+        if (err)
+          return res.send(error);
+
+        response.data.next_url = '/admin';
+        return res.send(response.data);
+      });
+    })
+    .catch(error => {
+      return res.send(error.response.data);
+    });
+});
+
+app.post('/users/:id/update', (req, res) => {
+  makeApiRequest(req, {url: `/users/${req.params.id}/update`})
+    .then(response => {
+      response.data.next_url = '/admin/tarifas';
+      return res.send(response.data);
+    })
+    .catch(error => {
+      return res.send(error.response.data);
+    });
+});
+
+app.post('/users/:id/update_password', (req, res) => {
+  makeApiRequest(req, {url: `/users/${req.params.id}/change_password`})
+    .then(response => {
+      response.data.next_url = '/admin/tarifas';
+      return res.send(response.data);
+    })
+    .catch(error => {
+      return res.send(error.response.data);
+    });
+});
+
 app.post('/users/:id/make_prepago', (req, res) => {
   makeApiRequest(req, {url: `/users/${req.params.id}/make_prepago`})
     .then(response => {
@@ -177,8 +247,37 @@ app.post('/users/:id/make_prepago', (req, res) => {
     });
 });
 
-app.get('/users/pedidos', (req, res) => {
-  makeApiRequest(req, {url: `/users/${req.session.userId}/pedidos`})
+app.get('/users/price_rate', (req, res) => {
+  return sign_in(req).then( (loginData) => {
+    if (loginData.username){
+      req.session.token = loginData.token;
+      req.session.userId = loginData.id;
+      req.session.admin = false;
+      req.session.userSession = false;
+      req.method = 'GET';
+    }
+    return makeApiRequest(req, { url: `/users/${req.session.userId}/price_rate` })
+      .then(function (response) {
+        return res.send(response.data);
+      })
+      .catch(function (error) {
+        return res.send(error.response.data);
+      });
+  });
+});
+
+app.get('/users/get_data', (req, res) => {
+  makeApiRequest(req, {url: `/users/${req.session.userId}`})
+    .then(response => {
+      return res.send(response.data);
+    })
+    .catch(error => {
+      return res.send(error.response.data);
+    });
+});
+
+app.get('/users/:id', (req, res) => {
+  makeApiRequest(req, {url: `/users/${req.params.id}`})
     .then(response => {
       return res.send(response.data);
     })
@@ -209,6 +308,26 @@ function makeApiRequest(req, params = {url: '', headers: {}}){
   
   return axios.get(baseUrl + params.url, requestConfig);
 }
+
+app.get('/pedidos/:id/terminar', (req, res) => {
+  return makeApiRequest(req, {url: `/pedidos/${req.params.id}/close`})
+    .then(function (response) {
+      return res.redirect('/');
+    })
+    .catch(function (error) {
+      return res.send(error.response.data);
+    });
+});
+
+app.get('/pedidos/:id/iniciar', (req, res) => {
+  return makeApiRequest(req, {url: `/pedidos/${req.params.id}/start`})
+    .then(function (response) {
+      return res.redirect('/');
+    })
+    .catch(function (error) {
+      return res.send(error.response.data);
+    });
+});
 
 app.post('/pedidos/:id/add_payment_detail', (req, res) => {
   return makeApiRequest(req, {url: `/pedidos/${req.session.order_id}/add_payment_detail`})
@@ -272,25 +391,6 @@ function sign_in(req){
   });
 }
 
-app.get('/users/price_rate', (req, res) => {
-  return sign_in(req).then( (loginData) => {
-    if (loginData.username){
-      req.session.token = loginData.token;
-      req.session.userId = loginData.id;
-      req.session.admin = false;
-      req.session.userSession = false;
-      req.method = 'GET';
-    }
-    return makeApiRequest(req, { url: `/users/${req.session.userId}/price_rate` })
-      .then(function (response) {
-        return res.send(response.data);
-      })
-      .catch(function (error) {
-        return res.send(error.response.data);
-      });
-  });
-});
-
 app.post('/pedidos/:id/add_person', (req, res) => {
   return makeApiRequest(req, {url: `/pedidos/${req.session.order_id}/add_person`})
     .then(function (response) {
@@ -334,10 +434,6 @@ app.post('/pedidos', (req, res) => {
       });
   }
 
-  if (req.body.extraCost) {
-    req.session.extraCost = req.body.extraCost;
-  }
-
   return makeApiRequest(req, {url: '/pedidos'})
     .then(function (response) {
       if (response.data.error)
@@ -376,11 +472,38 @@ app.post('/sign_in', (req, res) => {
 });
 
 app.get('/admin/prepagos', (req, res) => {
+  if (!req.session.admin)
+    return res.redirect('/');
+
   return res.render('admin/prepagos/index.html');
 });
 
 app.get('/admin/prepagos/agregar', (req, res) => {
+  if (!req.session.admin)
+    return res.redirect('/');
+
   return res.render('admin/prepagos/agregar.html');
+});
+
+app.get('/admin/tarifas', (req, res) => {
+  if (!req.session.admin)
+    return res.redirect('/');
+
+  return res.render('admin/tarifas/index.html');
+});
+
+app.get('/admin/tarifas/agregar', (req, res) => {
+  if (!req.session.admin)
+    return res.redirect('/');
+
+  return res.render('admin/tarifas/agregar.html');
+});
+
+app.get('/admin/tarifas/:id', (req, res) => {
+  if (!req.session.admin)
+    return res.redirect('/');
+
+  return res.render('admin/tarifas/modificar.html', {id: req.params.id});
 });
 
 app.get('*', (req, res) => {

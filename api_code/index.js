@@ -65,9 +65,9 @@ fastify.addHook('preHandler', (request, response, next) => {
 function aditionId(request, userData){
   if (request.body)
     return request.body.user_id = userData.id;
-  
+
   if (
-    request.urlData().path.match(/users/)
+    request.urlData().path.match(/users/) && request.params.id === null
   )
     request.params.id = userData.id;
 }

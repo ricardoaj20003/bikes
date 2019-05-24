@@ -10,15 +10,18 @@ let Prepago = bookshelf.Model.extend({
 }, {
   userLists: function(){
     return this.fetchAll().then( prepagos => {
-      let prepagoObjects = {};
-      let prepagoIds = prepagos.map( prepago => { 
+      let prepagoObjects = {},
+        prepagoIds = prepagos.map( prepago => { 
         prepagoObjects[prepago.id] = prepago.attributes;
         return prepago.id 
       });
-      let PriceRate = require('./price_rate').PriceRate;
+      let PriceRate = require('./price_rate').PriceRate,
+          userLists = {};
+      
+      Object.assign(userLists, prepagoObjects);
       return PriceRate.where('prepago_id', 'IN', prepagoIds).fetchAll().then( prices => {
         let pricesIds = prices.map( price => { 
-          prepagoObjects[price.id] = prepagoObjects[price.attributes.prepago_id];
+          userLists[price.id] = prepagoObjects[price.attributes.prepago_id];
           return price.id 
         });
         let User = require('./user').User;
@@ -27,7 +30,7 @@ let Prepago = bookshelf.Model.extend({
             let usersObject = [];
             users.forEach(user => {
               let userObject = user.attributes;
-              userObject.prepagoData = prepagoObjects[userObject.price_rate_id];
+              userObject.prepagoData = userLists[userObject.price_rate_id];
               usersObject.push(userObject);
               resolve(usersObject);
             });
