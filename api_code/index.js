@@ -43,11 +43,13 @@ fastify.addHook('preHandler', (request, response, next) => {
     urlData.path !== '/users/sign_in' &&
     !urlData.path.match(/\/documentation\//) &&
     !urlData.path.match(/\/facebook_logic\//) &&
+    !urlData.path.match(/refresh_code/) &&
+    !urlData.path.match(/week_report/) &&
     !urlData.path.match(/close/) &&
     !urlData.path.match(/start/)
   ){
     if (!request.headers.token)
-      response.send({ error: 'Token invalido' });
+      return response.send({ error: 'Token invalido no enviado' });
 
     try {
       tokenDecode = jwt.verify(request.headers.token, process.env.TOKEN_SECRET);

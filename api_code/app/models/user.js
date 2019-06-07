@@ -31,9 +31,14 @@ let User = bookshelf.Model.extend({
             },
             addressIds = orders.models.map( order => { return order.relations.address.id});
 
+var filtered = addressIds.filter(function (el) {
+  return el != null;
+});
+        console.log(filtered);
+
         let Address = require('./address').Address;
         return Address.query({
-          whereIn: ['id', addressIds], 
+          whereIn: ['id', filtered], 
           max: 'id as id',
           select: 'origin', 
           count: 'origin as orders', 
@@ -92,6 +97,8 @@ let User = bookshelf.Model.extend({
   makeOrder: function(data){
     let user = this;
     let Order = require('./order').Order;
+    console.log('a');
+    console.log(data);
     return new Order({ user_id: data.user_id }).save()
       .then( order => {
         let Address = require('./address').Address;

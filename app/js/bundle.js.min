@@ -85,6 +85,9 @@ $('.text-center.solicita').click(function(){
         data: JSON.stringify(data),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
+        xhrFields: {
+         withCredentials: true
+        },
         success: function(response){
           if (response.error)
             return alert(response.error);
