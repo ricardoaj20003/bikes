@@ -104,7 +104,6 @@ $(document).ready(function ($) {
 
   if ($('#tarifaUserLists').length)
     $.get('/users/not_prepago', users => {
-      console.log(users);
       if (users.error)
         return alert(users.error);
 

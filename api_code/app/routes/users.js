@@ -282,14 +282,11 @@ module.exports = function(fastify, opts, next){
     }
   },
   (request, response) => {
-console.log(request.body);
     return User.where({username: request.body.username}).fetch()
       .then((user) => {
-        console.log(user)
         if (!user)
           return response.send({error: 'datos no coinciden'});
 
-    	console.log(request.body.username);
         return user.validatePassord(request.body.password).then((validateResponse) => {
           if (!validateResponse)
             return response.send({error: 'datos no coinciden'});

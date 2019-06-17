@@ -24,7 +24,6 @@ let PaymentDetail = bookshelf.Model.extend({
                 let Roundsman = require('./roundsman').Roundsman;
                 return Roundsman.where({ id: order_control.attributes.roundsman_id }).fetch({ withRelated: ['order_control'] }).then(function (roundsman) {
                   let address = order.relations.address;
-                  console.log(order.relations)
                   let name = order.relations.person.attributes.name;
                   let cel = order.relations.person.attributes.celular;
                   let price = order.relations.paymentDetail.attributes.total;
@@ -38,12 +37,12 @@ let PaymentDetail = bookshelf.Model.extend({
                           let re = new RegExp(`${coupon.attributes.remove_message}.*,`, "g");
                           message = message.replace(re, ' Pedido sin cobro,');
                         }
-                        roundsman.assign_order(message, order.id);
+                        //roundsman.assign_order(message, order.id);
                         return new Promise( (resolve, reject) => { resolve(order)});
                       });
                     });
                   }
-                  roundsman.assign_order(message, order.id);
+                  //roundsman.assign_order(message, order.id);
                   return new Promise((resolve, reject) => { resolve(order) });
                 });
               })
