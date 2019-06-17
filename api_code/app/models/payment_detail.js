@@ -37,12 +37,12 @@ let PaymentDetail = bookshelf.Model.extend({
                           let re = new RegExp(`${coupon.attributes.remove_message}.*,`, "g");
                           message = message.replace(re, ' Pedido sin cobro,');
                         }
-                        //roundsman.assign_order(message, orderId);
+                        //roundsman.assign_order(message, order.id);
                         return new Promise( (resolve, reject) => { resolve(order)});
                       });
                     });
                   }
-                  //roundsman.assign_order(message, orderId);
+                  //roundsman.assign_order(message, order.id);
                   return new Promise((resolve, reject) => { resolve(order) });
                 });
               })

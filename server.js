@@ -1,5 +1,5 @@
 const fs = require("fs");
-const host = "localhost";
+const host = "0.0.0.0";
 const port = 3003;
 const express = require("express");
 const session = require('express-session');

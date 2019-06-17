@@ -27,7 +27,7 @@ let Roundsman = bookshelf.Model.extend({
     }, {patch: true});
   },
   sendCloseMessage: function(senderID, orderId){
-    let url = `https://www.donmandon.com.mx/pedidos/${orderId}/terminar`;
+    let url = `https://www.donmandon.mx/pedidos/${orderId}/terminar`;
     let requestBody = {
       "recipient": {
         "id": senderID
@@ -39,7 +39,7 @@ let Roundsman = bookshelf.Model.extend({
     this.sendMessage(requestBody);
   },
   sendStartMessage: function(senderID, orderId, message){
-    let url = `https://wwww.donmandon.com.mx/pedidos/${orderId}/iniciar`;
+    let url = `https://www.donmandon.mx/pedidos/${orderId}/iniciar`;
     let requestBody = {
       "recipient": {
         "id": senderID

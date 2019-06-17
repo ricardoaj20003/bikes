@@ -27,13 +27,17 @@ let User = bookshelf.Model.extend({
     return Order.where('id', 'IN', ids).orderBy('close_at', 'DESC').orderBy('start_at', 'ASC').fetchAll({ withRelated: ['address', 'person', 'paymentDetail'] })
       .then( orders => {
         let returnObject = {
-              orders: orders
-            },
-            addressIds = orders.models.map( order => { return order.relations.address.id});
+          orders: orders
+        },
+          addressIds = orders.models.map(order => { return order.relations.address.id });
+
+        var filtered = addressIds.filter(function (el) {
+          return el != null;
+        });
 
         let Address = require('./address').Address;
         return Address.query({
-          whereIn: ['id', addressIds], 
+          whereIn: ['id', filtered], 
           max: 'id as id',
           select: 'origin', 
           count: 'origin as orders', 

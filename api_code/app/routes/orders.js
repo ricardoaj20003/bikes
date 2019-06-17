@@ -363,9 +363,10 @@ module.exports = function (fastify, opts, next) {
           return response.send(order);
 
         return OrderControl.where({ order_id: order.id }).fetch().then((order_control) => {
+          let Roundsman = require('../models/roundsman').Roundsman;
           return Roundsman.where({ id: order_control.attributes.roundsman_id }).fetch({ withRelated: ['order_control'] }).then(function (roundsman) {
             return order.save({ start_at: new Date() }, { patch: true }).then(function (order) {
-              roundsman.start_order(message, orderId);
+              roundsman.start_order(order.id);
               return response.send(order);
             });
           });
