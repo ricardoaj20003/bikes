@@ -1,0 +1,47 @@
+
+exports.up = function(knex, Promise) {
+  return Promise.all([
+    knex.raw(`
+      CREATE OR REPLACE FUNCTION assignNextRoundsman()
+      RETURNS trigger AS
+      $BODY$
+      DECLARE
+      last_roundsman INTEGER;
+      next_roundsman INTEGER;
+      BEGIN
+        SELECT order_controls.next_roundsman INTO last_roundsman FROM order_controls WHERE created_at NOTNULL ORDER BY created_at DESC LIMIT 1;
+        IF last_roundsman ISNULL THEN
+          SELECT id INTO last_roundsman FROM roundsman WHERE "senderID" IS NOT NULL ORDER BY ID ASC LIMIT 1;
+        END IF;
+        NEW.roundsman_id = last_roundsman;
+        IF EXISTS (SELECT id FROM roundsman WHERE id > last_roundsman AND "senderID" IS NOT NULL) THEN
+          SELECT id INTO next_roundsman FROM roundsman WHERE id > last_roundsman AND "senderID" IS NOT NULL ORDER BY id ASC LIMIT 1;
+        ELSE
+          SELECT id INTO next_roundsman FROM roundsman WHERE "senderID" IS NOT NULL ORDER BY ID ASC LIMIT 1;
+        END IF;
+        NEW.next_roundsman = next_roundsman;
+        RETURN NEW;
+      END;
+      $BODY$
+      LANGUAGE plpgsql
+    `),
+    knex.raw(`
+      CREATE TRIGGER assign_next_roundsman
+      BEFORE INSERT
+      ON order_controls
+      FOR EACH ROW
+        EXECUTE PROCEDURE assignNextRoundsman();
+    `)
+  ]);
+};
+
+exports.down = function(knex, Promise) {
+  return Promise.all([
+    knex.raw(`
+      DROP TRIGGER assign_next_roundsman ON order_controls;
+    `),
+    knex.raw(`
+      DROP FUNCTION assignNextRoundsman;
+    `)
+  ])
+};
