@@ -1,6 +1,5 @@
 api_code/node_modules/*
 api_code/package-lock.json
 api_code/.env*
-api_code/knexfile.js
 node_modules
 sessions/
