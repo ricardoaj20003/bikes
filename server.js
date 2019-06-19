@@ -370,8 +370,8 @@ function sign_in(req){
     if (req.session.token)
       return resolve({});
 
-    req.body.username = 'donmandonBase';
-    req.body.password = '123456789';
+    req.body.username = 'USERNAMEVAR';
+    req.body.password = 'PASSWORDVAR';
     req.method = 'POST';
     return makeApiRequest(req, { url: '/users/sign_in' }).then(function (response) {
       let jwt = require('jsonwebtoken');
