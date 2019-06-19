@@ -36,7 +36,14 @@ exports.seed = function(knex, Promise) {
                           return knex('users').insert([
                             {id: 1, username: 'normalusernologin', password: '$2b$08$kKZRSfJtWSBMJJ6cR2EqWOZILAfoERoNop4wxZmI3mDJRtrCjFYiS', email: 'donmandonmx@gmail.com', price_rate_id: 1, phone: '', name: 'Dm boot user', is_admin: false}
                           ]);
-                      });
+                      }).then( () => {
+                        return knex('roundsman').del()
+                          .then( () => {
+                            return knex('roundsman').insert([
+                              { id: 1, name: 'mensajero master', email: 'mensajeros@donmandon.mx', celular: '', zone_code: '2030'}
+                            ]);
+                          })
+                      })
                     });
                 });
             })
